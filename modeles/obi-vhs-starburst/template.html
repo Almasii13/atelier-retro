@@ -57,7 +57,7 @@
   .sous-titre .crochet { font-weight: 900; }
 
   /* Explosion noire */
-  .burst { left: -1.2mm; width: calc(var(--front) + 2.4mm); top: {{ face.burst_haut }}mm; height: 17.5mm; }
+  .burst { left: -.6mm; width: calc(var(--front) + 1.2mm); top: {{ face.burst_haut }}mm; height: 17.5mm; }
   .burst svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .burst .txt { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
                 color: #fff; font-weight: 900; font-size: 3.05mm; line-height: 1.25; letter-spacing: -.15mm; white-space: nowrap; }
@@ -135,8 +135,8 @@
     <div class="abs tate promo">{{ face.promo | safe }}</div>
 
     <div class="abs burst">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-        <polygon points="{{ etoile(22, 50, 37, irregulier=0.06) }}" fill="#111"/>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="overflow:visible">
+        <polygon points="{{ etoile(22, 46, 35, irregulier=0.05) }}" fill="#111"/>
       </svg>
       <div class="txt"><div>{{ face.burst | safe }}</div></div>
     </div>
