@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = haut %}{% set B = bas %}
+{# ---- Diagonale ciel / sable : y = y0 - pente·x (mm, repère page finie) ---- #}
+{% set y0 = 141.8 %}{% set pente = 0.2703 %}
+{% set zc1 = zone_cercle(24.4, 0.94) %}{% set zc2 = zone_cercle(27, 0.94) %}
+<style>
+  /* Modèle d'après une pub VHD Victor/JVC (magazine « Anime Vision », 1985).
+     Format B5 182×257 mm, fond perdu {{ FP }} mm, marge de sécurité {{ SECU }} mm.
+     Toutes les cotes sont en mm dans le repère de la page finie. */
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.encre }}; font-family: var(--f-gothic); }
+  .grain::after { content: ""; position: absolute; inset: 0; opacity: .06; pointer-events: none;
+    background-image: radial-gradient(#000 .1mm, transparent .13mm); background-size: .42mm .42mm; }
+
+  /* ---------- HAUT ---------- */
+  .marque { left: 11.3mm; width: 33.4mm; background: #d7000f; color: #fff; display: grid; place-items: center; }
+  .marque.l1 { top: 3.6mm; height: 8mm; font: italic 5.6mm/1 var(--f-latin); letter-spacing: -.2mm; }
+  .marque.l2 { top: 12.6mm; height: 8.4mm; font: 4.2mm/8.4mm var(--f-latin); letter-spacing: .2mm; white-space: nowrap; overflow: hidden; padding: 0 1.6mm; text-align: center; display: block; }
+  .mention { left: 11.3mm; top: 22.4mm; font: 500 1.45mm/1 var(--f-gothic); white-space: nowrap; }
+  .support { right: {{ SECU + 7 }}mm; top: 5.4mm; font: 3.4mm/1 var(--f-latin); letter-spacing: -.05mm; }
+  .support small { font-size: 1.9mm; margin-left: .8mm; }
+
+  .img-a { left: 3.8mm; top: 20.2mm; width: 89.7mm; height: 96.6mm;
+           clip-path: {{ clip([(0,14.5),(83.3,0),(100,85.7),(1.9,100)]) }}; }
+
+  .accroche { left: 78mm; top: 13.6mm; width: 95mm; transform: rotate(-4deg); transform-origin: left top;
+              font: 900 6.3mm/1.2 var(--f-mincho); letter-spacing: .1mm; }
+  .accroche span { display: block; white-space: nowrap; }
+
+  .synopsis { left: 83mm; top: 40.5mm; width: {{ L - SECU - 83 }}mm; height: 41.5mm; font: 500 2.12mm/1.74 var(--f-gothic); }
+  .synopsis .g { float: left; width: 7mm; height: 100%; shape-outside: polygon(0 0, 100% 100%, 0 100%); }
+  .synopsis .d { float: right; width: calc(100% - 7mm); height: 100%; shape-outside: polygon(100% 44%, 100% 100%, 15% 100%); }
+  .synopsis p { text-indent: 1em; }
+  .synopsis p.credits { text-align: left; text-align-last: left; text-indent: 0; margin-top: .9mm; font-size: 1.95mm; line-height: 1.62; }
+  .synopsis b { font: 1.85mm/1 var(--f-latin); color: {{ C.magenta }}; margin-right: .6mm; letter-spacing: .1mm; }
+
+  .bande { left: 117.2mm; top: 80.7mm; width: 90mm; height: 7.4mm; background: #141414; color: #fff;
+           transform: rotate(-15.5deg); transform-origin: left top; display: flex; align-items: center;
+           padding-left: 3.2mm; font: 900 3.05mm/1 var(--f-gothic); letter-spacing: .15mm; white-space: nowrap; }
+
+  .titre-haut { left: 98mm; top: 92.5mm; transform: rotate(-15.5deg); transform-origin: left top; color: {{ C.marine }}; }
+  .titre-haut .t { font: 16mm/1 var(--f-gothic-lourd); letter-spacing: -.8mm; transform: skewX(-8deg);
+                   white-space: nowrap; font-feature-settings: "palt" 1; }
+  .titre-haut .s { margin: 1.4mm 0 0 7mm; font: 900 3.2mm/1 var(--f-gothic); color: {{ C.encre }}; letter-spacing: .1mm; white-space: nowrap; }
+
+  .prix-haut { left: 71mm; top: 104.8mm; width: 23mm; height: 7mm; text-align: right; color: {{ C.rouge }};
+               font: 6.2mm/7mm var(--f-latin); letter-spacing: -.1mm; }
+  .spec-haut { left: 46mm; top: 113mm; width: 48mm; }
+  .spec-haut .l1 { font: 700 2.05mm/1.3 var(--f-gothic); }
+  .spec-haut .l2 { font: 4mm/1.1 var(--f-latin); letter-spacing: -.05mm; }
+  .spec-haut .cr { font: 500 1.5mm/1.45 var(--f-gothic); margin-top: .5mm; }
+
+  .rot-haut { left: 16mm; top: 112.2mm; transform: rotate(-8deg); transform-origin: left top;
+              color: {{ C.magenta }}; font: 900 3.2mm/1 var(--f-gothic); font-style: italic; letter-spacing: -.1mm; white-space: nowrap; }
+
+  .pastille .date { font: 7.4mm/1 var(--f-cond); color: {{ C.jaune }}; letter-spacing: .1mm; }
+  .pastille .lab  { font: 900 4.6mm/1 var(--f-gothic); color: #fff; margin-top: 1mm; letter-spacing: .5mm; }
+
+  /* ---------- BAS ---------- */
+  .chapeau { left: 67mm; top: 140mm; transform: rotate(-14deg); transform-origin: left top; color: {{ C.magenta }};
+             font: 700 2.5mm/1.45 var(--f-gothic); white-space: nowrap; }
+  .chapeau span { display: block; }
+  .chapeau span + span { margin-left: 10mm; }
+  .kicker { left: 46mm; top: 144.5mm; color: {{ C.vert }}; font: 900 4.4mm/1 var(--f-mincho); letter-spacing: .4mm; }
+  .titre-bas { left: {{ SECU + 15.5 }}mm; top: 150.5mm; width: 76mm; color: {{ C.vert }};
+               font: 900 10.6mm/1 var(--f-mincho); white-space: nowrap; text-align: justify; text-align-last: justify;
+               -webkit-text-stroke: .25mm {{ C.vert }}; }
+  .lead { left: {{ SECU + 15.5 }}mm; top: 164.8mm; width: 76mm; font: 900 3.95mm/1.38 var(--f-gothic); }
+  .lead span { display: block; white-space: nowrap; }
+  .corps { left: {{ SECU + 15.5 }}mm; top: 176.4mm; width: 76mm; font: 500 2.12mm/1.74 var(--f-gothic); }
+  .corps .sommaire { margin-top: 2.6mm; }
+  .corps p { text-indent: 1em; }
+  .sommaire { font: 500 2mm/1.62 var(--f-gothic); text-indent: 0; }
+  .sommaire h4 { color: {{ C.magenta }}; font: 700 2.1mm/1.5 var(--f-gothic); }
+  .sommaire span.i { display: inline; }
+  .sommaire span.i::before { content: "●"; }
+  .sommaire em { font-style: normal; color: #fff; background: {{ C.bleu }}; padding: 0 .5mm; margin-right: .4mm; font-weight: 700; font-size: .9em; }
+
+  .img-b { left: 112mm; top: 117mm; width: 64mm; height: 70mm; }
+
+  .slogan { left: 101mm; top: 157mm; transform: rotate(-14deg); transform-origin: left top; color: {{ C.rouge }};
+            font: 900 5.1mm/1.3 var(--f-gothic); white-space: nowrap; letter-spacing: .1mm;
+            -webkit-text-stroke: .9mm #fff; paint-order: stroke fill; }
+  .slogan span { display: block; }
+  .slogan span + span { margin-left: 7mm; }
+
+  .staff { left: 100mm; top: 190mm; width: 33mm; font: 500 1.9mm/1.52 var(--f-gothic); }
+  .staff b { display: block; font: 1.9mm/1.4 var(--f-latin); color: {{ C.magenta }}; letter-spacing: .15mm; }
+  .staff b + span { }
+  .staff span { display: block; white-space: nowrap; }
+  .staff .cast { margin-top: 1.1mm; }
+
+  .logo-rv { left: 135.5mm; top: 212mm; width: 40mm; height: 12mm; }
+  .logo-rv .r { position: absolute; left: 0; top: 0; font: italic 5.4mm/1 var(--f-latin); color: {{ C.magenta }}; letter-spacing: -.3mm; }
+  .logo-rv .v { position: absolute; left: 4.5mm; top: 5.2mm; font: italic 5.4mm/1 var(--f-latin); color: {{ C.marine }}; letter-spacing: -.3mm; }
+  .logo-rv .n { position: absolute; left: 21.5mm; top: 1.2mm; background: {{ C.marine }}; color: #fff; font: 2.6mm/1 var(--f-latin);
+                padding: .7mm 1.2mm; }
+
+  .prix-bas { left: 100mm; top: 226.4mm; display: flex; align-items: baseline; gap: 1.6mm; white-space: nowrap; }
+  .prix-bas .ref { font: 2.7mm/1 var(--f-latin); }
+  .prix-bas .p { font: 6.4mm/1 var(--f-latin); color: {{ C.rouge }}; letter-spacing: -.1mm; }
+  .spec-bas { left: 144mm; top: 226.6mm; font: 700 1.8mm/1.5 var(--f-gothic); white-space: nowrap; }
+
+  /* ---------- PIED ---------- */
+  .rayures { left: calc(var(--fp) * -1); right: calc(var(--fp) * -1); top: 235.2mm; height: 9.6mm;
+             background: repeating-linear-gradient(90deg, #e83828 0 .55mm, #fbe4dc .55mm 1.25mm); }
+  .cartouche { left: 50.5mm; top: 236.9mm; width: 81mm; height: 6.2mm; background: #fff; display: flex; align-items: center;
+               justify-content: center; gap: 3mm; white-space: nowrap; }
+  .cartouche span { font: 900 2.5mm/1 var(--f-gothic); letter-spacing: .05mm; }
+  .cartouche small { font: 700 1.7mm/1 var(--f-gothic); margin-right: .6mm; }
+  .mentions { left: 11mm; top: 248.6mm; font: 500 2.25mm/1 var(--f-gothic); letter-spacing: .12mm; white-space: nowrap; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# Fonds ciel / sable jusque dans le fond perdu #}
+  <svg class="abs grain" style="left:{{ -FP }}mm; top:{{ -FP }}mm; width:{{ L + 2*FP }}mm; height:{{ H + 2*FP }}mm"
+       viewBox="{{ -FP }} {{ -FP }} {{ L + 2*FP }} {{ H + 2*FP }}">
+    <rect x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.sable }}"/>
+    <polygon fill="{{ C.ciel }}" points="{{ -FP }},{{ -FP }} {{ L + FP }},{{ -FP }} {{ L + FP }},{{ y0 - pente*(L+FP) }} {{ -FP }},{{ y0 + pente*FP }}"/>
+  </svg>
+
+  {# ============ HAUT ============ #}
+  <div class="abs marque l1">{{ marque.logo }}</div>
+  <div class="abs marque l2" data-fit>{{ marque.nom }}</div>
+  <div class="abs mention">{{ marque.mention }}</div>
+  <div class="abs support">{{ marque.support }}<small>{{ marque.support_petit }}</small></div>
+
+  {% set u = img('principal') %}
+  <div class="slot img-a {{ '' if u else 'vide' }}" data-label="VISUEL PRINCIPAL&#10;Broly — JPG / PNG">
+    {% if u %}<img src="{{ u }}">{% endif %}</div>
+
+  <div class="abs accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
+
+  <div class="abs synopsis justifie kinsoku">
+    <div class="g"></div><div class="d"></div>
+    {% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}
+    <p class="credits"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
+  </div>
+
+  <div class="abs bande">{{ T.bande }}</div>
+
+  <div class="abs titre-haut"><div class="t">{{ T.titre }}</div><div class="s">{{ T.sous_titre }}</div></div>
+
+  <div class="abs prix-haut">{{ T.prix }}</div>
+  <div class="abs spec-haut">
+    <div class="l1">{{ T.spec }}</div>
+    <div class="l2">{{ T.reference }}</div>
+    <div class="cr">{% for c in T.credits %}{{ c }}<br>{% endfor %}</div>
+  </div>
+
+  <div class="abs rot-haut">{{ T.support_rotatif }}</div>
+  <div class="forme pastille" style="left:17.6mm; top:114.1mm; width:24.4mm; height:24.4mm;">
+    <svg viewBox="0 0 24.4 24.4"><circle cx="12.2" cy="12.2" r="12.2" fill="#141414"/></svg>
+    <div class="contenu" style="left:{{ zc1[0] }}mm; top:{{ zc1[1] }}mm; width:{{ zc1[2] }}mm; height:{{ zc1[3] }}mm;">
+      <div class="date nowrap" data-etire="1.08">{{ T.date }}</div><div class="lab">{{ T.date_label }}</div>
+    </div>
+  </div>
+
+  {# ============ BAS ============ #}
+  <div class="abs chapeau">{% for l in B.chapeau %}<span>{{ l }}</span>{% endfor %}</div>
+  <div class="abs kicker">{{ B.kicker }}</div>
+  <div class="abs titre-bas">{{ B.titre }}</div>
+  <div class="abs lead">{% for l in B.lead %}<span>{{ l }}</span>{% endfor %}</div>
+  <div class="abs corps justifie kinsoku">{% for p in B.corps %}<p>{{ p }}</p>{% endfor %}
+    <div class="sommaire">
+      <h4>{{ B.sommaire_titre }}</h4>
+      {% for tag, item in B.sommaire %}<span class="i">{% if tag %}<em>{{ tag }}</em>{% endif %}{{ item }}</span>{% endfor %}
+    </div>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="slot detoure img-b {{ '' if u2 else 'vide' }}" data-label="PERSONNAGE DÉTOURÉ&#10;PNG transparent">
+    {% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+
+  <div class="abs slogan">{% for l in B.slogan %}<span>{{ l }}</span>{% endfor %}</div>
+
+  <div class="forme pastille" style="left:141.5mm; top:183mm; width:27mm; height:27mm;">
+    <svg viewBox="0 0 27 27"><circle cx="13.5" cy="13.5" r="13.5" fill="{{ C.bleu }}"/></svg>
+    <div class="contenu" style="left:{{ zc2[0] }}mm; top:{{ zc2[1] }}mm; width:{{ zc2[2] }}mm; height:{{ zc2[3] }}mm;">
+      <div class="date nowrap" data-etire="1.08">{{ B.date }}</div><div class="lab">{{ B.date_label }}</div>
+    </div>
+  </div>
+  <div class="forme" style="left:137.5mm; top:179mm; width:35mm; height:35mm;">
+    {{ arc(35, B.support_rotatif, C.magenta, 2.8, -150, -30, "Zen Kaku", 900) }}
+  </div>
+
+  <div class="abs staff">
+    <b>STAFF</b>{% for r, n in B.staff %}<span>{{ r }}：{{ n }}</span>{% endfor %}
+    <div class="cast"><b>CAST</b>{% for r, n in B.cast %}<span>{{ r }}：{{ n }}</span>{% endfor %}</div>
+  </div>
+
+  <div class="abs logo-rv"><span class="r">{{ B.logo[0] }}</span><span class="v">{{ B.logo[1] }}</span><span class="n">{{ B.logo[2] }}</span></div>
+
+  <div class="abs prix-bas"><span class="ref">{{ B.reference }}</span><span class="p">{{ B.prix }}</span></div>
+  <div class="abs spec-bas">{% for s in B.spec %}{{ s }}<br>{% endfor %}</div>
+
+  {# ============ PIED ============ #}
+  <div class="abs rayures"></div>
+  <div class="abs cartouche">{% for lab, n in pied.bande %}<span><small>{{ lab }}</small>{{ n }}</span>{% endfor %}</div>
+  <div class="abs mentions">{{ pied.mentions }}</div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

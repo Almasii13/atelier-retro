@@ -22,7 +22,15 @@ Exports : PNG propre (impression), PNG avec repères de pli, PDF aux dimensions 
 | Modèle | Format | Inspiré de | Statut |
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
-| `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » (Pony Canyon, 1991) — face calquée élément par élément | En test |
+| `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
+| `flyer-vhd-double` | Flyer B5 182×257, deux titres (haut ciel / bas sable) | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V1) |
+
+## Règles de mise en page (appliquées par tous les modèles)
+
+- Fond perdu 3 mm, marge de sécurité 2,5–3 mm : aucun texte hors de la zone bleue de l'épreuve.
+- Textes dans les formes : zone de texte inscrite calculée (`lib/formes.py`), centrage horizontal et vertical, taille ajustée automatiquement (`data-fit`), condensation horizontale si nécessaire (`data-etire`).
+- Japonais : justification inter-caractères, kinsoku strict, kana proportionnels (`palt`) sur les titres, colonnes verticales justifiées sur une hauteur commune.
+- Polices libres (OFL) embarquées dans `lib/fonts`.
 
 ## Règles maison
 
