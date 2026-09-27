@@ -2,15 +2,15 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>Obi VHS — Dragon Ball Super: Broly</title>
-<link rel="stylesheet" href="file:///home/claude/atelier-retro/lib/atelier.css">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
 <style>
   /* Modèle fidèle à l'obi LD japonais fin 80's (réf. « Ariel VISUAL 1 »).
      Toutes les positions de la face sont en mm, relevées sur la référence
      (obi ≈ 16 % de la hauteur, colonnes à ~3,5 / 14 / 25 mm du bord gauche). */
   :root {
-    --h: 188mm; --front: 30mm; --dos: 26mm; --back: 30mm;
-    --fond: #ece33f; --encre: #1b1d26; --logo: #3d5bb0;
+    --h: {{ dim.hauteur }}mm; --front: {{ dim.face }}mm; --dos: {{ dim.tranche }}mm; --back: {{ dim.verso }}mm;
+    --fond: {{ couleurs.fond }}; --encre: {{ couleurs.encre }}; --logo: {{ couleurs.logo }};
   }
   body { width: calc(var(--back) + var(--dos) + var(--front)); height: var(--h); }
   .obi { position: relative; display: flex; width: 100%; height: 100%; background: var(--fond);
@@ -48,21 +48,21 @@
   .accroche { top: 28.5mm; right: .2mm; font-weight: 900; font-size: 8.3mm; letter-spacing: 1.5mm; transform: scaleX(1.08); transform-origin: right top; }
   .promo    { top: 29.5mm; left: .3mm; font-weight: 500; font-size: 4.25mm; letter-spacing: 0; transform: scaleX(1.18); transform-origin: left top; }
   .col-titre { top: 29.5mm; left: 5.6mm; width: 13.6mm; display: flex; flex-direction: column; align-items: center; }
-  .titre { font-weight: 900; font-size: 9.8mm; letter-spacing: -.2mm; line-height: 1; transform: scaleX(1.36); }
+  .titre { font-weight: 900; font-size: {{ face.taille_titre }}mm; letter-spacing: -.2mm; line-height: 1; transform: scaleX(1.36); }
   .edition { margin-top: 1mm; text-align: center; font: 900 2.9mm/1 var(--f-latin); transform: scaleX(.82); white-space: nowrap; }
-  .num { font: 900 23mm/.82 var(--f-latin); transform: scaleX(.42); letter-spacing: -1mm; margin-top: .4mm; }
+  .num { font: 900 {{ face.taille_num }}mm/.82 var(--f-latin); transform: scaleX(.42); letter-spacing: -1mm; margin-top: .4mm; }
   .sous-titre { margin-top: 1.2mm; font-weight: 900; font-size: 3.8mm; letter-spacing: 0; }
   .sous-titre .latin { text-orientation: upright; font-family: var(--f-latin); font-size: 3.7mm; letter-spacing: -.35mm; }
   .sous-titre rt { font-size: 1.4mm; font-weight: 700; letter-spacing: 0; }
   .sous-titre .crochet { font-weight: 900; }
 
   /* Explosion noire */
-  .burst { left: -1.2mm; width: calc(var(--front) + 2.4mm); top: 156mm; height: 17.5mm; }
+  .burst { left: -1.2mm; width: calc(var(--front) + 2.4mm); top: {{ face.burst_haut }}mm; height: 17.5mm; }
   .burst svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .burst .txt { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
                 color: #fff; font-weight: 900; font-size: 3.05mm; line-height: 1.25; letter-spacing: -.15mm; white-space: nowrap; }
   .burst .txt .lat { font-family: var(--f-latin); }
-  .note { top: calc(156mm + 18.4mm); left: 0; right: 0; text-align: center;
+  .note { top: calc({{ face.burst_haut }}mm + 18.4mm); left: 0; right: 0; text-align: center;
           font-size: 1.3mm; font-weight: 500; white-space: nowrap; }
   .logo-bas { bottom: 1mm; left: 0; right: 0; text-align: center; color: var(--logo);
               font: italic 900 4.8mm/1 var(--f-latin); letter-spacing: -.3mm; }
@@ -72,7 +72,7 @@
   .tranche .editeur { font-size: 2.6mm; }
   .tranche .ref { top: 6.5mm; left: 0; right: 0; text-align: center; font: 900 1.9mm var(--f-latin); }
   .tranche .titre-dos { top: 13mm; left: 0; right: 0; display: flex; justify-content: center; }
-  .tranche .titre-dos .tate { font-weight: 900; font-size: 10mm; letter-spacing: -.3mm; }
+  .tranche .titre-dos .tate { font-weight: 900; font-size: {{ tranche.taille_titre }}mm; letter-spacing: -.3mm; }
   .tranche .titre-dos .petit { font-size: .45em; letter-spacing: .2mm; }
   .tranche .titre-dos .lat { text-orientation: upright; font-family: var(--f-latin); font-size: .55em; }
   .tranche .logo-bas { font-size: 3.6mm; }
@@ -94,57 +94,60 @@
   .verso .ref { text-align: center; font: 900 2.1mm var(--f-latin); }
 </style>
 </head>
-<body class="propre">
+<body class="{{ 'propre' if propre else '' }}">
 <div class="obi">
 
   <section class="panneau verso">
-    <div class="abs editeur">BACK TO 2054 VHS</div>
+    <div class="abs editeur">{{ editeur.nom }}</div>
     <div class="abs bloc">
-      <p class="texte">惑星ベジータ消滅から41年。辺境の星で生き延びた一人のサイヤ人が、悟空とベジータの前に姿を現す。怒りが呼び覚ます、計り知れない力とは――。</p>
-      <div class="tech"><span>カラー／約100分</span><span>Hi-Fiステレオ</span><span>日本語・片面1巻</span></div>
-      <div class="staff"><span><i>原作・脚本・キャラクターデザイン</i>鳥山 明</span><span><i>監督</i>長峯達也</span></div>
-      <div class="prix"><b>¥4,800</b><small>（税込）</small></div>
+      <p class="texte">{{ verso.texte }}</p>
+      <div class="tech">{% for l in verso.fiche %}<span>{{ l }}</span>{% endfor %}</div>
+      <div class="staff">{% for s in verso.staff %}<span><i>{{ s[0] }}</i>{{ s[1] }}</span>{% endfor %}</div>
+      <div class="prix"><b>{{ verso.prix }}</b><small>{{ verso.prix_note }}</small></div>
       <div class="code-barre"></div>
-      <div class="ref">BTV-2054</div>
+      <div class="ref">{{ reference }}</div>
     </div>
   </section>
 
   <section class="panneau tranche">
-    <div class="abs editeur">B2054 VHS</div>
-    <div class="abs ref">BTV-2054</div>
-    <div class="abs titre-dos"><div class="tate"><span class="petit">ドラゴンボール超</span>　ブロリー</div></div>
-    <div class="abs logo-bas">B2054</div>
+    <div class="abs editeur">{{ editeur.nom_court }}</div>
+    <div class="abs ref">{{ reference }}</div>
+    <div class="abs titre-dos"><div class="tate">{{ tranche.titre | safe }}</div></div>
+    <div class="abs logo-bas">{{ editeur.logo }}</div>
   </section>
 
   <section class="panneau face">
-    <div class="abs editeur">BACK TO 2054 VHS</div>
-    <div class="abs micro">COLOR 100min. Hi-Fi STEREO MONO</div>
-    <div class="abs cases"><span>BTV-2054</span><span>¥4,800(税込)</span></div>
+    <div class="abs editeur">{{ editeur.nom }}</div>
+    <div class="abs micro">{{ face.micro }}</div>
+    <div class="abs cases">{% for c in face.cases %}<span>{{ c }}</span>{% endfor %}</div>
     <div class="abs logos">
-      <div class="logo-fmt">VHS</div>
-      <div class="logo-oval">Hi-Fi<small>STEREO</small></div>
+      <div class="logo-fmt">{{ face.logo_fmt }}</div>
+      <div class="logo-oval">{{ face.logo_oval[0] }}<small>{{ face.logo_oval[1] }}</small></div>
     </div>
 
-    <div class="abs tate accroche">宇宙最強の伝説戦士、覚醒<span class="tcy">!!</span></div>
+    <div class="abs tate accroche">{{ face.accroche | safe }}</div>
     <div class="abs col-titre">
-      <div class="tate titre">ブロリー</div>
-      <div class="edition">MOVIE</div>
-      <div class="num">20</div>
-      <div class="tate sous-titre"><ruby class="latin">SAIYAN<rt>サイヤ</rt></ruby>最大の激闘<span class="crochet">〈劇場版〉</span></div>
+      <div class="tate titre">{{ face.titre }}</div>
+      <div class="edition">{{ face.edition }}</div>
+      <div class="num">{{ face.num }}</div>
+      <div class="tate sous-titre">{{ face.sous_titre | safe }}</div>
     </div>
-    <div class="abs tate promo">ファン待望の、伝説の超サイヤ人がついにスクリーンに帰還<span class="tcy">!</span></div>
+    <div class="abs tate promo">{{ face.promo | safe }}</div>
 
     <div class="abs burst">
       <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-        <polygon points="50.00,-2.75 55.04,14.96 63.28,4.77 66.29,14.33 76.01,9.53 73.13,23.31 88.47,16.66 80.55,30.37 97.61,28.26 84.36,39.91 102.22,42.49 86.20,50.00 100.09,57.20 87.34,60.96 96.49,71.23 82.71,71.02 88.73,83.56 72.92,76.45 78.27,93.99 65.54,84.02 63.77,96.88 55.07,85.26 50.00,102.10 44.68,86.99 35.17,100.50 34.12,84.76 21.47,94.39 25.58,78.19 11.31,83.52 18.45,70.27 5.84,70.17 12.55,61.00 1.62,56.96 11.75,50.00 -2.19,42.50 13.86,39.39 6.47,30.12 17.66,29.22 11.45,16.60 26.69,23.09 24.43,10.21 34.57,16.22 36.70,4.72 44.47,11.51" fill="#111"/>
+        <polygon points="{{ etoile(22, 50, 37, irregulier=0.06) }}" fill="#111"/>
       </svg>
-      <div class="txt"><div><span class="lat">BROLY</span>テレカ<br>プレゼント<span class="lat">!!</span></div></div>
+      <div class="txt"><div>{{ face.burst | safe }}</div></div>
     </div>
-    <div class="abs note">(テレカは各店先着順となります)</div>
-    <div class="abs logo-bas">B2054</div>
+    <div class="abs note">{{ face.note }}</div>
+    <div class="abs logo-bas">{{ editeur.logo }}</div>
   </section>
 
-  
+  {% if repere %}
+  <div class="pli" style="left: var(--back)"></div>
+  <div class="pli" style="left: calc(var(--back) + var(--dos))"></div>
+  {% endif %}
 </div>
 </body>
 </html>

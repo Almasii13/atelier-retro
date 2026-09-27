@@ -21,7 +21,8 @@ Exports : PNG propre (impression), PNG avec repères de pli, PDF aux dimensions 
 
 | Modèle | Format | Inspiré de | Statut |
 |---|---|---|---|
-| `obi-vhs-jp-classique` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD japonais fin 80's | En test |
+| `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
+| `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » (Pony Canyon, 1991) — face calquée élément par élément | En test |
 
 ## Règles maison
 

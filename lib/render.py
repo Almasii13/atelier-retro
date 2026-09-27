@@ -19,9 +19,23 @@ RACINE = pathlib.Path(__file__).resolve().parent.parent
 MM = 96 / 25.4  # px CSS par mm
 
 
+def etoile(pointes=18, r_ext=50, r_int=38, cx=50, cy=50, sx=1.0, sy=1.0, irregulier=0.0):
+    """Points SVG d'une étoile / explosion (pastilles 'burst')."""
+    import math, random
+    rnd = random.Random(pointes)
+    pts = []
+    for i in range(pointes * 2):
+        a = math.pi * i / pointes - math.pi / 2
+        r = r_ext if i % 2 == 0 else r_int
+        r *= 1 + rnd.uniform(-irregulier, irregulier)
+        pts.append(f"{cx + math.cos(a) * r * sx:.2f},{cy + math.sin(a) * r * sy:.2f}")
+    return " ".join(pts)
+
+
 def construire_html(fiche, propre, repere):
     dossier_modele = RACINE / "modeles" / fiche["modele"]
     env = Environment(loader=FileSystemLoader(dossier_modele), autoescape=False)
+    env.globals["etoile"] = etoile
     return env.get_template("template.html").render(
         **fiche, lib=(RACINE / "lib").as_uri(), propre=propre, repere=repere)
 
