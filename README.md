@@ -30,7 +30,7 @@ Exports :
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
-| `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V3) |
+| `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV, repère incliné unique | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V4) |
 
 ## Règles de mise en page (appliquées par tous les modèles)
 
@@ -38,6 +38,7 @@ Exports :
 - Textes dans les formes : zone de texte inscrite calculée (`lib/formes.py`), centrage horizontal et vertical, taille ajustée automatiquement (`data-fit`), condensation horizontale si nécessaire (`data-etire`).
 - Japonais : justification inter-caractères, kinsoku strict, kana proportionnels (`palt`) sur les titres, colonnes verticales justifiées sur une hauteur commune.
 - Polices libres (OFL) embarquées dans `lib/fonts`.
+- **Cohérence géométrique** : un seul angle pour tous les éléments inclinés d'une page. Les éléments inclinés sont posés dans un repère incliné commun (`.axe`, paramètres `geo` de la fiche) : les bords des images sont parallèles aux lignes de texte, les colonnes partagent le même bord gauche, les gouttières sont constantes, la diagonale de fond suit le même angle.
 
 ## Règles maison
 

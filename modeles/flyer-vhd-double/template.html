@@ -5,20 +5,26 @@
 <title>{{ titre_fichier }}</title>
 <link rel="stylesheet" href="{{ lib }}/atelier.css">
 <script src="{{ lib }}/atelier.js" defer></script>
-{% set C = couleurs %}{% set T = haut %}{% set B = bas %}
-{# Diagonale ciel / sable : y = y0 - pente·x (mm, repère page finie) #}
-{% set y0 = 141.8 %}{% set pente = 0.2703 %}
-{# Bandeau noir : incliné de -15,5°, extrémité gauche coupée à la verticale #}
-{% set bt = pente %}{% set ba = 15.125 %}{% set bx = 117.2 %}{% set by = 80.7 %}{% set be = 7.4 %}{% set bev = 7.66 %}
-{# Bloc texte du haut : même angle, origine (hx, hy), largeur hw #}
-{% set hx = 86 %}{% set hy = 23.4 %}{% set hw = 74 %}
-{% set bxr = L + FP + 2 %}
+{% set C = couleurs %}{% set T = haut %}{% set B = bas %}{% set G = geo %}
+{# ================= GÉOMÉTRIE =================
+   Un seul angle θ pour TOUT ce qui est incliné (image, bloc texte, bandeau, titre, prix, chapeau, slogan, diagonale).
+   Repère incliné (u, v) : origine O = coin haut-gauche de l'image, u le long des lignes de texte, v perpendiculaire.
+   Page : x = ox + u·cosθ + v·sinθ ; y = oy − u·sinθ + v·cosθ #}
+{% set th = G.angle %}{% set c = cos(radians(th)) %}{% set s = sin(radians(th)) %}{% set tg = tan(radians(th)) %}
+{% set Wi = G.img_l %}{% set Hi = G.img_h %}{% set ug = Wi + G.gouttiere %}
+{# Diagonale ciel/sable = droite v = diag_v du repère #}
+{% set dpx = G.ox + G.diag_v * s %}{% set dpy = G.oy + G.diag_v * c %}
+{% macro ydiag(x) %}{{ dpy - (x - dpx) * tg }}{% endmacro %}
+{# Pastille date : centre dans le repère, sous le coin bas-gauche de l'image #}
+{% set pu = G.pastille_u %}{% set pv = Hi + G.pastille_v %}
+{% set pcx = G.ox + pu * c + pv * s %}{% set pcy = G.oy - pu * s + pv * c %}
+{% set be = 7.4 %}{% set biais = tg * be %}
 {% set zc1 = zone_cercle(24.4, 0.94) %}{% set zc2 = zone_cercle(25, 0.94) %}
 {% set ZG = zones.gauche %}{% set ZD = zones.droite %}
 <style>
   /* Modèle d'après une pub VHD Victor/JVC (magazine « Anime Vision », 1985).
-     B5 182×257 mm, fond perdu {{ FP }} mm, sécurité {{ SECU }} mm. Cotes en mm, repère page finie.
-     Haut : un seul angle, -15,125° = pente de la diagonale ciel/sable (bloc texte, bandeau, titre). Bas : -14° (chapeau, slogan). */
+     B5 182×257 mm, fond perdu {{ FP }} mm, sécurité {{ SECU }} mm. Cotes en mm.
+     Angle unique θ = {{ th }}° pour tous les éléments inclinés. */
   :root { --fp: {{ FP }}mm; }
   body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
   .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.encre }}; font-family: var(--f-gothic); }
@@ -31,37 +37,41 @@
   .support { right: {{ SECU + 7 }}mm; top: 5.4mm; font: 3.4mm/1 var(--f-latin); letter-spacing: -.05mm; }
   .support small { font-size: 1.9mm; margin-left: .8mm; }
 
-  .img-a { left: 3.8mm; top: 20.2mm; width: 89.7mm; height: 96.6mm;
-           clip-path: {{ clip([(0,14.5),(83.3,0),(100,85.7),(1.9,100)]) }}; }
+  /* Repère incliné commun : tout le haut y est posé */
+  .axe { left: {{ G.ox }}mm; top: {{ G.oy }}mm; width: 0; height: 0; transform: rotate(-{{ th }}deg); transform-origin: 0 0; }
+  .axe > * { position: absolute; }
 
-  /* Bloc du haut : accroche + synopsis + crédits, tournés ensemble, parallèles au bandeau et à la diagonale */
-  .bloc-haut { left: {{ hx }}mm; top: {{ hy }}mm; width: {{ hw }}mm; transform: rotate(-{{ ba }}deg); transform-origin: left top; }
-  .bloc-haut > * { position: relative; }
-  .accroche { font: 900 5.7mm/1.22 var(--f-mincho); letter-spacing: .1mm; }
+  .img-a { left: 0; top: 0; width: {{ Wi }}mm; height: {{ Hi }}mm; }
+
+  /* Colonne de droite : bord gauche parallèle au bord droit de l'image (gouttière constante) */
+  .colonne { left: {{ ug }}mm; top: {{ G.bloc_v }}mm; width: {{ G.bloc_l }}mm; }
+  .colonne > * { position: relative; }
+  .accroche { font: 900 5.6mm/1.24 var(--f-mincho); letter-spacing: .1mm; }
   .accroche span { display: block; white-space: nowrap; }
-  .synopsis { margin-top: 2.6mm; font: 500 2.12mm/1.74 var(--f-gothic); }
+  .synopsis { margin-top: 2.4mm; font: 500 2.12mm/1.74 var(--f-gothic); }
   .synopsis p { text-indent: 1em; }
-  .credits { margin-top: 1.2mm; font: 500 1.95mm/1.62 var(--f-gothic); text-align: left; }
+  .credits { margin-top: 1mm; font: 500 1.95mm/1.62 var(--f-gothic); text-align: left; }
   .credits b { font: 1.85mm/1 var(--f-latin); color: {{ C.magenta }}; margin-right: .6mm; letter-spacing: .1mm; }
 
-  .bande-txt { left: {{ bx }}mm; top: {{ by }}mm; width: 80mm; height: {{ be }}mm; transform: rotate(-{{ ba }}deg);
-               transform-origin: left top; display: flex; align-items: center; padding-left: 4.2mm;
-               color: #fff; font: 900 3.05mm/1 var(--f-gothic); letter-spacing: .15mm; white-space: nowrap; }
+  /* Bandeau : parallèle au bloc, part du même bord gauche ; extrémité gauche coupée à la verticale de la page */
+  .bande { margin-top: 3mm; margin-left: -{{ biais }}mm; width: 170mm; height: {{ be }}mm; background: #141414;
+           clip-path: polygon({{ biais }}mm 0, 100% 0, 100% 100%, 0 100%);
+           display: flex; align-items: center; padding-left: {{ biais + 3.2 }}mm;
+           color: #fff; font: 900 3.05mm/1 var(--f-gothic); letter-spacing: .15mm; white-space: nowrap; }
+  .titre { margin-top: 2mm; color: {{ C.marine }}; font: {{ G.titre_corps }}mm/1 var(--f-gothic-lourd); letter-spacing: -.8mm;
+           white-space: nowrap; font-feature-settings: "palt" 1; transform: skewX(-8deg); transform-origin: left bottom; }
+  .sous-titre { margin-top: 1.6mm; font: 900 3.2mm/1 var(--f-gothic); letter-spacing: .1mm; white-space: nowrap; }
 
-  .titre-haut { left: 98.5mm; top: 92.2mm; transform: rotate(-{{ ba }}deg); transform-origin: left top; color: {{ C.marine }}; }
-  .titre-haut .t { font: 16mm/1 var(--f-gothic-lourd); letter-spacing: -.8mm; transform: skewX(-8deg); transform-origin: left bottom;
-                   white-space: nowrap; font-feature-settings: "palt" 1; }
-  .titre-haut .s { margin: 1.6mm 0 0 5.5mm; font: 900 3.2mm/1 var(--f-gothic); color: {{ C.encre }}; letter-spacing: .1mm; white-space: nowrap; }
+  /* Sous l'image, dans le même repère : fiche, référence, prix */
+  .fiche { left: {{ G.fiche_u }}mm; top: {{ Hi + 1.6 }}mm; width: {{ Wi - G.fiche_u }}mm; }
+  .fiche .ligne2 { display: flex; justify-content: space-between; align-items: baseline; margin-top: .6mm; }
+  .fiche .l1 { font: 700 2.05mm/1.3 var(--f-gothic); }
+  .fiche .prix { color: {{ C.rouge }}; font: 6.2mm/1 var(--f-latin); letter-spacing: -.1mm; }
+  .fiche .l2 { font: 4mm/1 var(--f-latin); letter-spacing: -.05mm; }
+  .fiche .cr { font: 500 1.5mm/1.45 var(--f-gothic); margin-top: .5mm; }
 
-  .prix-haut { left: 71mm; top: 104.8mm; width: 23mm; height: 7mm; text-align: right; color: {{ C.rouge }};
-               font: 6.2mm/7mm var(--f-latin); letter-spacing: -.1mm; }
-  .spec-haut { left: 46mm; top: 113mm; width: 48mm; }
-  .spec-haut .l1 { font: 700 2.05mm/1.3 var(--f-gothic); }
-  .spec-haut .l2 { font: 4mm/1.1 var(--f-latin); letter-spacing: -.05mm; }
-  .spec-haut .cr { font: 500 1.5mm/1.45 var(--f-gothic); margin-top: .5mm; }
-
-  .rot-haut { left: 16mm; top: 112.2mm; transform: rotate(-8deg); transform-origin: left top;
-              color: {{ C.magenta }}; font: italic 900 3.2mm/1 var(--f-gothic); letter-spacing: -.1mm; white-space: nowrap; }
+  .rot-haut { left: 1.5mm; top: {{ Hi - 5.2 }}mm; color: {{ C.magenta }}; font: italic 900 3.2mm/1 var(--f-gothic);
+              letter-spacing: -.1mm; white-space: nowrap; }
 
   .pastille .date { font: 7.4mm/1 var(--f-cond); color: {{ C.jaune }}; letter-spacing: .1mm; }
   .pastille .lab  { font: 900 4.6mm/1 var(--f-gothic); color: #fff; margin-top: 1mm; letter-spacing: .5mm; }
@@ -69,7 +79,7 @@
   .pastille .l2b  { font: 900 4.8mm/1.2 var(--f-gothic); color: #fff; letter-spacing: .5mm; }
 
   /* ---------- BAS ---------- */
-  .chapeau { left: 67mm; top: 140mm; transform: rotate(-14deg); transform-origin: left top; color: {{ C.magenta }};
+  .chapeau { left: {{ G.chapeau[0] }}mm; top: {{ G.chapeau[1] }}mm; transform: rotate(-{{ th }}deg); transform-origin: left top; color: {{ C.magenta }};
              font: 700 2.5mm/1.45 var(--f-gothic); white-space: nowrap; }
   .chapeau span { display: block; }
   .chapeau span + span { margin-left: 10mm; }
@@ -81,7 +91,7 @@
   .zone-g { left: 18.5mm; top: 167.5mm; width: 76mm; height: 64.5mm; }
   .zone-d { left: 106mm; top: 112mm; width: 72mm; height: 66mm; }
 
-  .slogan { left: 99.5mm; top: 183.5mm; transform: rotate(-14deg); transform-origin: left top; color: {{ C.rouge }};
+  .slogan { left: {{ G.slogan[0] }}mm; top: {{ G.slogan[1] }}mm; transform: rotate(-{{ th }}deg); transform-origin: left top; color: {{ C.rouge }};
             font: 900 4.9mm/1.32 var(--f-gothic); white-space: nowrap; letter-spacing: .1mm;
             -webkit-text-stroke: .9mm #fff; paint-order: stroke fill; }
   .slogan span { display: block; }
@@ -120,13 +130,15 @@
   <svg class="abs" data-calque="fond" style="left:{{ -FP-2 }}mm; top:{{ -FP-2 }}mm; width:{{ L + 2*FP + 4 }}mm; height:{{ H + 2*FP + 4 }}mm"
        viewBox="{{ -FP-2 }} {{ -FP-2 }} {{ L + 2*FP + 4 }} {{ H + 2*FP + 4 }}">
     <rect x="{{ -FP-2 }}" y="{{ -FP-2 }}" width="{{ L + 2*FP + 4 }}" height="{{ H + 2*FP + 4 }}" fill="{{ C.sable }}"/>
-    <polygon fill="{{ C.ciel }}" points="{{ -FP-2 }},{{ -FP-2 }} {{ L+FP+2 }},{{ -FP-2 }} {{ L+FP+2 }},{{ y0 - pente*(L+FP+2) }} {{ -FP-2 }},{{ y0 + pente*(FP+2) }}"/>
+    <polygon fill="{{ C.ciel }}" points="{{ -FP-2 }},{{ -FP-2 }} {{ L+FP+2 }},{{ -FP-2 }} {{ L+FP+2 }},{{ ydiag(L+FP+2) }} {{ -FP-2 }},{{ ydiag(-FP-2) }}"/>
   </svg>
 
   {# ===== CALQUE : VISUEL PRINCIPAL ===== #}
   {% set u = img('principal') %}
-  <div class="slot img-a {{ '' if u else 'vide' }}" data-calque="image:principal" data-label="VISUEL PRINCIPAL&#10;Broly — JPG / PNG">
-    {% if u %}<img src="{{ u }}">{% endif %}</div>
+  <div class="abs axe" data-calque="image:principal">
+    <div class="slot img-a {{ '' if u else 'vide' }}" data-label="VISUEL PRINCIPAL&#10;Broly — JPG / PNG">
+      {% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
 
   {# ===== CALQUES : ZONES RÉSERVÉES ===== #}
   <div class="zone-reservee zone-g" data-calque="zone:{{ ZG.cle }}" data-label="{{ ZG.label }}"></div>
@@ -140,29 +152,25 @@
     <div class="abs mention" data-groupe="Marque">{{ marque.mention }}</div>
     <div class="abs support" data-groupe="Marque">{{ marque.support }}<small>{{ marque.support_petit }}</small></div>
 
-    <div class="abs bloc-haut" data-groupe="Accroche & synopsis">
-      <div class="accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
-      <div class="synopsis justifie kinsoku">{% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}</div>
-      <p class="credits kinsoku"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
+    <div class="abs axe">
+      <div class="colonne" data-groupe="Accroche, synopsis & titre">
+        <div class="accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
+        <div class="synopsis justifie kinsoku">{% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}</div>
+        <p class="credits kinsoku"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
+        <div class="bande">{{ T.bande }}</div>
+        <div class="titre">{{ T.titre }}</div>
+        <div class="sous-titre">{{ T.sous_titre }}</div>
+      </div>
+
+      <div class="fiche" data-groupe="Prix & date (haut)">
+        <div class="l1">{{ T.spec }}</div>
+        <div class="ligne2"><span class="l2">{{ T.reference }}</span><span class="prix">{{ T.prix }}</span></div>
+        <div class="cr">{% for c2 in T.credits %}{{ c2 }}<br>{% endfor %}</div>
+      </div>
+      <div class="rot-haut" data-groupe="Prix & date (haut)">{{ T.support_rotatif }}</div>
     </div>
 
-    {# Bandeau : parallélogramme à coupe verticale côté gauche, file jusque dans le fond perdu #}
-    <svg class="abs" data-groupe="Bandeau & titre" style="left:0; top:0; width:{{ L }}mm; height:{{ H }}mm; overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
-      <polygon fill="#141414" points="{{ bx }},{{ by }} {{ bxr }},{{ by - bt*(bxr-bx) }} {{ bxr }},{{ by - bt*(bxr-bx) + bev }} {{ bx }},{{ by + bev }}"/>
-    </svg>
-    <div class="abs bande-txt" data-groupe="Bandeau & titre">{{ T.bande }}</div>
-
-    <div class="abs titre-haut" data-groupe="Bandeau & titre"><div class="t">{{ T.titre }}</div><div class="s">{{ T.sous_titre }}</div></div>
-
-    <div class="abs prix-haut" data-groupe="Prix & date (haut)">{{ T.prix }}</div>
-    <div class="abs spec-haut" data-groupe="Prix & date (haut)">
-      <div class="l1">{{ T.spec }}</div>
-      <div class="l2">{{ T.reference }}</div>
-      <div class="cr">{% for c in T.credits %}{{ c }}<br>{% endfor %}</div>
-    </div>
-
-    <div class="abs rot-haut" data-groupe="Prix & date (haut)">{{ T.support_rotatif }}</div>
-    <div class="forme pastille" data-groupe="Prix & date (haut)" style="left:17.6mm; top:114.1mm; width:24.4mm; height:24.4mm;">
+    <div class="forme pastille" data-groupe="Prix & date (haut)" style="left:{{ pcx - 12.2 }}mm; top:{{ pcy - 12.2 }}mm; width:24.4mm; height:24.4mm;">
       <svg viewBox="0 0 24.4 24.4"><circle cx="12.2" cy="12.2" r="12.2" fill="#141414"/></svg>
       <div class="contenu" style="left:{{ zc1[0] }}mm; top:{{ zc1[1] }}mm; width:{{ zc1[2] }}mm; height:{{ zc1[3] }}mm;">
         <div class="date nowrap" data-etire="1.08">{{ T.date }}</div><div class="lab">{{ T.date_label }}</div>

@@ -49,7 +49,9 @@ def construire_html(fiche, dossier, propre):
             return (dossier / chemin).resolve().as_uri()
         return ""
 
+    import math
     env.globals.update(
+        sin=math.sin, cos=math.cos, tan=math.tan, radians=math.radians,
         etoile=formes.etoile, zone_etoile=formes.zone_texte_etoile, zone_cercle=formes.zone_texte_cercle,
         polygone=formes.polygone, clip=formes.clip_polygone, arc=formes.texte_arc, img=img)
     largeur, hauteur = format_fini(fiche)
