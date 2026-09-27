@@ -1,7 +1,7 @@
 {
   "modele": "obi-vhs-starburst",
   "titre_fichier": "Obi VHS — Dragon Ball Super: Broly",
-  "reference": "BTV-2054",
+  "reference": "CYV-2054",
   "dim": {
     "hauteur": 188,
     "face": 30,
@@ -14,14 +14,14 @@
     "logo": "#3d5bb0"
   },
   "editeur": {
-    "nom": "BACK TO 2054 VHS",
-    "nom_court": "B2054 VHS",
-    "logo": "B2054"
+    "nom": "CYBERDYN VIDEO",
+    "nom_court": "CYBERDYN",
+    "logo": "CYBERDYN"
   },
   "face": {
     "micro": "COLOR 100min. Hi-Fi STEREO MONO",
     "cases": [
-      "BTV-2054",
+      "CYV-2054",
       "¥4,800(税込)"
     ],
     "logo_fmt": "VHS",

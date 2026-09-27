@@ -22,9 +22,9 @@
     "principal": "images/broly_principal.jpg"
   },
   "marque": {
-    "logo": "B2054",
-    "nom": "BACK TO 2054",
-    "mention": "※B2054は、バック・トゥ・2054のビデオブランドです。",
+    "logo": "CYBERDYN",
+    "nom": "VIDEO",
+    "mention": "※CYBERDYN VIDEOは、BACK TO 2054のビデオレーベルです。",
     "support": "VIDEO CASSETTE",
     "support_petit": "VHS"
   },
@@ -36,8 +36,8 @@
     ],
     "decalages": [
       0,
-      -3,
-      5
+      -2.5,
+      4
     ],
     "synopsis": [
       "惑星ベジータ消滅から41年――。辺境の惑星で生き延びたサイヤ人ブロリーは、父パラガスとともにフリーザ軍に迎え入れられ、地球へと姿を現した。",
@@ -53,16 +53,16 @@
     "date_label": "発売",
     "prix": "¥4,800",
     "spec": "■カラー■Hi-Fiステレオ■100分",
-    "reference": "BTV-2054",
+    "reference": "CYV-2054",
     "credits": [
-      "発売●バック・トゥ・2054株式会社",
-      "販売●B2054ビジュアル株式会社",
+      "発売●CYBERDYN VIDEO",
+      "販売●BACK TO 2054",
       "※ビデオの無断複製・レンタルは禁止されています。"
     ]
   },
   "bas": {
     "chapeau": [
-      "劇場公開記念 B2054コレクション",
+      "劇場公開記念 CYBERDYNコレクション",
       "初回限定版――"
     ],
     "kicker": "ドラゴンボール超 ブロリー",
@@ -84,11 +84,11 @@
       "特製アウターケース"
     ],
     "logo": [
-      "B2054",
+      "CYBERDYN",
       "COLLECTION",
       "Vol.1"
     ],
-    "reference": "BTV-2054S",
+    "reference": "CYV-2054S",
     "prix": "¥5,800",
     "spec": [
       "■カラー　■約100分",
@@ -99,14 +99,14 @@
     "bande": [
       [
         "発売",
-        "バック・トゥ・2054株式会社"
+        "CYBERDYN VIDEO"
       ],
       [
         "販売",
-        "B2054ビジュアル株式会社"
+        "BACK TO 2054"
       ]
     ],
-    "mentions": "雑誌20540-08　B2054 MOOK 8　定価880円　Back to 2054　©Printed in Japan"
+    "mentions": "雑誌20540-08　BACK TO 2054 MOOK 8　定価880円　CYBERDYN VIDEO　©Printed in Japan"
   },
   "zones": {
     "gauche": {

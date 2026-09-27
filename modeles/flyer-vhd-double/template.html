@@ -9,21 +9,23 @@
 {# Diagonale ciel / sable : y = y0 - pente·x (mm, repère page finie) #}
 {% set y0 = 141.8 %}{% set pente = 0.2703 %}
 {# Bandeau noir : incliné de -15,5°, extrémité gauche coupée à la verticale #}
-{% set ba = 15.5 %}{% set bt = 0.27732 %}{% set bx = 117.2 %}{% set by = 80.7 %}{% set be = 7.4 %}{% set bev = 7.68 %}
+{% set bt = pente %}{% set ba = 15.125 %}{% set bx = 117.2 %}{% set by = 80.7 %}{% set be = 7.4 %}{% set bev = 7.66 %}
+{# Bloc texte du haut : même angle, origine (hx, hy), largeur hw #}
+{% set hx = 86 %}{% set hy = 23.4 %}{% set hw = 74 %}
 {% set bxr = L + FP + 2 %}
 {% set zc1 = zone_cercle(24.4, 0.94) %}{% set zc2 = zone_cercle(25, 0.94) %}
 {% set ZG = zones.gauche %}{% set ZD = zones.droite %}
 <style>
   /* Modèle d'après une pub VHD Victor/JVC (magazine « Anime Vision », 1985).
      B5 182×257 mm, fond perdu {{ FP }} mm, sécurité {{ SECU }} mm. Cotes en mm, repère page finie.
-     Tous les éléments inclinés partagent deux angles : -15,5° (bandeau, titre) et -14° (chapeau, slogan). */
+     Haut : un seul angle, -15,125° = pente de la diagonale ciel/sable (bloc texte, bandeau, titre). Bas : -14° (chapeau, slogan). */
   :root { --fp: {{ FP }}mm; }
   body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
   .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.encre }}; font-family: var(--f-gothic); }
 
   /* ---------- HAUT ---------- */
   .marque { left: 11.3mm; width: 33.4mm; background: #d7000f; color: #fff; text-align: center; white-space: nowrap; overflow: hidden; }
-  .marque.l1 { top: 3.6mm; height: 8mm; font: italic 5.6mm/8mm var(--f-latin); letter-spacing: -.2mm; }
+  .marque.l1 { top: 3.6mm; height: 8mm; font: italic 5.6mm/8mm var(--f-latin); letter-spacing: -.2mm; padding: 0 2mm; }
   .marque.l2 { top: 12.6mm; height: 8.4mm; font: 4.2mm/8.4mm var(--f-latin); letter-spacing: .2mm; padding: 0 1.6mm; }
   .mention { left: 11.3mm; top: 22.4mm; font: 500 1.45mm/1 var(--f-gothic); white-space: nowrap; }
   .support { right: {{ SECU + 7 }}mm; top: 5.4mm; font: 3.4mm/1 var(--f-latin); letter-spacing: -.05mm; }
@@ -32,22 +34,21 @@
   .img-a { left: 3.8mm; top: 20.2mm; width: 89.7mm; height: 96.6mm;
            clip-path: {{ clip([(0,14.5),(83.3,0),(100,85.7),(1.9,100)]) }}; }
 
-  .accroche { left: 78mm; top: 13.6mm; transform: rotate(-4deg); transform-origin: left top;
-              font: 900 6.3mm/1.2 var(--f-mincho); letter-spacing: .1mm; }
+  /* Bloc du haut : accroche + synopsis + crédits, tournés ensemble, parallèles au bandeau et à la diagonale */
+  .bloc-haut { left: {{ hx }}mm; top: {{ hy }}mm; width: {{ hw }}mm; transform: rotate(-{{ ba }}deg); transform-origin: left top; }
+  .bloc-haut > * { position: relative; }
+  .accroche { font: 900 5.7mm/1.22 var(--f-mincho); letter-spacing: .1mm; }
   .accroche span { display: block; white-space: nowrap; }
-
-  .synopsis { left: 83mm; top: 40.5mm; width: {{ L - SECU - 83 }}mm; height: 41.5mm; font: 500 2.12mm/1.74 var(--f-gothic); }
-  .synopsis .g { float: left; width: 7mm; height: 100%; shape-outside: polygon(0 0, 100% 100%, 0 100%); }
-  .synopsis .d { float: right; width: calc(100% - 7mm); height: 100%; shape-outside: polygon(100% 44%, 100% 100%, 15% 100%); }
+  .synopsis { margin-top: 2.6mm; font: 500 2.12mm/1.74 var(--f-gothic); }
   .synopsis p { text-indent: 1em; }
-  .synopsis p.credits { text-align: left; text-align-last: left; text-indent: 0; margin-top: .9mm; font-size: 1.95mm; line-height: 1.62; }
-  .synopsis b { font: 1.85mm/1 var(--f-latin); color: {{ C.magenta }}; margin-right: .6mm; letter-spacing: .1mm; }
+  .credits { margin-top: 1.2mm; font: 500 1.95mm/1.62 var(--f-gothic); text-align: left; }
+  .credits b { font: 1.85mm/1 var(--f-latin); color: {{ C.magenta }}; margin-right: .6mm; letter-spacing: .1mm; }
 
   .bande-txt { left: {{ bx }}mm; top: {{ by }}mm; width: 80mm; height: {{ be }}mm; transform: rotate(-{{ ba }}deg);
                transform-origin: left top; display: flex; align-items: center; padding-left: 4.2mm;
                color: #fff; font: 900 3.05mm/1 var(--f-gothic); letter-spacing: .15mm; white-space: nowrap; }
 
-  .titre-haut { left: 98mm; top: 92.5mm; transform: rotate(-{{ ba }}deg); transform-origin: left top; color: {{ C.marine }}; }
+  .titre-haut { left: 98.5mm; top: 92.2mm; transform: rotate(-{{ ba }}deg); transform-origin: left top; color: {{ C.marine }}; }
   .titre-haut .t { font: 16mm/1 var(--f-gothic-lourd); letter-spacing: -.8mm; transform: skewX(-8deg); transform-origin: left bottom;
                    white-space: nowrap; font-feature-settings: "palt" 1; }
   .titre-haut .s { margin: 1.6mm 0 0 5.5mm; font: 900 3.2mm/1 var(--f-gothic); color: {{ C.encre }}; letter-spacing: .1mm; white-space: nowrap; }
@@ -92,8 +93,8 @@
   .bonus span { display: block; white-space: nowrap; }
   .bonus span::before { content: "●"; color: {{ C.magenta }}; margin-right: .5mm; }
 
-  .logo-col { left: 135mm; top: 219.3mm; width: {{ L - SECU - 147 }}mm; height: 5.6mm; display: flex; align-items: center; gap: 1.2mm; white-space: nowrap; }
-  .logo-col .a { font: italic 4.4mm/1 var(--f-latin); color: {{ C.magenta }}; letter-spacing: -.3mm; }
+  .logo-col { left: 120mm; top: 219.3mm; width: {{ L - SECU - 120 }}mm; justify-content: flex-end; height: 5.6mm; display: flex; align-items: center; gap: 1.2mm; white-space: nowrap; }
+  .logo-col .a { font: italic 3.9mm/1 var(--f-latin); color: {{ C.magenta }}; letter-spacing: -.3mm; }
   .logo-col .b { font: italic 2mm/1 var(--f-latin); color: {{ C.marine }}; letter-spacing: .1mm; }
   .logo-col .n { background: {{ C.marine }}; color: #fff; font: 2.1mm/1 var(--f-latin); padding: .6mm 1mm; }
 
@@ -134,17 +135,15 @@
   {# ===== CALQUE : TEXTES & GRAPHISMES ===== #}
   <div class="abs" data-calque="texte" style="inset:0">
 
-    <div class="abs marque l1">{{ marque.logo }}</div>
+    <div class="abs marque l1" data-fit>{{ marque.logo }}</div>
     <div class="abs marque l2" data-fit>{{ marque.nom }}</div>
     <div class="abs mention">{{ marque.mention }}</div>
     <div class="abs support">{{ marque.support }}<small>{{ marque.support_petit }}</small></div>
 
-    <div class="abs accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
-
-    <div class="abs synopsis justifie kinsoku">
-      <div class="g"></div><div class="d"></div>
-      {% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}
-      <p class="credits"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
+    <div class="abs bloc-haut">
+      <div class="accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
+      <div class="synopsis justifie kinsoku">{% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}</div>
+      <p class="credits kinsoku"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
     </div>
 
     {# Bandeau : parallélogramme à coupe verticale côté gauche, file jusque dans le fond perdu #}
