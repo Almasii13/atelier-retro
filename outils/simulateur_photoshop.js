@@ -62,7 +62,7 @@ const doc = { layerSets: { add() { const g = nouveauCalque("groupe"); return g; 
   suspendHistory(n, code) { eval(code); },
   resizeImage() {}, saveAs() {} };
 global.app = { fonts: Object.assign([{ postScriptName: "ArchivoBlack-Regular" }], {}), preferences: {}, displayDialogs: 0,
-  documents: { add(w, h, r) { if (!(w > 0 && h > 0)) throw new Error("taille doc"); return doc; } } };
+  documents: { add(w, h, r) { const n = (x) => (x && x.v !== undefined ? x.v : x); if (!(n(w) > 0 && n(h) > 0)) throw new Error("taille doc"); return doc; } } };
 eval(src);
 const par = {}; for (const l of calques) par[l.type] = (par[l.type] || 0) + 1;
 console.log("Calques créés :", JSON.stringify(par));
