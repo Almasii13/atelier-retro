@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Obi VHS — Dragon Ball Super: Broly</title>
+<link rel="stylesheet" href="file:///home/claude/atelier-retro/lib/atelier.css">
+<style>
+  /* ---- Dimensions (mm), pilotées par la fiche ---- */
+  :root {
+    --h: 188mm;
+    --front: 30mm;
+    --dos: 26mm;
+    --back: 30mm;
+    --fond: #f4e04d;
+    --accent: #d8141c;
+    --bandeau: #111111;
+  }
+  body { width: calc(var(--back) + var(--dos) + var(--front)); height: var(--h); }
+  .obi { position: relative; display: flex; width: 100%; height: 100%;
+         background: var(--fond); font-family: var(--f-gothic); color: var(--noir); overflow: hidden; }
+  .panneau { position: relative; height: 100%; overflow: hidden; }
+
+  /* Bandeau éditeur en tête */
+  .bandeau { height: 5.2mm; background: var(--bandeau); color: #fff;
+             font: 900 2.5mm var(--f-latin); letter-spacing: .15mm;
+             display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+  .bandeau small { font-size: 1.6mm; margin-left: .8mm; opacity: .9; }
+
+  /* ---------- FACE (visible sur la jaquette) ---------- */
+  .face { width: var(--front); }
+  .cartouche { margin: 1.2mm 1.4mm 0; border: .2mm solid var(--noir); background: #fff;
+               font: 700 1.35mm var(--f-latin); line-height: 1.35; padding: .6mm .8mm;
+               display: flex; justify-content: space-between; align-items: center; }
+  .cartouche .logos { display: flex; gap: .6mm; }
+  .cartouche .logos span { border: .2mm solid var(--noir); padding: 0 .5mm; font-size: 1.5mm; font-weight: 900; }
+
+  .colonnes { position: absolute; top: 12.5mm; left: 0; right: 0; bottom: 30mm;
+              display: flex; flex-direction: row-reverse; justify-content: space-between; padding: 0 1.2mm; }
+  .col-accroche { font-weight: 900; font-size: 5.1mm; letter-spacing: .2mm; }
+  .col-titre { display: flex; flex-direction: column; align-items: center; gap: 1mm; }
+  .col-titre .titre { font-weight: 900; font-size: 10.5mm; color: var(--accent);
+                      letter-spacing: -.3mm; }
+  .col-titre .sur-titre { font-weight: 900; font-size: 2.6mm; }
+  .col-titre .edition { font: 900 2.6mm var(--f-latin); writing-mode: horizontal-tb; white-space: nowrap; }
+  .col-titre .edition b { display: block; font-size: 9mm; line-height: .9; text-align: center; }
+  .col-titre .sous-titre { font-weight: 900; font-size: 3.2mm; }
+  .col-promo { font-weight: 700; font-size: 3.1mm; color: var(--noir); letter-spacing: .1mm; }
+  .col-promo em { font-style: normal; color: var(--accent); }
+
+  .face .pastille { position: absolute; left: 2mm; right: 2mm; bottom: 12mm; padding: 1.2mm .5mm;
+                    font-size: 2.35mm; line-height: 1.25; }
+  .face .pastille .rouge { color: var(--jaune-obi); }
+  .face .note { position: absolute; bottom: 8.6mm; left: 0; right: 0; text-align: center; font-size: 1.2mm; }
+  .face .logo-edit { position: absolute; bottom: 2.4mm; left: 0; right: 0; text-align: center;
+                     font: italic 900 3.2mm var(--f-latin); letter-spacing: -.1mm; }
+
+  /* ---------- TRANCHE ---------- */
+  .tranche { width: var(--dos); background: var(--accent); color: #fff; }
+  .tranche .bandeau { background: var(--noir); }
+  .tranche .num { text-align: center; font: 900 2mm var(--f-latin); margin-top: 1.5mm; }
+  .tranche .titre-dos { position: absolute; top: 12mm; left: 0; right: 0; bottom: 26mm;
+                        display: flex; justify-content: center; }
+  .tranche .titre-dos .tate { font-weight: 900; font-size: 9mm; letter-spacing: .5mm; }
+  .tranche .titre-dos .tate .petit { font-size: .55em; }
+  .tranche .bas { position: absolute; bottom: 3mm; left: 0; right: 0; text-align: center; }
+  .tranche .bas .logo-edit { font: italic 900 3.4mm var(--f-latin); }
+  .tranche .bas .fmt { margin-top: 1.2mm; font: 900 1.9mm var(--f-latin); background: #fff; color: var(--accent);
+                       display: inline-block; padding: .3mm 1mm; }
+
+  /* ---------- VERSO ---------- */
+  .verso { width: var(--back); }
+  .verso .contenu { position: absolute; top: 8mm; left: 2mm; right: 2mm; bottom: 4mm;
+                    display: flex; flex-direction: column; gap: 2.5mm; }
+  .verso .texte { font-size: 2.2mm; line-height: 1.55; font-weight: 700; }
+  .verso .fiche-tech { border-top: .3mm solid var(--noir); border-bottom: .3mm solid var(--noir);
+                       padding: 1mm 0; font-size: 1.8mm; line-height: 1.5; font-weight: 700; }
+  .verso .fiche-tech span { display: block; }
+  .verso .staff { font-size: 1.75mm; line-height: 1.6; font-weight: 700; }
+  .verso .staff i { display: block; font-style: normal; color: var(--accent); font-size: 1.5mm; }
+  .verso .staff span { display: block; margin-bottom: .5mm; font-size: 2.1mm; }
+  .verso .staff-titre { display: inline-block; background: var(--accent); color: #fff;
+                        font: 900 1.9mm var(--f-latin); padding: .2mm 1mm; margin-bottom: .6mm; }
+  .verso .prix { margin-top: auto; background: var(--noir); color: #fff; text-align: center; padding: 1.2mm 0; }
+  .verso .prix b { display: block; font: 900 4.4mm var(--f-latin); }
+  .verso .prix small { font-size: 1.6mm; }
+  .verso .ref { font: 900 2.2mm var(--f-latin); text-align: center; }
+  .code-barre { height: 9mm; background:
+      repeating-linear-gradient(90deg, #000 0 .25mm, #fff .25mm .5mm, #000 .5mm .9mm, #fff .9mm 1.1mm, #000 1.1mm 1.3mm, #fff 1.3mm 1.8mm);
+      border: 1.2mm solid #fff; outline: .15mm solid #000; }
+</style>
+</head>
+<body class="propre">
+<div class="obi">
+
+  <!-- VERSO (au dos de la jaquette) -->
+  <section class="panneau verso">
+    <div class="bandeau">BACK TO 2054</div>
+    <div class="contenu">
+      <p class="texte">惑星ベジータ消滅から41年。辺境の星で生き延びた一人のサイヤ人が、悟空とベジータの前に姿を現す。怒りが呼び覚ます、計り知れない力とは――。</p>
+      <div class="fiche-tech">
+        <span>カラー／約100分</span><span>Hi-Fiステレオ</span><span>日本語・片面1巻</span>
+      </div>
+      <div class="staff">
+        <div class="staff-titre">STAFF</div>
+        <span><i>原作・脚本・キャラクターデザイン</i>鳥山 明</span><span><i>監督</i>長峯達也</span>
+      </div>
+      <div class="prix"><b>¥4,800</b><small>（税込）</small></div>
+      <div class="code-barre"></div>
+      <div class="ref">BTV-2054</div>
+    </div>
+  </section>
+
+  <!-- TRANCHE -->
+  <section class="panneau tranche">
+    <div class="bandeau">VHS</div>
+    <div class="num">BTV-2054</div>
+    <div class="titre-dos"><div class="tate"><span class="petit">ドラゴンボール超</span>　ブロリー</div></div>
+    <div class="bas"><div class="logo-edit">B2054</div><div class="fmt">Hi-Fi</div></div>
+  </section>
+
+  <!-- FACE -->
+  <section class="panneau face">
+    <div class="bandeau">BACK TO 2054<small>VIDEO</small></div>
+    <div class="cartouche">
+      <div>BTV-2054<br>VHS Hi-Fi STEREO</div>
+      <div class="logos"><span>VHS</span><span>Hi-Fi</span></div>
+    </div>
+
+    <div class="colonnes">
+      <div class="tate col-accroche">宇宙最強の戦士、覚醒<span class="tcy">!!</span></div>
+      <div class="col-titre">
+        <div class="tate sur-titre">ドラゴンボール超</div>
+        <div class="tate titre stroke-noir">ブロリー</div>
+        <div class="edition">MOVIE<b>20</b></div>
+        <div class="tate sous-titre">伝説の超サイヤ人〈劇場版〉</div>
+      </div>
+      <div class="tate col-promo">シリーズ最大のスケールで贈る、渾身のバトル超大作<span class="tcy">!</span></div>
+    </div>
+
+    <div class="pastille">特製テレカ<br><span class="rouge">封入!!</span></div>
+    <div class="note">※初回限定生産</div>
+    <div class="logo-edit">B2054</div>
+  </section>
+
+  
+</div>
+</body>
+</html>

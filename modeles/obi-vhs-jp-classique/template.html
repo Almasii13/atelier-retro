@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<style>
+  /* ---- Dimensions (mm), pilotées par la fiche ---- */
+  :root {
+    --h: {{ dim.hauteur }}mm;
+    --front: {{ dim.face }}mm;
+    --dos: {{ dim.tranche }}mm;
+    --back: {{ dim.verso }}mm;
+    --fond: {{ couleurs.fond }};
+    --accent: {{ couleurs.accent }};
+    --bandeau: {{ couleurs.bandeau }};
+  }
+  body { width: calc(var(--back) + var(--dos) + var(--front)); height: var(--h); }
+  .obi { position: relative; display: flex; width: 100%; height: 100%;
+         background: var(--fond); font-family: var(--f-gothic); color: var(--noir); overflow: hidden; }
+  .panneau { position: relative; height: 100%; overflow: hidden; }
+
+  /* Bandeau éditeur en tête */
+  .bandeau { height: 5.2mm; background: var(--bandeau); color: #fff;
+             font: 900 2.5mm var(--f-latin); letter-spacing: .15mm;
+             display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+  .bandeau small { font-size: 1.6mm; margin-left: .8mm; opacity: .9; }
+
+  /* ---------- FACE (visible sur la jaquette) ---------- */
+  .face { width: var(--front); }
+  .cartouche { margin: 1.2mm 1.4mm 0; border: .2mm solid var(--noir); background: #fff;
+               font: 700 1.35mm var(--f-latin); line-height: 1.35; padding: .6mm .8mm;
+               display: flex; justify-content: space-between; align-items: center; }
+  .cartouche .logos { display: flex; gap: .6mm; }
+  .cartouche .logos span { border: .2mm solid var(--noir); padding: 0 .5mm; font-size: 1.5mm; font-weight: 900; }
+
+  .colonnes { position: absolute; top: 12.5mm; left: 0; right: 0; bottom: 30mm;
+              display: flex; flex-direction: row-reverse; justify-content: space-between; padding: 0 1.2mm; }
+  .col-accroche { font-weight: 900; font-size: 5.1mm; letter-spacing: .2mm; }
+  .col-titre { display: flex; flex-direction: column; align-items: center; gap: 1mm; }
+  .col-titre .titre { font-weight: 900; font-size: {{ face.taille_titre }}mm; color: var(--accent);
+                      letter-spacing: -.3mm; }
+  .col-titre .sur-titre { font-weight: 900; font-size: 2.6mm; }
+  .col-titre .edition { font: 900 2.6mm var(--f-latin); writing-mode: horizontal-tb; white-space: nowrap; }
+  .col-titre .edition b { display: block; font-size: 9mm; line-height: .9; text-align: center; }
+  .col-titre .sous-titre { font-weight: 900; font-size: 3.2mm; }
+  .col-promo { font-weight: 700; font-size: 3.1mm; color: var(--noir); letter-spacing: .1mm; }
+  .col-promo em { font-style: normal; color: var(--accent); }
+
+  .face .pastille { position: absolute; left: 2mm; right: 2mm; bottom: 12mm; padding: 1.2mm .5mm;
+                    font-size: 2.35mm; line-height: 1.25; }
+  .face .pastille .rouge { color: var(--jaune-obi); }
+  .face .note { position: absolute; bottom: 8.6mm; left: 0; right: 0; text-align: center; font-size: 1.2mm; }
+  .face .logo-edit { position: absolute; bottom: 2.4mm; left: 0; right: 0; text-align: center;
+                     font: italic 900 3.2mm var(--f-latin); letter-spacing: -.1mm; }
+
+  /* ---------- TRANCHE ---------- */
+  .tranche { width: var(--dos); background: var(--accent); color: #fff; }
+  .tranche .bandeau { background: var(--noir); }
+  .tranche .num { text-align: center; font: 900 2mm var(--f-latin); margin-top: 1.5mm; }
+  .tranche .titre-dos { position: absolute; top: 12mm; left: 0; right: 0; bottom: 26mm;
+                        display: flex; justify-content: center; }
+  .tranche .titre-dos .tate { font-weight: 900; font-size: {{ tranche.taille_titre }}mm; letter-spacing: .5mm; }
+  .tranche .titre-dos .tate .petit { font-size: .55em; }
+  .tranche .bas { position: absolute; bottom: 3mm; left: 0; right: 0; text-align: center; }
+  .tranche .bas .logo-edit { font: italic 900 3.4mm var(--f-latin); }
+  .tranche .bas .fmt { margin-top: 1.2mm; font: 900 1.9mm var(--f-latin); background: #fff; color: var(--accent);
+                       display: inline-block; padding: .3mm 1mm; }
+
+  /* ---------- VERSO ---------- */
+  .verso { width: var(--back); }
+  .verso .contenu { position: absolute; top: 8mm; left: 2mm; right: 2mm; bottom: 4mm;
+                    display: flex; flex-direction: column; gap: 2.5mm; }
+  .verso .texte { font-size: 2.2mm; line-height: 1.55; font-weight: 700; }
+  .verso .fiche-tech { border-top: .3mm solid var(--noir); border-bottom: .3mm solid var(--noir);
+                       padding: 1mm 0; font-size: 1.8mm; line-height: 1.5; font-weight: 700; }
+  .verso .fiche-tech span { display: block; }
+  .verso .staff { font-size: 1.75mm; line-height: 1.6; font-weight: 700; }
+  .verso .staff i { display: block; font-style: normal; color: var(--accent); font-size: 1.5mm; }
+  .verso .staff span { display: block; margin-bottom: .5mm; font-size: 2.1mm; }
+  .verso .staff-titre { display: inline-block; background: var(--accent); color: #fff;
+                        font: 900 1.9mm var(--f-latin); padding: .2mm 1mm; margin-bottom: .6mm; }
+  .verso .prix { margin-top: auto; background: var(--noir); color: #fff; text-align: center; padding: 1.2mm 0; }
+  .verso .prix b { display: block; font: 900 4.4mm var(--f-latin); }
+  .verso .prix small { font-size: 1.6mm; }
+  .verso .ref { font: 900 2.2mm var(--f-latin); text-align: center; }
+  .code-barre { height: 9mm; background:
+      repeating-linear-gradient(90deg, #000 0 .25mm, #fff .25mm .5mm, #000 .5mm .9mm, #fff .9mm 1.1mm, #000 1.1mm 1.3mm, #fff 1.3mm 1.8mm);
+      border: 1.2mm solid #fff; outline: .15mm solid #000; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="obi">
+
+  <!-- VERSO (au dos de la jaquette) -->
+  <section class="panneau verso">
+    <div class="bandeau">{{ editeur.nom }}</div>
+    <div class="contenu">
+      <p class="texte">{{ verso.texte }}</p>
+      <div class="fiche-tech">
+        {% for l in verso.fiche %}<span>{{ l }}</span>{% endfor %}
+      </div>
+      {% if verso.staff %}<div class="staff">
+        <div class="staff-titre">STAFF</div>
+        {% for s in verso.staff %}<span><i>{{ s[0] }}</i>{{ s[1] }}</span>{% endfor %}
+      </div>{% endif %}
+      <div class="prix"><b>{{ verso.prix }}</b><small>{{ verso.prix_note }}</small></div>
+      <div class="code-barre"></div>
+      <div class="ref">{{ reference }}</div>
+    </div>
+  </section>
+
+  <!-- TRANCHE -->
+  <section class="panneau tranche">
+    <div class="bandeau">VHS</div>
+    <div class="num">{{ reference }}</div>
+    <div class="titre-dos"><div class="tate">{{ tranche.titre | safe }}</div></div>
+    <div class="bas"><div class="logo-edit">{{ editeur.logo }}</div><div class="fmt">{{ tranche.format }}</div></div>
+  </section>
+
+  <!-- FACE -->
+  <section class="panneau face">
+    <div class="bandeau">{{ editeur.nom }}<small>VIDEO</small></div>
+    <div class="cartouche">
+      <div>{{ reference }}<br>{{ face.cartouche_ligne2 }}</div>
+      <div class="logos">{% for l in face.logos %}<span>{{ l }}</span>{% endfor %}</div>
+    </div>
+
+    <div class="colonnes">
+      <div class="tate col-accroche">{{ face.accroche | safe }}</div>
+      <div class="col-titre">
+        <div class="tate sur-titre">{{ face.sur_titre }}</div>
+        <div class="tate titre stroke-noir">{{ face.titre }}</div>
+        <div class="edition">{{ face.edition_haut }}<b>{{ face.edition_num }}</b></div>
+        <div class="tate sous-titre">{{ face.sous_titre | safe }}</div>
+      </div>
+      <div class="tate col-promo">{{ face.promo | safe }}</div>
+    </div>
+
+    <div class="pastille">{{ face.pastille | safe }}</div>
+    <div class="note">{{ face.note }}</div>
+    <div class="logo-edit">{{ editeur.logo }}</div>
+  </section>
+
+  {% if repere %}
+  <div class="pli" style="left: var(--back)"></div>
+  <div class="pli" style="left: calc(var(--back) + var(--dos))"></div>
+  {% endif %}
+</div>
+</body>
+</html>

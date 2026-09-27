@@ -1,0 +1,43 @@
+{
+  "modele": "obi-vhs-jp-classique",
+  "titre_fichier": "Obi VHS — Dragon Ball Super: Broly",
+  "reference": "BTV-2054",
+
+  "dim": { "hauteur": 188, "face": 30, "tranche": 26, "verso": 30 },
+
+  "couleurs": { "fond": "#f4e04d", "accent": "#d8141c", "bandeau": "#111111" },
+
+  "editeur": { "nom": "BACK TO 2054", "logo": "B2054" },
+
+  "face": {
+    "cartouche_ligne2": "VHS Hi-Fi STEREO",
+    "logos": ["VHS", "Hi-Fi"],
+    "accroche": "宇宙最強の戦士、覚醒<span class=\"tcy\">!!</span>",
+    "sur_titre": "ドラゴンボール超",
+    "titre": "ブロリー",
+    "taille_titre": 10.5,
+    "edition_haut": "MOVIE",
+    "edition_num": "20",
+    "sous_titre": "伝説の超サイヤ人〈劇場版〉",
+    "promo": "シリーズ最大のスケールで贈る、渾身のバトル超大作<span class=\"tcy\">!</span>",
+    "pastille": "特製テレカ<br><span class=\"rouge\">封入!!</span>",
+    "note": "※初回限定生産"
+  },
+
+  "tranche": {
+    "titre": "<span class=\"petit\">ドラゴンボール超</span>　ブロリー",
+    "taille_titre": 9,
+    "format": "Hi-Fi"
+  },
+
+  "verso": {
+    "texte": "惑星ベジータ消滅から41年。辺境の星で生き延びた一人のサイヤ人が、悟空とベジータの前に姿を現す。怒りが呼び覚ます、計り知れない力とは――。",
+    "fiche": ["カラー／約100分", "Hi-Fiステレオ", "日本語・片面1巻"],
+    "staff": [
+      ["原作・脚本・キャラクターデザイン", "鳥山 明"],
+      ["監督", "長峯達也"]
+    ],
+    "prix": "¥4,800",
+    "prix_note": "（税込）"
+  }
+}
