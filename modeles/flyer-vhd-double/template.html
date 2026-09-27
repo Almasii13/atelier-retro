@@ -135,65 +135,65 @@
   {# ===== CALQUE : TEXTES & GRAPHISMES ===== #}
   <div class="abs" data-calque="texte" style="inset:0">
 
-    <div class="abs marque l1" data-fit>{{ marque.logo }}</div>
-    <div class="abs marque l2" data-fit>{{ marque.nom }}</div>
-    <div class="abs mention">{{ marque.mention }}</div>
-    <div class="abs support">{{ marque.support }}<small>{{ marque.support_petit }}</small></div>
+    <div class="abs marque l1" data-groupe="Marque" data-fit>{{ marque.logo }}</div>
+    <div class="abs marque l2" data-groupe="Marque" data-fit>{{ marque.nom }}</div>
+    <div class="abs mention" data-groupe="Marque">{{ marque.mention }}</div>
+    <div class="abs support" data-groupe="Marque">{{ marque.support }}<small>{{ marque.support_petit }}</small></div>
 
-    <div class="abs bloc-haut">
+    <div class="abs bloc-haut" data-groupe="Accroche & synopsis">
       <div class="accroche">{% for l in T.accroche %}<span style="margin-left:{{ T.decalages[loop.index0] }}mm">{{ l }}</span>{% endfor %}</div>
       <div class="synopsis justifie kinsoku">{% for p in T.synopsis %}<p>{{ p }}</p>{% endfor %}</div>
       <p class="credits kinsoku"><b>STAFF</b>{% for it in T.staff.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}<br><b>CAST</b>{% for it in T.cast.split('　') %}<span class="nowrap">{{ it }}</span>{{ '　' if not loop.last }}{% endfor %}</p>
     </div>
 
     {# Bandeau : parallélogramme à coupe verticale côté gauche, file jusque dans le fond perdu #}
-    <svg class="abs" style="left:0; top:0; width:{{ L }}mm; height:{{ H }}mm; overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+    <svg class="abs" data-groupe="Bandeau & titre" style="left:0; top:0; width:{{ L }}mm; height:{{ H }}mm; overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
       <polygon fill="#141414" points="{{ bx }},{{ by }} {{ bxr }},{{ by - bt*(bxr-bx) }} {{ bxr }},{{ by - bt*(bxr-bx) + bev }} {{ bx }},{{ by + bev }}"/>
     </svg>
-    <div class="abs bande-txt">{{ T.bande }}</div>
+    <div class="abs bande-txt" data-groupe="Bandeau & titre">{{ T.bande }}</div>
 
-    <div class="abs titre-haut"><div class="t">{{ T.titre }}</div><div class="s">{{ T.sous_titre }}</div></div>
+    <div class="abs titre-haut" data-groupe="Bandeau & titre"><div class="t">{{ T.titre }}</div><div class="s">{{ T.sous_titre }}</div></div>
 
-    <div class="abs prix-haut">{{ T.prix }}</div>
-    <div class="abs spec-haut">
+    <div class="abs prix-haut" data-groupe="Prix & date (haut)">{{ T.prix }}</div>
+    <div class="abs spec-haut" data-groupe="Prix & date (haut)">
       <div class="l1">{{ T.spec }}</div>
       <div class="l2">{{ T.reference }}</div>
       <div class="cr">{% for c in T.credits %}{{ c }}<br>{% endfor %}</div>
     </div>
 
-    <div class="abs rot-haut">{{ T.support_rotatif }}</div>
-    <div class="forme pastille" style="left:17.6mm; top:114.1mm; width:24.4mm; height:24.4mm;">
+    <div class="abs rot-haut" data-groupe="Prix & date (haut)">{{ T.support_rotatif }}</div>
+    <div class="forme pastille" data-groupe="Prix & date (haut)" style="left:17.6mm; top:114.1mm; width:24.4mm; height:24.4mm;">
       <svg viewBox="0 0 24.4 24.4"><circle cx="12.2" cy="12.2" r="12.2" fill="#141414"/></svg>
       <div class="contenu" style="left:{{ zc1[0] }}mm; top:{{ zc1[1] }}mm; width:{{ zc1[2] }}mm; height:{{ zc1[3] }}mm;">
         <div class="date nowrap" data-etire="1.08">{{ T.date }}</div><div class="lab">{{ T.date_label }}</div>
       </div>
     </div>
 
-    <div class="abs chapeau">{% for l in B.chapeau %}<span>{{ l }}</span>{% endfor %}</div>
-    <div class="abs kicker">{{ B.kicker }}</div>
-    <div class="abs titre-bas">{{ B.titre }}</div>
+    <div class="abs chapeau" data-groupe="Titre bas">{% for l in B.chapeau %}<span>{{ l }}</span>{% endfor %}</div>
+    <div class="abs kicker" data-groupe="Titre bas">{{ B.kicker }}</div>
+    <div class="abs titre-bas" data-groupe="Titre bas">{{ B.titre }}</div>
 
-    <div class="abs slogan">{% for l in B.slogan %}<span>{{ l }}</span>{% endfor %}</div>
+    <div class="abs slogan" data-groupe="Slogan & pastille">{% for l in B.slogan %}<span>{{ l }}</span>{% endfor %}</div>
 
-    <div class="forme" style="left:147mm; top:187.5mm; width:33mm; height:33mm;">
+    <div class="forme" data-groupe="Slogan & pastille" style="left:147mm; top:187.5mm; width:33mm; height:33mm;">
       {{ arc(33, B.support_rotatif, C.magenta, 2.7, -150, -30, "Zen Kaku", 900) }}
     </div>
-    <div class="forme pastille" style="left:151mm; top:191.5mm; width:25mm; height:25mm;">
+    <div class="forme pastille" data-groupe="Slogan & pastille" style="left:151mm; top:191.5mm; width:25mm; height:25mm;">
       <svg viewBox="0 0 25 25"><circle cx="12.5" cy="12.5" r="12.5" fill="{{ C.bleu }}"/></svg>
       <div class="contenu" style="left:{{ zc2[0] }}mm; top:{{ zc2[1] }}mm; width:{{ zc2[2] }}mm; height:{{ zc2[3] }}mm;">
         <div class="l2a nowrap" data-etire="1.1">{{ B.pastille[0] }}</div><div class="l2b nowrap" data-etire="1.1">{{ B.pastille[1] }}</div>
       </div>
     </div>
 
-    <div class="abs bonus"><b>{{ B.bonus_titre }}</b>{% for it in B.bonus %}<span>{{ it }}</span>{% endfor %}</div>
-    <div class="abs logo-col"><span class="a">{{ B.logo[0] }}</span><span class="b">{{ B.logo[1] }}</span><span class="n">{{ B.logo[2] }}</span></div>
+    <div class="abs bonus" data-groupe="Bonus & prix (bas)"><b>{{ B.bonus_titre }}</b>{% for it in B.bonus %}<span>{{ it }}</span>{% endfor %}</div>
+    <div class="abs logo-col" data-groupe="Bonus & prix (bas)"><span class="a">{{ B.logo[0] }}</span><span class="b">{{ B.logo[1] }}</span><span class="n">{{ B.logo[2] }}</span></div>
 
-    <div class="abs prix-bas"><span class="ref">{{ B.reference }}</span><span class="p">{{ B.prix }}</span></div>
-    <div class="abs spec-bas">{% for s in B.spec %}{{ s }}<br>{% endfor %}</div>
+    <div class="abs prix-bas" data-groupe="Bonus & prix (bas)"><span class="ref">{{ B.reference }}</span><span class="p">{{ B.prix }}</span></div>
+    <div class="abs spec-bas" data-groupe="Bonus & prix (bas)">{% for s in B.spec %}{{ s }}<br>{% endfor %}</div>
 
-    <div class="abs rayures"></div>
-    <div class="abs cartouche">{% for lab, n in pied.bande %}<span><small>{{ lab }}</small>{{ n }}</span>{% endfor %}</div>
-    <div class="abs mentions">{{ pied.mentions }}</div>
+    <div class="abs rayures" data-groupe="Pied de page"></div>
+    <div class="abs cartouche" data-groupe="Pied de page">{% for lab, n in pied.bande %}<span><small>{{ lab }}</small>{{ n }}</span>{% endfor %}</div>
+    <div class="abs mentions" data-groupe="Pied de page">{{ pied.mentions }}</div>
   </div>
 
   {% if not propre %}

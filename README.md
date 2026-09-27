@@ -21,6 +21,8 @@ Exports :
 - `<nom>_epreuve.png` : fond perdu, trait de coupe (magenta), zone de sécurité (bleu), plis, zones réservées.
 - `<nom>.psd` : calques Photoshop — Fond / Forme + calque écrêté pour chaque image / repères des zones réservées (masqués) / Textes & graphismes.
 - `<nom>_calques/` : les mêmes calques en PNG transparents, pour le montage vidéo (glisser la VHS 3D ou la TV entre le fond et les textes).
+- `<nom>_photoshop.jsx` : **script Photoshop** qui reconstruit le document en vrais calques — textes modifiables, formes vectorielles, image en masque d'écrêtage, zones réservées, repères. Photoshop > Fichier > Scripts > Parcourir… Le PSD est enregistré à côté du script. Installer d'abord les polices de `lib/fonts`.
+- `<nom>_photoshop_verification.png` : contrôle du script sans Photoshop (original | reconstruction depuis les données du script | différence), via `outils/verifier_jsx.py`.
 
 ## Catalogue des modèles
 
@@ -28,7 +30,7 @@ Exports :
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
-| `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V2) |
+| `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V3) |
 
 ## Règles de mise en page (appliquées par tous les modèles)
 
@@ -39,6 +41,6 @@ Exports :
 
 ## Règles maison
 
-- Pas de logos officiels (éditeurs, franchises) : éditeur fictif « BACK TO 2054 / B2054 ».
+- Pas de logos officiels (éditeurs, franchises). Marque des VHS : **CYBERDYN VIDEO** (label de BACK TO 2054).
 - Les visuels de films sont fournis par Cyril (`images/` dans chaque création).
 - Zones réservées (VHS 3D, TV cathodique) : classe `.zone-reservee`, visibles en bleu sur les épreuves, invisibles à l'export.

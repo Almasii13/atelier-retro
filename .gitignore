@@ -1,3 +1,5 @@
 *_reperes.html
 __pycache__/
 creations/*/obi.html
+*.verif.html
+.*.html

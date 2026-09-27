@@ -12,6 +12,7 @@ Exports, à côté de la fiche :
   <nom>_apercu.png   (obis) face posée sur une jaquette
   <nom>.psd          calques Photoshop (si le modèle déclare des data-calque)
   <nom>_calques/     les mêmes calques en PNG transparents (montage vidéo)
+  <nom>_photoshop.jsx script Photoshop : reconstruit le document en vrais calques (textes modifiables)
 
 Calques : chaque enfant direct de .page porte data-calque="…" :
   fond | texte | image:<clé> | zone:<clé>   (ordre d'empilement = ordre dans le DOM)
@@ -81,6 +82,14 @@ def rendre(chemin_fiche, dpi):
                 page.screenshot(path=f"{base}.png",
                                 clip={"x": fp * MM, "y": fp * MM, "width": L * MM, "height": H * MM})
                 exporter_calques(page, fiche, base, wpx, hpx)
+                if page.query_selector(".page > [data-calque]"):
+                    # page dédiée à 2x : la mesure de l'encre n'a pas besoin de 300 ppi
+                    import photoshop
+                    p2 = nav.new_page(viewport={"width": wpx, "height": hpx}, device_scale_factor=2)
+                    p2.goto(f_html.as_uri())
+                    p2.wait_for_selector("body[data-pret='1']", timeout=20000)
+                    photoshop.exporter_jsx(p2, fiche, base)
+                    p2.close()
             else:
                 page.screenshot(path=f"{base}_epreuve.png", clip={"x": 0, "y": 0, "width": wpx, "height": hpx})
             page.close()
