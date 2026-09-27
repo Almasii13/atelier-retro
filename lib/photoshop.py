@@ -121,6 +121,7 @@ def construire_scene_ps(scene, fiche):
     libelles = fiche.get("libelles_calques", {})
     sortie = {
         "titre": fiche.get("titre_fichier", "atelier"),
+        "fichier": "atelier",
         "largeur": round((L + 2 * fp) * mm), "hauteur": round((H + 2 * fp) * mm),
         "reperes": {"coupe": [fp * mm, (L + fp) * mm, fp * mm, (H + fp) * mm],
                     "secu": [(fp + secu) * mm, (L + fp - secu) * mm, (fp + secu) * mm, (H + fp - secu) * mm]},
@@ -212,6 +213,9 @@ def exporter_jsx(page, fiche, base):
     scene = page.evaluate((RACINE / "lib" / "extraction_ps.js").read_text(encoding="utf-8"))
     mesurer_textes(page, scene)
     donnees = construire_scene_ps(scene, fiche)
+    import re, unicodedata
+    nom = unicodedata.normalize("NFKD", pathlib.Path(base).name).encode("ascii", "ignore").decode()
+    donnees["fichier"] = re.sub(r"[^A-Za-z0-9_-]+", "_", nom).strip("_") or "atelier"
     modele = (RACINE / "lib" / "photoshop_modele.jsx").read_text(encoding="utf-8")
     jsx = modele.replace("/*__SCENE__*/null", json.dumps(donnees, ensure_ascii=True))
     # Fichier 100 % ASCII : ExtendScript lit parfois les .jsx sans BOM dans l'encodage du système

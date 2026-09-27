@@ -36,7 +36,15 @@
   app.displayDialogs = DialogModes.NO;
 
   // Construction à 72 ppi (1 pt = 1 px : textes et tracés exacts), passage à 300 ppi sans rééchantillonnage à la fin.
-  var doc = app.documents.add(SCENE.largeur, SCENE.hauteur, 72, SCENE.titre, NewDocumentMode.RGB, DocumentFill.WHITE);
+  // Nom de document sans caractères interdits (« : », « — »…) : cause d'échec de la commande « Créer » sous Windows
+  var nomDoc = SCENE.fichier;
+  var doc;
+  try {
+    doc = app.documents.add(new UnitValue(SCENE.largeur, "px"), new UnitValue(SCENE.hauteur, "px"), 72, nomDoc,
+                            NewDocumentMode.RGB, DocumentFill.WHITE);
+  } catch (e1) {
+    doc = app.documents.add(new UnitValue(SCENE.largeur, "px"), new UnitValue(SCENE.hauteur, "px"), 72);
+  }
 
   // ---------- Utilitaires ----------
   function couleurRGB(rgb) { var c = new SolidColor(); c.rgb.red = rgb[0]; c.rgb.green = rgb[1]; c.rgb.blue = rgb[2]; return c; }
