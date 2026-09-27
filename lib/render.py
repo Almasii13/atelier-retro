@@ -145,10 +145,11 @@ def exporter_calques(page, fiche, base, wpx, hpx):
     try:
         from psd_tools import PSDImage
         from psd_tools.api.layers import PixelLayer
+        from psd_tools.constants import Compression
         psd = PSDImage.new("RGBA", rendus[0][1].size)
         for n, im, vis, clip in rendus:
             n = n.replace("▶", ">>").replace("—", "-")
-            calque = PixelLayer.frompil(im, psd, n)
+            calque = PixelLayer.frompil(im, psd, n, compression=Compression.RLE)
             calque.visible = vis
             if clip:
                 calque.clipping = True
