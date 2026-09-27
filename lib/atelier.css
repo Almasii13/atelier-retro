@@ -1,64 +1,82 @@
 /* ============================================================
-   ATELIER RETRO — briques communes
-   Unités en mm : le rendu final se fait à 300/600 dpi.
+   ATELIER RETRO — socle commun
+   Unités en mm. Toutes les pages ont : format fini + fond perdu (--fp)
+   + zone de sécurité (--secu) pour les textes.
    ============================================================ */
 
-:root {
-  /* Palettes typiques LD/VHS japonaises 80-90 */
-  --jaune-obi: #f4e04d;
-  --jaune-pale: #f7ea7a;
-  --rouge-jp: #d8141c;
-  --noir: #111;
-  --blanc: #fff;
-  --orange-dbz: #f28a0c;
+/* ---------- Polices (OFL, dans lib/fonts) ---------- */
+@font-face { font-family: "Dela Gothic"; src: url("fonts/DelaGothicOne-Regular.ttf"); }
+@font-face { font-family: "Yuji Syuku"; src: url("fonts/YujiSyuku-Regular.ttf"); }
+@font-face { font-family: "Zen Old Mincho"; font-weight: 900; src: url("fonts/ZenOldMincho-Black.ttf"); }
+@font-face { font-family: "Reggae One"; src: url("fonts/ReggaeOne-Regular.ttf"); }
+@font-face { font-family: "M Rounded"; font-weight: 800; src: url("fonts/MPLUSRounded1c-ExtraBold.ttf"); }
+@font-face { font-family: "Anton"; src: url("fonts/Anton-Regular.ttf"); }
+@font-face { font-family: "Archivo Black"; src: url("fonts/ArchivoBlack-Regular.ttf"); }
+@font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
+@font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }
+@font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }
 
-  --f-gothic: "Noto Sans CJK JP", "Noto Sans JP", sans-serif;
-  --f-mincho: "Noto Serif CJK JP", "Noto Serif JP", serif;
-  --f-latin: "Helvetica Neue", "Arial Black", Arial, sans-serif;
+:root {
+  --fp: 3mm;          /* fond perdu */
+  --secu: 2.5mm;      /* marge de sécurité texte depuis la coupe et les plis */
+
+  --f-gothic: "Zen Kaku", "Noto Sans CJK JP", sans-serif;
+  --f-gothic-lourd: "Dela Gothic", "Zen Kaku", "Noto Sans CJK JP", sans-serif;
+  --f-mincho: "Zen Old Mincho", "Noto Serif CJK JP", serif;
+  --f-pinceau: "Yuji Syuku", "Zen Old Mincho", serif;
+  --f-rond: "M Rounded", "Zen Kaku", sans-serif;
+  --f-cond: "Anton", "Archivo Black", sans-serif;
+  --f-latin: "Archivo Black", "Arial Black", sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { background: #fff; }
+html, body { background: #fff; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+body { position: relative; overflow: hidden; }
 
-/* Texte vertical japonais */
-.tate {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-feature-settings: "vert" 1, "vrt2" 1;
-  line-height: 1;
-}
-/* "!!" et nombres courts droits dans une colonne verticale */
+/* La page finie, décalée du fond perdu */
+.page { position: absolute; left: var(--fp); top: var(--fp); overflow: visible; }
+/* Un élément de fond qui déborde dans le fond perdu */
+.perdu { position: absolute; inset: calc(var(--fp) * -1); }
+.abs { position: absolute; }
+
+/* ---------- Typographie japonaise pro ---------- */
+.tate { writing-mode: vertical-rl; text-orientation: mixed; line-height: 1; }
 .tcy { text-combine-upright: all; }
+.upright { text-orientation: upright; }
+.palt { font-feature-settings: "palt" 1; }              /* kana proportionnels (titres) */
+.kinsoku { line-break: strict; word-break: normal; overflow-wrap: anywhere; }
+.justifie { text-align: justify; text-justify: inter-character; text-align-last: start; }
+.justifie-tout { text-align: justify; text-align-last: justify; text-justify: inter-character; }
+.centre { text-align: center; }
+.equilibre { text-wrap: balance; }
+.trim { text-box: trim-both cap alphabetic; }           /* centrage optique des chiffres latins */
+.nowrap { white-space: nowrap; }
 
-/* Contour de texte façon sérigraphie */
-.stroke-noir { -webkit-text-stroke: 0.35mm var(--noir); paint-order: stroke fill; }
-.stroke-blanc { -webkit-text-stroke: 0.45mm var(--blanc); paint-order: stroke fill; }
+/* ---------- Formes avec texte centré ---------- */
+/* .forme : conteneur positionné ; svg de fond ; .contenu = zone de texte inscrite, centrée */
+.forme { position: absolute; }
+.forme > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.forme > .contenu { position: absolute; display: flex; flex-direction: column;
+                    align-items: center; justify-content: center; text-align: center; }
+.forme > .contenu > * { max-width: 100%; }
+.cercle { border-radius: 50%; }
 
-/* Pastille arrondie (bonus/cadeau) */
-.pastille {
-  border-radius: 2.2mm;
-  background: var(--noir);
-  color: var(--blanc);
-  text-align: center;
-  font-family: var(--f-gothic);
-  font-weight: 900;
-}
+/* ---------- Images ---------- */
+.slot { position: absolute; overflow: hidden; background: center / cover no-repeat; }
+.slot.vide { background: repeating-linear-gradient(45deg, #3a3d4a 0 3mm, #444857 3mm 6mm); }
+.slot.vide::after { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center;
+  color: rgba(255,255,255,.7); font: 700 3mm/1.3 var(--f-latin); text-align: center; padding: 3mm; letter-spacing: .2mm; }
+.slot.detoure.vide { background: repeating-linear-gradient(45deg, rgba(60,60,80,.25) 0 3mm, rgba(60,60,80,.1) 3mm 6mm);
+  outline: .3mm dashed rgba(0,0,0,.4); }
+.slot.detoure.vide::after { color: rgba(0,0,0,.55); }
+.slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.slot.detoure img { object-fit: contain; }
 
-/* Traits de coupe / pli (masqués à l'export "propre") */
-.pli { position: absolute; top: 0; bottom: 0; width: 0;
-       border-left: 0.15mm dashed rgba(0,0,0,.35); }
-body.propre .pli, body.propre .repere { display: none; }
-
-/* Emplacement image fourni par Cyril */
-.slot-image { background: #2a2a33 center/cover no-repeat; position: relative; overflow: hidden; }
-.slot-image.vide::after {
-  content: attr(data-label);
-  position: absolute; inset: 0; display: grid; place-items: center;
-  color: rgba(255,255,255,.45); font: 700 4mm var(--f-latin);
-  text-align: center; letter-spacing: .3mm;
-  background: repeating-linear-gradient(45deg, #2a2a33 0 4mm, #30303a 4mm 8mm);
-}
-
-/* Zone réservée (VHS 3D, TV cathodique...) */
-.zone-reservee { position: absolute; outline: 0.4mm dashed #00c2ff; }
-body.propre .zone-reservee { outline: none; }
+/* ---------- Repères d'épreuve (masqués à l'export propre) ---------- */
+.repere { position: absolute; pointer-events: none; z-index: 1000; }
+.repere.coupe { outline: .15mm solid #e6007e; }
+.repere.secu { outline: .15mm dashed #00a0e9; }
+.repere.pli { width: 0; border-left: .2mm dashed #e6007e; }
+.zone-reservee { position: absolute; outline: .4mm dashed #00c2ff; background: rgba(0,194,255,.08); }
+body.propre .repere { display: none; }
+body.propre .zone-reservee { outline: none; background: none; }

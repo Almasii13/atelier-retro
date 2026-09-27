@@ -31,15 +31,25 @@
     ],
     "accroche": "宇宙最強の伝説戦士、覚醒<span class=\"tcy\">!!</span>",
     "titre": "ブロリー",
-    "taille_titre": 9.8,
+    "taille_titre": 8.6,
     "edition": "MOVIE",
     "num": "20",
-    "taille_num": 23,
+    "taille_num": 22,
     "sous_titre": "<ruby class=\"latin\">SAIYAN<rt>サイヤ</rt></ruby>最大の激闘<span class=\"crochet\">〈劇場版〉</span>",
-    "promo": "ファン待望の、伝説の超サイヤ人がついにスクリーンに帰還<span class=\"tcy\">!</span>",
-    "burst_haut": 156,
+    "promo": "ファン待望の、伝説の超サイヤ人がついにスクリーンに帰還！",
+    "burst_haut": 154,
     "burst": "<span class=\"lat\">BROLY</span>テレカ<br>プレゼント<span class=\"lat\">!!</span>",
-    "note": "(テレカは各店先着順となります)"
+    "note": "(テレカは各店先着順となります)",
+    "colonnes_haut": 26,
+    "colonnes_hauteur": 124,
+    "taille_accroche": 6.8,
+    "largeur_col_titre": 12,
+    "etirement_titre": 1.22,
+    "taille_sous_titre": 3.7,
+    "taille_promo": 3.7,
+    "hauteur_promo": 112,
+    "burst_hauteur": 16.5,
+    "burst_pointes": 22
   },
   "tranche": {
     "titre": "<span class=\"petit\">ドラゴンボール超</span>　ブロリー",
@@ -64,5 +74,8 @@
     ],
     "prix": "¥4,800",
     "prix_note": "（税込）"
-  }
+  },
+  "fond_perdu": 3,
+  "securite": 2.5,
+  "images": {}
 }
