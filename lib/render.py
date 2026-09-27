@@ -10,6 +10,14 @@ Exports, à côté de la fiche :
   <nom>_epreuve.png  épreuve : fond perdu visible, trait de coupe (magenta),
                      zone de sécurité (bleu), plis, zones réservées
   <nom>_apercu.png   (obis) face posée sur une jaquette
+  <nom>.psd          calques Photoshop (si le modèle déclare des data-calque)
+  <nom>_calques/     les mêmes calques en PNG transparents (montage vidéo)
+
+Calques : chaque enfant direct de .page porte data-calque="…" :
+  fond | texte | image:<clé> | zone:<clé>   (ordre d'empilement = ordre dans le DOM)
+  - image:<clé> → dans le PSD, une forme « Forme — … » + un calque écrêté par-dessus
+    (colle ton image dans ce calque écrêté, elle prend la forme automatiquement)
+  - zone:<clé>  → repère masqué (VHS 3D, TV cathodique…)
 """
 import argparse, json, pathlib, sys
 from jinja2 import Environment, FileSystemLoader
@@ -68,10 +76,11 @@ def rendre(chemin_fiche, dpi):
             page.goto(f_html.as_uri())
             page.wait_for_selector("body[data-pret='1']", timeout=20000)
             if propre:
-                page.pdf(path=f"{base}.pdf", width=f"{W}mm", height=f"{Ht}mm", print_background=True,
-                         margin={"top": "0", "right": "0", "bottom": "0", "left": "0"})
+                page.add_style_tag(content=f"@page {{ size: {W}mm {Ht}mm; margin: 0; }}")
+                page.pdf(path=f"{base}.pdf", prefer_css_page_size=True, print_background=True)
                 page.screenshot(path=f"{base}.png",
                                 clip={"x": fp * MM, "y": fp * MM, "width": L * MM, "height": H * MM})
+                exporter_calques(page, fiche, base, wpx, hpx)
             else:
                 page.screenshot(path=f"{base}_epreuve.png", clip={"x": 0, "y": 0, "width": wpx, "height": hpx})
             page.close()
@@ -81,6 +90,72 @@ def rendre(chemin_fiche, dpi):
     if "dim" in fiche:
         apercu_obi(fiche, base, dpi)
     print("OK →", dossier)
+
+
+CSS_CALQUE = """
+  html, body { background: transparent !important; }
+  .page > * { visibility: hidden !important; }
+  .page > [data-calque="%s"], .page > [data-calque="%s"] * { visibility: visible !important; }
+  .repere { display: none !important; }
+"""
+CSS_FORME = """
+  .slot { background: #7f7f7f !important; outline: none !important; }
+  .slot::after, .slot img { display: none !important; }
+"""
+CSS_ZONE = """
+  .zone-reservee { outline: .5mm dashed #00a0e9 !important; background: rgba(0,160,233,.18) !important; }
+  .zone-reservee::after { display: grid !important; }
+"""
+
+
+def exporter_calques(page, fiche, base, wpx, hpx):
+    """Rend chaque calque séparément (fond transparent) puis assemble un PSD."""
+    noms = page.eval_on_selector_all(".page > [data-calque]", "els => els.map(e => e.dataset.calque)")
+    ordre = list(dict.fromkeys(noms))
+    if not ordre:
+        return
+    from PIL import Image
+    import io
+    dossier = pathlib.Path(f"{base}_calques"); dossier.mkdir(exist_ok=True)
+    for f in dossier.glob("*.png"):
+        f.unlink()
+    libelles = fiche.get("libelles_calques", {})
+    rendus = []  # (nom lisible, image, visible, clipping)
+
+    def capture(nom, extra=""):
+        tag = page.add_style_tag(content=CSS_CALQUE % (nom, nom) + extra)
+        png = page.screenshot(clip={"x": 0, "y": 0, "width": wpx, "height": hpx}, omit_background=True)
+        page.evaluate("t => t.remove()", tag)
+        return Image.open(io.BytesIO(png)).convert("RGBA")
+
+    for nom in ordre:
+        lib = libelles.get(nom, nom)
+        if nom.startswith("image:"):
+            rendus.append((f"Forme - {lib}", capture(nom, CSS_FORME), True, False))
+            rendus.append((f">> {lib} (colle ton image ici)", capture(nom), True, True))
+        elif nom.startswith("zone:"):
+            rendus.append((f"Repere - {lib}", capture(nom, CSS_ZONE), False, False))
+        else:
+            rendus.append((lib, capture(nom), True, False))
+
+    for i, (n, im, _, _) in enumerate(rendus):
+        sur = "".join(c if c.isalnum() else "_" for c in n.lower()).strip("_")
+        im.save(dossier / f"{i:02d}_{sur}.png")
+
+    try:
+        from psd_tools import PSDImage
+        from psd_tools.api.layers import PixelLayer
+        psd = PSDImage.new("RGBA", rendus[0][1].size)
+        for n, im, vis, clip in rendus:
+            n = n.replace("▶", ">>").replace("—", "-")
+            calque = PixelLayer.frompil(im, psd, n)
+            calque.visible = vis
+            if clip:
+                calque.clipping = True
+            psd.append(calque)
+        psd.save(f"{base}.psd")
+    except ImportError:
+        print("psd-tools absent : calques exportés en PNG seulement")
 
 
 def apercu_obi(fiche, base, dpi):

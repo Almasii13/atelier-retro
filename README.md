@@ -15,7 +15,12 @@ pip install jinja2 playwright pillow && playwright install chromium
 python3 lib/render.py creations/2026-09_dbs-broly/obi.json --dpi 300
 ```
 
-Exports : PNG propre (impression), PNG avec repères de pli, PDF aux dimensions réelles, aperçu sur jaquette.
+Exports :
+- `<nom>.pdf` : impression, format fini + fond perdu 3 mm.
+- `<nom>.png` : aperçu propre, recadré au format fini.
+- `<nom>_epreuve.png` : fond perdu, trait de coupe (magenta), zone de sécurité (bleu), plis, zones réservées.
+- `<nom>.psd` : calques Photoshop — Fond / Forme + calque écrêté pour chaque image / repères des zones réservées (masqués) / Textes & graphismes.
+- `<nom>_calques/` : les mêmes calques en PNG transparents, pour le montage vidéo (glisser la VHS 3D ou la TV entre le fond et les textes).
 
 ## Catalogue des modèles
 
@@ -23,7 +28,7 @@ Exports : PNG propre (impression), PNG avec repères de pli, PDF aux dimensions 
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
-| `flyer-vhd-double` | Flyer B5 182×257, deux titres (haut ciel / bas sable) | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V1) |
+| `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V2) |
 
 ## Règles de mise en page (appliquées par tous les modèles)
 

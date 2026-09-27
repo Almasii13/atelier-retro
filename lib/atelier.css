@@ -31,7 +31,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: #fff; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
-body { position: relative; overflow: hidden; }
+html { overflow: clip; }
+body { position: relative; overflow: clip; }
 
 /* La page finie, décalée du fond perdu */
 .page { position: absolute; left: var(--fp); top: var(--fp); overflow: visible; }
@@ -78,5 +79,8 @@ body { position: relative; overflow: hidden; }
 .repere.secu { outline: .15mm dashed #00a0e9; }
 .repere.pli { width: 0; border-left: .2mm dashed #e6007e; }
 .zone-reservee { position: absolute; outline: .4mm dashed #00c2ff; background: rgba(0,194,255,.08); }
+.zone-reservee::after { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center;
+  text-align: center; white-space: pre-line; color: #0080c0; font: 700 3mm/1.35 var(--f-latin); letter-spacing: .2mm; }
+body.propre .zone-reservee::after { display: none; }
 body.propre .repere { display: none; }
 body.propre .zone-reservee { outline: none; background: none; }

@@ -1,21 +1,26 @@
 {
   "modele": "flyer-vhd-double",
-  "titre_fichier": "Flyer B5 — Dragon Ball Super: Broly / Super Hero",
-  "format": { "largeur": 182, "hauteur": 257 },
+  "titre_fichier": "Flyer B5 — Dragon Ball Super: Broly",
+  "format": {
+    "largeur": 182,
+    "hauteur": 257
+  },
   "fond_perdu": 3,
   "securite": 3,
-
   "couleurs": {
-    "ciel": "#aedbe6", "sable": "#f1e48e", "encre": "#1a1a1a",
-    "marine": "#2b3290", "vert": "#0f6a2f", "rouge": "#e60033",
-    "magenta": "#e4007f", "bleu": "#1f55a8", "jaune": "#ffe100"
+    "ciel": "#aedbe6",
+    "sable": "#f1e48e",
+    "encre": "#1a1a1a",
+    "marine": "#2b3290",
+    "vert": "#0f6a2f",
+    "rouge": "#e60033",
+    "magenta": "#e4007f",
+    "bleu": "#1f55a8",
+    "jaune": "#ffe100"
   },
-
   "images": {
-    "principal": "images/broly_principal.jpg",
-    "personnage": "images/superhero_personnage.png"
+    "principal": "images/broly_principal.jpg"
   },
-
   "marque": {
     "logo": "B2054",
     "nom": "BACK TO 2054",
@@ -23,10 +28,17 @@
     "support": "VIDEO CASSETTE",
     "support_petit": "VHS"
   },
-
   "haut": {
-    "accroche": ["伝説の超サイヤ人、", "ブロリーの怒りが", "ついにビデオになった!!"],
-    "decalages": [0, -3, 5],
+    "accroche": [
+      "伝説の超サイヤ人、",
+      "ブロリーの怒りが",
+      "ついにビデオになった!!"
+    ],
+    "decalages": [
+      0,
+      -3,
+      5
+    ],
     "synopsis": [
       "惑星ベジータ消滅から41年――。辺境の惑星で生き延びたサイヤ人ブロリーは、父パラガスとともにフリーザ軍に迎え入れられ、地球へと姿を現した。",
       "迎え撃つ悟空とベジータ。だが戦うほどに目覚めていくブロリーの力は、二人の想像をはるかに超えていた。怒りが力を呼び、力がさらなる怒りを呼ぶ。宇宙をも揺るがす壮絶なバトルが、いま幕を開ける――。"
@@ -42,40 +54,75 @@
     "prix": "¥4,800",
     "spec": "■カラー■Hi-Fiステレオ■100分",
     "reference": "BTV-2054",
-    "credits": ["発売●バック・トゥ・2054株式会社", "販売●B2054ビジュアル株式会社", "※ビデオの無断複製・レンタルは禁止されています。"]
+    "credits": [
+      "発売●バック・トゥ・2054株式会社",
+      "販売●B2054ビジュアル株式会社",
+      "※ビデオの無断複製・レンタルは禁止されています。"
+    ]
   },
-
   "bas": {
-    "chapeau": ["B2054ビデオマガジン「レトロビジョン」", "オリジナル収録作品――"],
-    "kicker": "ドラゴンボール超",
-    "titre": "スーパーヒーロー",
-    "lead": ["時は レッドリボン軍復活の時代、", "最強の人造人間計画の秘密とは?!"],
-    "corps": [
-      "かつて悟空の手で壊滅したレッドリボン軍。その野望を受け継ぐ者たちが、天才科学者ヘド博士とともに、最強の人造人間ガンマ1号・2号を生み出した。狙われたのはピッコロ、そして悟飯。",
-      "師弟の絆が試されるとき、眠れる力がふたたび目を覚ます。新たな伝説の一ページが、いまビデオでよみがえる！"
+    "chapeau": [
+      "劇場公開記念 B2054コレクション",
+      "初回限定版――"
     ],
-    "sommaire_titre": "「レトロビジョン」第6号　その他の内容",
-    "sommaire": [
-      ["", "VHSコレクター最前線「帯の美学」徹底研究"],
-      ["新企画", "ジャケット・アートの巨匠たち"],
-      ["", "特集「伝説の超サイヤ人」ブロリー全記録"],
-      ["", "あの頃のレンタルビデオ店・探訪記"],
-      ["", "レトロビジョン情報センター　ほか、ファン必見の内容がギッシリ！"]
+    "kicker": "ドラゴンボール超 ブロリー",
+    "titre": "激闘伝",
+    "slogan": [
+      "悟空・ベジータ vs ブロリー",
+      "宇宙最大の激突がビデオで蘇る!!"
     ],
-    "slogan": ["ピッコロと悟飯、師弟の絆が", "新たな伝説として遂に登場!!"],
     "support_rotatif": "VHSビデオカセット",
-    "date": "6/11",
-    "date_label": "発売",
-    "staff": [["原作・脚本", "鳥山 明"], ["キャラクターデザイン", "鳥山 明"], ["監督", "児玉徹郎"], ["音楽", "佐藤直紀"]],
-    "cast": [["孫悟飯", "野沢雅子"], ["ピッコロ", "古川登志夫"], ["ガンマ1号", "神谷浩史"], ["ガンマ2号", "宮野真守"], ["ヘド", "入野自由　他"]],
-    "logo": ["Retro", "Vision", "Vol.6"],
-    "reference": "BTV-2055",
-    "prix": "¥4,900",
-    "spec": ["■カラー　■約100分", "■Hi-Fiステレオ"]
+    "pastille": [
+      "初回限定",
+      "特典付"
+    ],
+    "bonus_titre": "初回限定特典",
+    "bonus": [
+      "特製テレカ",
+      "ブロリー特製ステッカー",
+      "解説ブックレット（16P）",
+      "特製アウターケース"
+    ],
+    "logo": [
+      "B2054",
+      "COLLECTION",
+      "Vol.1"
+    ],
+    "reference": "BTV-2054S",
+    "prix": "¥5,800",
+    "spec": [
+      "■カラー　■約100分",
+      "■Hi-Fiステレオ　■初回限定生産"
+    ]
   },
-
   "pied": {
-    "bande": [["発売", "バック・トゥ・2054株式会社"], ["販売", "B2054ビジュアル株式会社"]],
+    "bande": [
+      [
+        "発売",
+        "バック・トゥ・2054株式会社"
+      ],
+      [
+        "販売",
+        "B2054ビジュアル株式会社"
+      ]
+    ],
     "mentions": "雑誌20540-08　B2054 MOOK 8　定価880円　Back to 2054　©Printed in Japan"
+  },
+  "zones": {
+    "gauche": {
+      "cle": "vhs",
+      "label": "VHS 3D\n(générateur)"
+    },
+    "droite": {
+      "cle": "tv",
+      "label": "TV CATHODIQUE"
+    }
+  },
+  "libelles_calques": {
+    "fond": "Fond",
+    "image:principal": "Visuel principal",
+    "zone:vhs": "Zone VHS 3D",
+    "zone:tv": "Zone TV cathodique",
+    "texte": "Textes & graphismes"
   }
 }
