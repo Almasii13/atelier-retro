@@ -214,5 +214,8 @@ def exporter_jsx(page, fiche, base):
     donnees = construire_scene_ps(scene, fiche)
     modele = (RACINE / "lib" / "photoshop_modele.jsx").read_text(encoding="utf-8")
     jsx = modele.replace("/*__SCENE__*/null", json.dumps(donnees, ensure_ascii=True))
-    pathlib.Path(f"{base}_photoshop.jsx").write_text(jsx, encoding="utf-8")
+    # Fichier 100 % ASCII : ExtendScript lit parfois les .jsx sans BOM dans l'encodage du système
+    jsx = "".join(c if ord(c) < 128 else f"\\u{ord(c):04x}" for c in jsx)
+    jsx = jsx.replace("\r\n", "\n").replace("\n", "\r\n")  # fins de ligne Windows, lues partout
+    pathlib.Path(f"{base}_photoshop.jsx").write_bytes(jsx.encode("ascii"))
     return donnees

@@ -12,7 +12,9 @@
     Le PSD est enregistré à côté de ce script.
 */
 (function () {
+ try {
   var SCENE = /*__SCENE__*/null;
+  if (!confirm("Atelier Retro\n\nConstruire le document \u00ab " + SCENE.titre + " \u00bb ?\n(1 a 2 minutes)")) return;
 
   function cTID(s) { return charIDToTypeID(s); }
   function sTID(s) { return stringIDToTypeID(s); }
@@ -258,4 +260,9 @@
         "Repères : coupe (fond perdu " + "3 mm), sécurité, plis.\n" +
         (manquantes.length ? "\nPolices remplacées : " + manquantes.join(", ") + "\n" : "") +
         (erreurs.length ? "\nÉléments non créés (" + erreurs.length + ") :\n- " + erreurs.slice(0, 12).join("\n- ") : "\nAucune erreur."));
+
+ } catch (err) {
+  alert("Atelier Retro \u2014 erreur\n\nLigne " + err.line + " : " + err.message +
+        "\n\nEnvoie une capture de ce message a Claude.");
+ }
 })();

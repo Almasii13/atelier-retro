@@ -1,7 +1,7 @@
 // Imitation minimale de l'API Photoshop (ExtendScript) pour exécuter le script généré
 // et détecter les erreurs de logique : appels inconnus, arguments manquants, ordre des calques.
 const fs = require("fs");
-const src = fs.readFileSync(process.argv[2], "utf8").replace(/^#target.*\n/, "");
+const src = fs.readFileSync(process.argv[2], "utf8").replace(/^#target[^\n]*\n/, "");
 const journal = [];
 const calques = [];
 let actif = null;
