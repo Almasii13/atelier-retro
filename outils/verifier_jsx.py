@@ -44,7 +44,10 @@ def texte_html(it, i):
         corps.append(f'<div style="text-align:{al};text-align-last:{last};text-indent:{p["retrait1"] / K}px;'
                      f'padding-left:{p["retraitG"] / K}px;{run_css(r0)}">{"".join(morceaux) or "&#8203;"}</div>')
     ech = it["runs"][0]["echelleH"] / 100
-    boite = f"width:{it['boite']['l'] / K}px;" if it.get("boite") else "white-space:nowrap;"
+    if it.get("vertical"):
+        boite = "writing-mode:vertical-rl;" + (f"height:{it['boite']['h'] / K}px;" if it.get("boite") else "white-space:nowrap;")
+    else:
+        boite = f"width:{it['boite']['l'] / K}px;" if it.get("boite") else "white-space:nowrap;"
     return (f'<div class="t" id="t{i}" data-cx="{it["centre"][0] / K}" data-cy="{it["centre"][1] / K}" data-a="{it["angle"]}" data-e="{ech}" '
             f'style="position:absolute;left:0;top:0;{boite}">{"".join(corps)}</div>')
 

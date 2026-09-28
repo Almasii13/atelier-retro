@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}
+{# Toutes les cotes sont relevées sur l'affiche de référence (845 × 1200 px) puis converties : r(v) = v × L / 845 mm #}
+{% set k = L / 845 %}
+{% macro r(v) %}{{ '%.3f' % (v * k) }}mm{% endmacro %}
+<style>
+  /* Modèle d'après l'affiche « 機動警察パトレイバー the Movie 4DX » (2020) — forme copiée à l'identique.
+     Fond blanc, personnage détouré au centre, accroche verticale en mincho, grand logo italique en pied. */
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.encre }}; font-family: var(--f-gothic); }
+  .fond { position: absolute; inset: calc(var(--fp) * -1 - 2mm); background: {{ C.fond }}; }
+
+  /* Accroche du haut : pleine largeur, bleu ardoise */
+  .haut { left: {{ r(28) }}; top: {{ r(17) }}; width: {{ r(794) }}; height: {{ r(60) }}; color: {{ C.bleu }};
+          font: 900 {{ r(51) }}/{{ r(60) }} var(--f-gothic); letter-spacing: 0; white-space: nowrap; }
+
+  /* Personnage détouré (fourni) */
+  .perso { left: {{ r(95) }}; top: {{ r(78) }}; width: {{ r(530) }}; height: {{ r(862) }}; }
+
+  /* Accroche verticale : une colonne en mincho, justifiée sur toute sa hauteur */
+  .vertical { left: {{ r(572) }}; top: {{ r(172) }}; width: {{ r(56) }}; height: {{ r(748) }};
+              font: 700 {{ r(44) }}/1 var(--f-mincho); color: {{ C.encre }}; }
+
+  /* Générique à droite */
+  .generique { left: {{ r(652) }}; top: {{ r(774) }}; width: {{ r(172) }}; font: 600 {{ r(11.2) }}/{{ r(16.2) }} var(--f-mincho); white-space: nowrap; }
+  .generique .g1 span, .generique .g2 span { display: block; }
+  .generique .real { font-size: {{ r(13) }}; line-height: {{ r(20) }}; margin-top: {{ r(1) }}; }
+  .generique .g2 { margin-top: {{ r(5) }}; font-size: {{ r(9.6) }}; line-height: {{ r(11.2) }}; }
+
+  /* Paragraphe anglais, centré, qui file sous le logo */
+  .anglais { left: {{ r(42) }}; top: {{ r(858) }}; width: {{ r(290) }}; height: {{ r(72) }}; overflow: hidden;
+             font: 700 {{ r(8.4) }}/{{ r(10.1) }} var(--f-gothic); text-align: center; color: #2b2b2b; }
+
+  /* Grand logo italique, pleine largeur */
+  .logo { left: {{ r(26) }}; top: {{ r(930) }}; width: {{ r(790) }}; height: {{ r(122) }}; transform: skewX(-12deg); transform-origin: 0 100%; }
+  .logo span { font: {{ r(150) }}/{{ r(122) }} var(--f-latin); color: {{ C.noir }}; letter-spacing: {{ r(-9) }}; }
+
+  .sous-logo { left: {{ r(186) }}; top: {{ r(1058) }}; width: {{ r(466) }}; height: {{ r(50) }}; transform: skewX(-12deg); transform-origin: 0 100%; }
+  .sous-logo span { font: {{ r(46) }}/{{ r(50) }} var(--f-gothic-lourd); color: {{ C.noir }}; letter-spacing: {{ r(-2) }}; }
+
+  .format { left: {{ r(664) }}; top: {{ r(1058) }}; width: {{ r(148) }}; height: {{ r(50) }}; }
+  .format span { font: {{ r(52) }}/{{ r(50) }} var(--f-latin); color: #262626; letter-spacing: {{ r(1) }}; }
+
+  /* Emblème bas-gauche */
+  .embleme { left: {{ r(70) }}; top: {{ r(1060) }}; width: {{ r(82) }}; height: {{ r(54) }}; }
+  .label { left: {{ r(46) }}; top: {{ r(1120) }}; width: {{ r(138) }}; height: {{ r(26) }}; text-align: center; }
+  .label span { font: {{ r(24) }}/{{ r(26) }} var(--f-latin); color: #1d1d1d; }
+  .label2 { left: {{ r(46) }}; top: {{ r(1146) }}; width: {{ r(138) }}; text-align: center; font: 700 {{ r(11.5) }}/1 var(--f-gothic); color: #333; }
+  .copyright { left: {{ r(40) }}; top: {{ r(1167) }}; width: {{ r(170) }}; font: 500 {{ r(9.4) }}/1 var(--f-gothic); color: #555; white-space: nowrap; }
+
+  /* Pavé « 劇場版 » */
+  .edition { left: {{ r(238) }}; top: {{ r(1118) }}; width: {{ r(108) }}; height: {{ r(42) }}; background: {{ C.orange }};
+             border: {{ r(2.6) }} solid #1b1b1b; display: flex; align-items: center; justify-content: center;
+             font: 900 {{ r(29) }}/1 var(--f-gothic); color: #1b1b1b; letter-spacing: {{ r(1) }}; }
+  .edition-sous { left: {{ r(208) }}; top: {{ r(1165) }}; width: {{ r(168) }}; text-align: center; font: 700 {{ r(13) }}/1 var(--f-gothic); white-space: nowrap; }
+
+  /* Bloc de mentions minuscules + bandeau + signature éditeur */
+  .mentions { left: {{ r(352) }}; top: {{ r(1112) }}; width: {{ r(160) }}; font: 700 {{ r(4.3) }}/{{ r(4.9) }} var(--f-gothic);
+              text-align: center; color: #333; white-space: nowrap; }
+  .barre { left: {{ r(395) }}; top: {{ r(1153) }}; width: {{ r(74) }}; height: {{ r(8) }}; background: #1b1b1b; border-radius: {{ r(1.5) }};
+           display: flex; align-items: center; justify-content: center; color: #fff; font: 700 {{ r(4.6) }}/1 var(--f-gothic); letter-spacing: {{ r(0.6) }}; }
+  .presente { left: {{ r(352) }}; top: {{ r(1164) }}; width: {{ r(160) }}; text-align: center; font: {{ r(9.2) }}/1 var(--f-latin); color: #333; white-space: nowrap; }
+
+  /* Date */
+  .date-boite { left: {{ r(527) }}; top: {{ r(1117) }}; width: {{ r(268) }}; height: {{ r(52) }}; }
+  .date { display: flex; align-items: center; color: {{ C.bleu }}; white-space: nowrap; }
+  .date .d { font: 900 {{ r(52) }}/{{ r(52) }} var(--f-gothic); letter-spacing: {{ r(-1) }}; }
+  .date .k { display: flex; flex-direction: column; align-items: center; margin: 0 {{ r(2.5) }}; font: 900 {{ r(11) }}/1.05 var(--f-gothic); }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="fond" data-calque="fond"></div>
+
+  {% set u = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure perso {{ '' if u else 'vide' }}" data-label="PERSONNAGE DÉTOURÉ&#10;PNG transparent">
+      {% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs haut" data-groupe="Accroche du haut"><span data-plein>{{ T.haut }}</span></div>
+
+    <div class="abs tate justifie-tout vertical" data-groupe="Accroche verticale">{{ T.vertical }}</div>
+
+    <div class="abs generique" data-groupe="Générique">
+      <div class="g1">{% for l in T.generique %}<span>{{ l }}</span>{% endfor %}<span class="real">{{ T.realisateur }}</span></div>
+      <div class="g2">{% for l in T.generique2 %}<span>{{ l }}</span>{% endfor %}</div>
+    </div>
+
+    <div class="abs anglais" data-groupe="Texte anglais">{{ T.anglais }}</div>
+
+    <div class="abs logo" data-groupe="Logo"><span data-plein>{{ T.logo }}</span></div>
+    <div class="abs sous-logo" data-groupe="Logo"><span data-plein>{{ T.sous_logo }}</span></div>
+    <div class="abs format" data-groupe="Logo"><span data-plein>{{ T.format }}</span></div>
+
+    <div class="abs embleme" data-groupe="Emblème">
+      {# Emblème original : cassette VHS stylisée #}
+      <svg viewBox="0 0 82 54" style="position:absolute;inset:0;width:100%;height:100%">
+        <polygon fill="#1d1d1d" points="4,8 78,8 78,50 4,50"/>
+        <polygon fill="{{ C.fond }}" points="14,16 68,16 68,34 14,34"/>
+        <circle cx="27" cy="25" r="6.5" fill="#1d1d1d"/><circle cx="55" cy="25" r="6.5" fill="#1d1d1d"/>
+        <circle cx="27" cy="25" r="2.4" fill="{{ C.fond }}"/><circle cx="55" cy="25" r="2.4" fill="{{ C.fond }}"/>
+        <polygon fill="{{ C.fond }}" points="22,42 60,42 57,47 25,47"/>
+        <polygon fill="#1d1d1d" points="30,0 52,0 56,8 26,8"/>
+      </svg>
+    </div>
+    <div class="abs label" data-groupe="Emblème"><span data-plein>{{ T.label }}</span></div>
+    <div class="abs label2" data-groupe="Emblème">{{ T.label2 }}</div>
+    <div class="abs copyright" data-groupe="Emblème">{{ T.copyright }}</div>
+
+    <div class="abs edition" data-groupe="Édition">{{ T.edition }}</div>
+    <div class="abs edition-sous" data-groupe="Édition">{{ T.edition_sous }}</div>
+
+    <div class="abs mentions" data-groupe="Mentions">{% for l in T.mentions %}{{ l }}<br>{% endfor %}</div>
+    <div class="abs barre" data-groupe="Mentions">{{ T.barre }}</div>
+    <div class="abs presente" data-groupe="Mentions">{{ T.presente }}</div>
+
+    <div class="abs date-boite" data-groupe="Date"><div class="date" data-plein>
+      <span class="d">{{ T.date[0] }}</span><span class="k"><span>{{ T.date[1] }}</span><span>{{ T.date[2] }}</span></span><span class="d">{{ T.date[3] }}</span>
+    </div></div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

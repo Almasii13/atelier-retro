@@ -30,6 +30,7 @@ Exports :
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
+| `affiche-vertical-4dx` | Affiche portrait B5 (échelle libre) : accroche haute, personnage détouré, accroche verticale mincho, grand logo italique | Affiche « 機動警察パトレイバー the Movie 4DX » (2020) | En test (V1) |
 | `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV, repère incliné unique | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V4) |
 
 ## Règles de mise en page (appliquées par tous les modèles)

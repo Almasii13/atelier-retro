@@ -115,7 +115,7 @@
   }
 
   // ---------- Textes ----------
-  function creerTexte(texte, runs, paras, boite) {
+  function creerTexte(texte, runs, paras, boite, vertical) {
     var d = new ActionDescriptor(), r = new ActionReference();
     r.putClass(sTID("textLayer")); d.putReference(cTID("null"), r);
     var t = new ActionDescriptor();
@@ -126,7 +126,7 @@
     t.putObject(sTID("textClickPoint"), sTID("paint"), clic);
     var formes = new ActionList(), f = new ActionDescriptor();
     f.putEnumerated(sTID("char"), sTID("char"), sTID(boite ? "box" : "paint"));
-    f.putEnumerated(sTID("orientation"), sTID("orientation"), sTID("horizontal"));
+    f.putEnumerated(sTID("orientation"), sTID("orientation"), sTID(vertical ? "vertical" : "horizontal"));
     if (boite) {
       var b = new ActionDescriptor();
       b.putUnitDouble(sTID("top"), sTID("pointsUnit"), 0);
@@ -198,10 +198,10 @@
   }
 
   function texte(it) {
-    var l = creerTexte(it.texte, it.runs, it.paras, it.boite);
+    var l = creerTexte(it.texte, it.runs, it.paras, it.boite, it.vertical);
     l.name = it.nom;
     // Ajustement fin de l'approche des lignes simples pour retrouver la largeur exacte de la maquette
-    if (!it.boite && it.runs.length === 1 && it.texte.indexOf("\r") < 0 && it.texte.length > 2) {
+    if (!it.vertical && !it.boite && it.runs.length === 1 && it.texte.indexOf("\r") < 0 && it.texte.length > 2) {
       var w = largeurEncre(l), cible = it.encre[0];
       if (w > 0 && Math.abs(w - cible) / cible > 0.01) {
         var delta = (cible - w) / (it.texte.length - 1) / it.runs[0].taille * 1000;

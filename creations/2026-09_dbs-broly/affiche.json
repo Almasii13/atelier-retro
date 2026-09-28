@@ -1,0 +1,69 @@
+{
+  "modele": "affiche-vertical-4dx",
+  "titre_fichier": "Affiche VHS — Dragon Ball Super: Broly",
+  "format": {
+    "largeur": 182,
+    "hauteur": 257
+  },
+  "fond_perdu": 3,
+  "securite": 3,
+  "couleurs": {
+    "fond": "#ffffff",
+    "encre": "#1e1e1e",
+    "noir": "#161616",
+    "bleu": "#3d5a7a",
+    "orange": "#f2994a"
+  },
+  "images": {
+    "personnage": "images/broly_detoure.png"
+  },
+  "libelles_calques": {
+    "fond": "Fond",
+    "image:personnage": "Personnage",
+    "texte": "Textes & graphismes"
+  },
+  "textes": {
+    "haut": "“伝説の超サイヤ人”をVHSで体験せよ！",
+    "vertical": "ブロリーは……いつだって最強だよ。",
+    "generique": [
+      "原作・脚本：鳥山 明",
+      "キャラクターデザイン：鳥山 明",
+      "作画監督：新谷直大",
+      "音楽：住友紀人",
+      "発売：CYBERDYN VIDEO"
+    ],
+    "realisateur": "監督：長峯達也",
+    "generique2": [
+      "制作：東映アニメーション",
+      "販売：BACK TO 2054",
+      "型番：Backto2054"
+    ],
+    "anglais": "With the destruction of Planet Vegeta forty-one years ago, the proud Saiyan race was believed to have vanished forever. However, on a barren frontier planet, a lone Saiyan known as \"BROLY\" has survived, raised in exile by his father Paragus. Recruited by the Frieza Force, he arrives on Earth to face Goku and Vegeta. As his rage grows, his power awakens beyond every limit, and the clash of the three Saiyans begins to shake the very foundations of the universe itself...",
+    "logo": "BROLY",
+    "sous_logo": "ドラゴンボール超ブロリー",
+    "format": "VHS",
+    "label": "CYBERDYN",
+    "label2": "VIDEO by BACK TO 2054",
+    "copyright": "© BACK TO 2054 / CYBERDYN VIDEO",
+    "edition": "劇場版",
+    "edition_sous": "（VHSリマスター版）",
+    "mentions": [
+      "Original Story, Screenplay & Character Design AKIRA TORIYAMA",
+      "Directed by TATSUYA NAGAMINE",
+      "Animation Director NAOHIRO SHINTANI   Music NORIHITO SUMITOMO",
+      "Animation Production TOEI ANIMATION",
+      "VHS Edition CYBERDYN VIDEO",
+      "Model No. Backto2054",
+      "COLOR / 100min. / Hi-Fi STEREO",
+      "A BACK TO 2054 Release"
+    ],
+    "barre": "Hi-Fi STEREO",
+    "presente": "CYBERDYN VIDEO PRESENTS",
+    "date": [
+      "12.14",
+      "(金)",
+      "より",
+      "VHS発売!"
+    ]
+  }
+}

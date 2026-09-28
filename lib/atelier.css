@@ -8,6 +8,9 @@
 @font-face { font-family: "Dela Gothic"; src: url("fonts/DelaGothicOne-Regular.ttf"); }
 @font-face { font-family: "Yuji Syuku"; src: url("fonts/YujiSyuku-Regular.ttf"); }
 @font-face { font-family: "Zen Old Mincho"; font-weight: 900; src: url("fonts/ZenOldMincho-Black.ttf"); }
+@font-face { font-family: "Zen Old Mincho"; font-weight: 500; src: url("fonts/ZenOldMincho-Medium.ttf"); }
+@font-face { font-family: "Zen Old Mincho"; font-weight: 600; src: url("fonts/ZenOldMincho-SemiBold.ttf"); }
+@font-face { font-family: "Zen Old Mincho"; font-weight: 700; src: url("fonts/ZenOldMincho-Bold.ttf"); }
 @font-face { font-family: "Reggae One"; src: url("fonts/ReggaeOne-Regular.ttf"); }
 @font-face { font-family: "M Rounded"; font-weight: 800; src: url("fonts/MPLUSRounded1c-ExtraBold.ttf"); }
 @font-face { font-family: "Anton"; src: url("fonts/Anton-Regular.ttf"); }

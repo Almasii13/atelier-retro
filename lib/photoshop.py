@@ -16,7 +16,7 @@ PX_DOC = 300 / 96  # 1 px CSS → px document (300 ppi)
 POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus gras au plus léger
     "Zen Kaku": [(800, "ZenKakuGothicNew-Black"), (600, "ZenKakuGothicNew-Bold"), (0, "ZenKakuGothicNew-Medium")],
     "Dela Gothic": [(0, "DelaGothicOne-Regular")],
-    "Zen Old Mincho": [(0, "ZenOldMincho-Black")],
+    "Zen Old Mincho": [(800, "ZenOldMincho-Black"), (700, "ZenOldMincho-Bold"), (600, "ZenOldMincho-SemiBold"), (0, "ZenOldMincho-Medium")],
     "Yuji Syuku": [(0, "YujiSyuku-Regular")],
     "M Rounded": [(0, "RoundedMplus1c-ExtraBold")],
     "Anton": [(0, "Anton-Regular")],
@@ -84,11 +84,11 @@ def mesurer_textes(page, scene):
         lx0 = bb[0] / k + x0 - rect[0]; ly0 = bb[1] / k + y0 - rect[1]
         lx1 = bb[2] / k + x0 - rect[0]; ly1 = bb[3] / k + y0 - rect[1]
         cx, cy = (lx0 + lx1) / 2, (ly0 + ly1) / 2
-        (px, py), (qx, qy) = page.evaluate("""([sel, cx, cy]) => {
+        (px, py), (qx, qy), (rx, ry) = page.evaluate("""([sel, cx, cy]) => {
             const el = document.querySelector(sel);
             const pos = el.style.position;
             if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
-            const r = [[cx, cy], [cx + 100, cy]].map(([x, y]) => {
+            const r = [[cx, cy], [cx + 100, cy], [cx, cy + 100]].map(([x, y]) => {
                 const p = document.createElement('i');
                 p.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:0;height:0;margin:0;padding:0;border:0;display:block;`;
                 el.appendChild(p); const b = p.getBoundingClientRect(); p.remove(); return [b.left, b.top];
@@ -97,6 +97,12 @@ def mesurer_textes(page, scene):
         }""", [sel, cx, cy])
         it["centre"] = [px, py]
         it["angle"] = math.degrees(math.atan2(qy - py, qx - px))
+        # échelle horizontale et inclinaison (skew) cumulées, transformations des ancêtres comprises
+        ux, uy = qx - px, qy - py
+        vx, vy = rx - px, ry - py
+        it["echelleX"] = math.hypot(ux, uy) / 100
+        nx, ny = -uy, ux  # perpendiculaire à u (repère écran, y vers le bas)
+        it["biais"] = math.degrees(math.atan2(nx * vy - ny * vx, nx * vx + ny * vy))
         it["encre"] = [lx1 - lx0, ly1 - ly0]
     tag.evaluate("t => t.remove()")
 
@@ -201,7 +207,9 @@ def construire_scene_ps(scene, fiche):
             item = {**base, "type": "texte", "texte": it["texte"], "runs": runs, "paras": paras,
                     "centre": [_doc(it["centre"][0]), _doc(it["centre"][1])], "angle": round(it["angle"], 3),
                     "encre": [_doc(it["encre"][0] * it.get("echelleX", 1)), _doc(it["encre"][1])],
-                    "boite": ({"l": _doc(it["boite"]["l"]) + 1, "h": _doc(it["boite"]["h"]) * 1.6 + 40} if it["boite"] else None)}
+                    "vertical": bool(it.get("vertical")),
+                    "boite": (({"l": _doc(it["boite"]["l"]) * 1.6 + 40, "h": _doc(it["boite"]["h"])} if it.get("vertical")
+                               else {"l": _doc(it["boite"]["l"]) + 1, "h": _doc(it["boite"]["h"]) * 1.6 + 40}) if it["boite"] else None)}
             if contour:
                 item["contour"] = {"taille": _doc(contour["contour"]) / 2, "couleur": _couleur(contour["contourCouleur"])}
             sortie["items"].append(item)
