@@ -83,7 +83,8 @@
 
   // ---------- Formes vectorielles ----------
   var nChemin = 0;
-  function forme(chemins, rgb, nom) {
+  // remplissage : null (couleur unie rgb) ou {angle, stops} (d\u00e9grad\u00e9 lin\u00e9aire)
+  function forme(chemins, rgb, nom, remplissage) {
     var subs = [];
     for (var c = 0; c < chemins.length; c++) {
       var pts = [];
@@ -100,16 +101,27 @@
     var d = new ActionDescriptor(), r = new ActionReference();
     r.putClass(sTID("contentLayer")); d.putReference(cTID("null"), r);
     var d2 = new ActionDescriptor(), d3 = new ActionDescriptor();
-    d3.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(rgb));
-    d2.putObject(cTID("Type"), sTID("solidColorLayer"), d3);
-    d.putObject(cTID("Usng"), sTID("contentLayer"), d2);
-    try { chemin.select(); executeAction(cTID("Mk  "), d, DialogModes.NO); }
-    catch (e) {  // repli : s\u00e9lection + calque de remplissage masqu\u00e9
-      chemin.makeSelection(0, true, SelectionType.REPLACE);
-      executeAction(cTID("Mk  "), d, DialogModes.NO);
-      doc.selection.deselect();
+    if (remplissage) {
+      d3.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(remplissage.stops));
+      d3.putUnitDouble(cTID("Angl"), cTID("#Ang"), remplissage.angle);
+      d3.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
+      d3.putBoolean(cTID("Algn"), true);
+      d2.putObject(cTID("Type"), sTID("gradientLayer"), d3);
+    } else {
+      d3.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(rgb));
+      d2.putObject(cTID("Type"), sTID("solidColorLayer"), d3);
     }
-    chemin.remove();
+    d.putObject(cTID("Usng"), sTID("contentLayer"), d2);
+    try {
+      try { chemin.select(); executeAction(cTID("Mk  "), d, DialogModes.NO); }
+      catch (e) {  // repli : s\u00e9lection + calque de remplissage masqu\u00e9
+        chemin.makeSelection(0, true, SelectionType.REPLACE);
+        executeAction(cTID("Mk  "), d, DialogModes.NO);
+        doc.selection.deselect();
+      }
+    } finally {
+      try { chemin.remove(); } catch (e3) {}
+    }
     var l = doc.activeLayer; l.name = nom;
     return l;
   }
@@ -144,21 +156,12 @@
   function couleurMoyenne(stops) { return stops[Math.floor(stops.length / 2)].c; }
 
   function formeDegradee(it) {
-    // forme vectorielle remplie d'un d\u00e9grad\u00e9 (calque de remplissage) ; repli : couleur m\u00e9diane
-    var l = forme(it.chemins, couleurMoyenne(it.stops), it.nom);
-    try {
-      var d = new ActionDescriptor(), r = new ActionReference();
-      r.putEnumerated(sTID("contentLayer"), cTID("Ordn"), cTID("Trgt"));
-      d.putReference(cTID("null"), r);
-      var gd = new ActionDescriptor();
-      gd.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(it.stops));
-      gd.putUnitDouble(cTID("Angl"), cTID("#Ang"), it.angle);
-      gd.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
-      gd.putBoolean(cTID("Algn"), true);
-      d.putObject(cTID("T   "), sTID("gradientLayer"), gd);
-      executeAction(cTID("setd"), d, DialogModes.NO);
-    } catch (e) { erreurs.push(it.nom + " (d\u00e9grad\u00e9 remplac\u00e9 par une couleur unie) : " + e.message); }
-    return l;
+    // calque de remplissage d\u00e9grad\u00e9 avec masque vectoriel ; repli : couleur m\u00e9diane
+    try { return forme(it.chemins, null, it.nom, { angle: it.angle, stops: it.stops }); }
+    catch (e) {
+      erreurs.push(it.nom + " (d\u00e9grad\u00e9 remplac\u00e9 par une couleur unie) : " + e.message);
+      return forme(it.chemins, couleurMoyenne(it.stops), it.nom);
+    }
   }
 
   function incrustationDegrade(dg) {
@@ -327,7 +330,7 @@
   doc.resizeImage(undefined, undefined, 300, ResampleMethod.NONE);
   app.preferences.rulerUnits = prefsRU; app.preferences.typeUnits = prefsTU; app.displayDialogs = dlg;
 
-  var fichier = new File(File($.fileName).parent.fsName + "/" + File($.fileName).name.replace(/_photoshop\.jsx$/i, "") + ".psd");
+  var fichier = new File(File($.fileName).parent.fsName + "/" + File($.fileName).name.replace(/\.jsx$/i, "").replace(/_photoshop$/i, "") + ".psd");
   try { var o = new PhotoshopSaveOptions(); o.layers = true; doc.saveAs(fichier, o, false, Extension.LOWERCASE); }
   catch (e) { erreurs.push("Enregistrement : " + e.message); }
 
