@@ -17,7 +17,8 @@ INVERSE = {"ZenKakuGothicNew-Black": ("Zen Kaku", 900), "ZenKakuGothicNew-Bold":
            "ZenKakuGothicNew-Medium": ("Zen Kaku", 500), "DelaGothicOne-Regular": ("Dela Gothic", 400),
            "ZenOldMincho-Black": ("Zen Old Mincho", 900), "YujiSyuku-Regular": ("Yuji Syuku", 400),
            "RoundedMplus1c-ExtraBold": ("M Rounded", 800), "Anton-Regular": ("Anton", 400),
-           "ArchivoBlack-Regular": ("Archivo Black", 400)}
+           "ArchivoBlack-Regular": ("Archivo Black", 400), "Ultra-Regular": ("Ultra", 400), "Tinos-Bold": ("Tinos", 700),
+           "ZenOldMincho-Bold": ("Zen Old Mincho", 700), "ZenOldMincho-SemiBold": ("Zen Old Mincho", 600), "ZenOldMincho-Medium": ("Zen Old Mincho", 500)}
 ALIGN = {"left": ("left", "auto"), "center": ("center", "auto"), "right": ("right", "auto"),
          "justifyLeft": ("justify", "left"), "justifyAll": ("justify", "justify")}
 
@@ -58,8 +59,10 @@ def main(jsx, original):
     W, H = sc["largeur"] / K, sc["hauteur"] / K
     svg, textes = [], []
     for i, it in enumerate(sc["items"]):
-        if it["type"] in ("forme", "image"):
+        if it["type"] in ("forme", "image", "degrade"):
             coul = it.get("couleur", [128, 128, 128])
+            if it["type"] == "degrade":
+                coul = it["stops"][len(it["stops"]) // 2]["c"]
             d = " ".join("M " + " L ".join(f"{p['a'][0] / K},{p['a'][1] / K}" for p in ch) + " Z" for ch in it["chemins"])
             svg.append(f'<path d="{d}" fill="rgb({",".join(map(str, coul))})"/>')
         elif it["type"] == "texte":

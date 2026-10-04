@@ -114,6 +114,72 @@
     return l;
   }
 
+  // ---------- Dégradés ----------
+  function descDegrade(stops) {
+    var g = new ActionDescriptor();
+    g.putString(cTID("Nm  "), "Atelier");
+    g.putEnumerated(cTID("GrdF"), cTID("GrdF"), cTID("CstS"));
+    g.putDouble(cTID("Intr"), 4096);
+    var cl = new ActionList();
+    for (var i = 0; i < stops.length; i++) {
+      var st = new ActionDescriptor();
+      st.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(stops[i].c));
+      st.putEnumerated(cTID("Type"), cTID("Clry"), cTID("UsrS"));
+      st.putInteger(cTID("Lctn"), Math.round(Math.max(0, Math.min(1, stops[i].pos)) * 4096));
+      st.putInteger(cTID("Mdpn"), 50);
+      cl.putObject(cTID("Clrt"), st);
+    }
+    g.putList(cTID("Clrs"), cl);
+    var tl = new ActionList();
+    for (var k = 0; k < 2; k++) {
+      var t = new ActionDescriptor();
+      t.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
+      t.putInteger(cTID("Lctn"), k * 4096);
+      t.putInteger(cTID("Mdpn"), 50);
+      tl.putObject(cTID("TrnS"), t);
+    }
+    g.putList(cTID("Trns"), tl);
+    return g;
+  }
+  function couleurMoyenne(stops) { return stops[Math.floor(stops.length / 2)].c; }
+
+  function formeDegradee(it) {
+    // forme vectorielle remplie d'un dégradé (calque de remplissage) ; repli : couleur médiane
+    var l = forme(it.chemins, couleurMoyenne(it.stops), it.nom);
+    try {
+      var d = new ActionDescriptor(), r = new ActionReference();
+      r.putEnumerated(sTID("contentLayer"), cTID("Ordn"), cTID("Trgt"));
+      d.putReference(cTID("null"), r);
+      var gd = new ActionDescriptor();
+      gd.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(it.stops));
+      gd.putUnitDouble(cTID("Angl"), cTID("#Ang"), it.angle);
+      gd.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
+      gd.putBoolean(cTID("Algn"), true);
+      d.putObject(cTID("T   "), sTID("gradientLayer"), gd);
+      executeAction(cTID("setd"), d, DialogModes.NO);
+    } catch (e) { erreurs.push(it.nom + " (dégradé remplacé par une couleur unie) : " + e.message); }
+    return l;
+  }
+
+  function incrustationDegrade(dg) {
+    var d = new ActionDescriptor(), r = new ActionReference();
+    r.putProperty(cTID("Prpr"), cTID("Lefx")); r.putEnumerated(cTID("Lyr "), cTID("Ordn"), cTID("Trgt"));
+    d.putReference(cTID("null"), r);
+    var fx = new ActionDescriptor(), g = new ActionDescriptor();
+    fx.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
+    g.putBoolean(cTID("enab"), true);
+    g.putEnumerated(cTID("Md  "), cTID("BlnM"), cTID("Nrml"));
+    g.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
+    g.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(dg.stops));
+    g.putUnitDouble(cTID("Angl"), cTID("#Ang"), dg.angle);
+    g.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
+    g.putBoolean(cTID("Algn"), true);
+    g.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
+    fx.putObject(cTID("GrFl"), cTID("GrFl"), g);
+    d.putObject(cTID("T   "), cTID("Lefx"), fx);
+    executeAction(cTID("setd"), d, DialogModes.NO);
+  }
+
   // ---------- Textes ----------
   function creerTexte(texte, runs, paras, boite, vertical) {
     var d = new ActionDescriptor(), r = new ActionReference();
@@ -210,6 +276,7 @@
     }
     placer(l, it.centre, it.angle);
     if (it.contour) contour(it.contour.taille, it.contour.couleur);
+    if (it.degradeTexte) { try { incrustationDegrade(it.degradeTexte); } catch (e) { erreurs.push(it.nom + " (dégradé du texte) : " + e.message); } }
     return l;
   }
 
@@ -234,6 +301,7 @@
       try {
         var cont = groupeDe(it), l;
         if (it.type === "forme") { l = forme(it.chemins, it.couleur, it.nom); ranger(l, cont); }
+        else if (it.type === "degrade") { l = formeDegradee(it); ranger(l, cont); }
         else if (it.type === "texte") { l = texte(it); ranger(l, cont); }
         else if (it.type === "arc") { arc(it, cont); }
         else if (it.type === "image") {

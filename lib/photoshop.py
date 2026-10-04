@@ -20,11 +20,13 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Yuji Syuku": [(0, "YujiSyuku-Regular")],
     "M Rounded": [(0, "RoundedMplus1c-ExtraBold")],
     "Anton": [(0, "Anton-Regular")],
+    "Ultra": [(0, "Ultra-Regular")],
+    "Tinos": [(0, "Tinos-Bold")],
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
-UNE_GRAISSE = {"Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku"}  # le navigateur synthétise le gras au-delà de 600
+UNE_GRAISSE = {"Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
@@ -36,10 +38,11 @@ def police_ps(st):
 
 
 CSS_ENCRE = """
-  html, body { background: transparent !important; }
+  html, body { background: transparent !important; overflow: visible !important; }
   body * { visibility: hidden !important; }
   [data-encre], [data-encre] * { visibility: visible !important; background: transparent !important;
-    -webkit-text-stroke-width: 0 !important; outline: none !important; box-shadow: none !important; }
+    -webkit-text-stroke-width: 0 !important; outline: none !important; box-shadow: none !important;
+    -webkit-text-fill-color: #000 !important; }
 """
 
 
@@ -47,6 +50,9 @@ def mesurer_textes(page, scene):
     """Complète chaque texte : centre de l'encre dans la page (px CSS), angle, largeur d'encre locale."""
     from PIL import Image
     tag = page.add_style_tag(content=CSS_ENCRE)
+    vp0 = dict(page.viewport_size)
+    # fenêtre élargie : une fois les rotations neutralisées, un texte peut sortir du format
+    page.set_viewport_size({"width": vp0["width"] * 2, "height": vp0["height"] * 2})
     for it in scene["items"]:
         if it["type"] != "texte":
             continue
@@ -105,6 +111,7 @@ def mesurer_textes(page, scene):
         it["biais"] = math.degrees(math.atan2(nx * vy - ny * vx, nx * vx + ny * vy))
         it["encre"] = [lx1 - lx0, ly1 - ly0]
     tag.evaluate("t => t.remove()")
+    page.set_viewport_size(vp0)
 
 
 def _doc(v):
@@ -154,6 +161,10 @@ def construire_scene_ps(scene, fiche):
             sortie["items"].append({**base, "type": "forme", "couleur": _couleur(it["couleur"]), "chemins": chemin(it["chemins"])})
         elif t in ("image", "zone"):
             sortie["items"].append({**base, "type": t, "cle": it["cle"], "label": it.get("label", ""), "chemins": chemin(it["chemins"])})
+        elif t == "degrade":
+            sortie["items"].append({**base, "type": "degrade", "chemins": chemin(it["chemins"]),
+                                    "angle": 90 - it["degrade"]["angle"],
+                                    "stops": [{"c": _couleur(st["c"]), "pos": st["pos"]} for st in it["degrade"]["stops"]]})
         elif t == "rayures":
             (ax, ay), (bx, by), (cx, cy), (dx, dy) = it["coins"]
             bandes = []
@@ -210,6 +221,10 @@ def construire_scene_ps(scene, fiche):
                     "vertical": bool(it.get("vertical")),
                     "boite": (({"l": _doc(it["boite"]["l"]) * 1.6 + 40, "h": _doc(it["boite"]["h"])} if it.get("vertical")
                                else {"l": _doc(it["boite"]["l"]) + 1, "h": _doc(it["boite"]["h"]) * 1.6 + 40}) if it["boite"] else None)}
+            if it.get("degradeTexte"):
+                d = it["degradeTexte"]
+                item["degradeTexte"] = {"angle": round(90 - d["angle"] - it["angle"], 2),
+                                        "stops": [{"c": _couleur(st["c"]), "pos": st["pos"]} for st in d["stops"]]}
             if contour:
                 item["contour"] = {"taille": _doc(contour["contour"]) / 2, "couleur": _couleur(contour["contourCouleur"])}
             sortie["items"].append(item)

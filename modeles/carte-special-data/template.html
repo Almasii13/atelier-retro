@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}
+{# Dos de carte 65 × 90 mm d'après une PP card « SUPER SAIYAN BATTLE / SPECIAL DATA » (1995).
+   Cotes en mm relevées sur la carte redressée (10 px/mm). #}
+{% macro degrade(stops, debut=-3, fin=93) %}{% for y, c in stops %}{{ c }} {{ '%.2f' % ((y - debut) / (fin - debut) * 100) }}%{{ ', ' if not loop.last }}{% endfor %}{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.encre }}; font-family: var(--f-gothic); }
+
+  /* Fond métallisé : dégradé vertical (reflet clair vers 20 mm, sarcelle foncé en bas), jusque dans le fond perdu */
+  .fond { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm;
+          background: linear-gradient(180deg, {{ degrade(C.degrade_fond) }}); }
+
+  /* Bande verticale gauche */
+  .bande { left: 2.3mm; top: -{{ FP }}mm; width: 13.9mm; height: {{ H + 2*FP }}mm;
+           background: linear-gradient(180deg, {{ degrade(C.degrade_bande) }}); }
+  .filet { top: -{{ FP }}mm; height: {{ H + 2*FP }}mm; background: {{ C.filet }}; }
+
+  /* SUPER SAIYAN BATTLE : lu de bas en haut, hauts de lettres vers la gauche */
+  .serie { line-height: 0; left: 5.13mm; top: 88.3mm; width: 85.3mm; height: 10.2mm; transform: rotate(-90deg); transform-origin: 0 0; }
+  .serie span { font: 12.4mm/10.2mm "Ultra", serif; letter-spacing: 0;
+                background: linear-gradient(90deg, {{ degrade(C.degrade_lettres, 0, 100) }}); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tm { left: 5.25mm; top: 31.75mm; transform: rotate(-90deg); transform-origin: 0 0; font: 700 1.05mm/1 var(--f-gothic); color: #3c4d4f; }
+
+  /* Marque du fabricant (en haut à droite) */
+  .marque { line-height: 0; left: 54.2mm; top: 1.95mm; width: 8mm; height: 2.2mm; text-align: center; }
+  .marque span { font: 2.35mm/2.2mm var(--f-latin); color: #1c1c1c; letter-spacing: .05mm; }
+
+  /* Panneau SPECIAL DATA */
+  .entete { line-height: 0; left: 23.15mm; top: 16.18mm; width: 35.5mm; height: 4.6mm; }
+  .entete span { font: 700 4.3mm/4.6mm "Tinos", serif; color: {{ C.entete_texte }}; letter-spacing: .1mm; white-space: pre; }
+
+  /* Lignes de texte : conteneur positionné + ligne statique (les furigana s'y posent) */
+  .bloc { --ruby-ecart: .95mm; }
+  .bloc .rt { font: 500 1.02mm/1 var(--f-gothic); color: {{ C.encre }}; letter-spacing: .02mm; }
+  .titre { left: 24.85mm; top: 25.6mm; }
+  .titre .ligne { font: 700 2.98mm/3.6mm var(--f-gothic); letter-spacing: .1mm; white-space: nowrap; }
+  .titre .it { display: inline-block; transform: skewX(-14deg); }
+  .question { left: 22.2mm; top: 31.45mm; width: 42mm; }
+  .question .ligne { font: 700 2.75mm/4.95mm var(--f-gothic); letter-spacing: .02mm; white-space: nowrap; }
+  .question .q { position: absolute; left: 0; top: 0; font: 700 2.8mm/4.95mm var(--f-gothic); letter-spacing: .07mm; }
+  .question .suite { padding-left: 8.25mm; }
+  .reponse { left: 60.55mm; top: 49.65mm; transform: rotate(180deg); transform-origin: 0 0; }
+  .reponse .ligne { font: 700 2.5mm/2.9mm var(--f-gothic); letter-spacing: .1mm; white-space: nowrap; }
+
+  /* Mentions du bas, détourées de blanc */
+  .bas { left: 17.75mm; color: #2a2a2a; white-space: nowrap; -webkit-text-stroke: .32mm #fff; paint-order: stroke fill; }
+  .bas1 { top: 81.55mm; font: 500 1.78mm/1 var(--f-gothic); letter-spacing: .03mm; }
+  .bas2 { top: 84.85mm; font: 500 1.86mm/1 var(--f-gothic); letter-spacing: -.02mm; }
+  .bas3 { top: 87.55mm; font: 500 1.28mm/1 var(--f-gothic); -webkit-text-stroke-width: .2mm; }
+
+  .zone-logo { left: 17mm; top: 1.8mm; width: 34.5mm; height: 11.9mm; }
+  .zone-perso { left: 4mm; top: 28mm; width: 59.5mm; height: 62mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="fond"></div>
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% for p in taches %}<polygon fill="{{ C.taches }}" points="{% for x, y in p %}{{ x }},{{ y }} {% endfor %}"/>{% endfor %}
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs bande" data-groupe="Bande SUPER SAIYAN BATTLE"></div>
+    <div class="abs filet" data-groupe="Bande SUPER SAIYAN BATTLE" style="left:2.3mm;width:.26mm"></div>
+    <div class="abs filet" data-groupe="Bande SUPER SAIYAN BATTLE" style="left:4.15mm;width:.3mm"></div>
+    <div class="abs filet" data-groupe="Bande SUPER SAIYAN BATTLE" style="left:15.95mm;width:.26mm"></div>
+    <div class="abs serie" data-groupe="Bande SUPER SAIYAN BATTLE"><span data-plein>{{ T.serie }}</span></div>
+    <div class="abs tm" data-groupe="Bande SUPER SAIYAN BATTLE">TM</div>
+
+    <div class="abs marque" data-groupe="Marque"><span data-plein>{{ T.marque }}</span></div>
+
+    <svg class="abs" data-groupe="Panneau SPECIAL DATA" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <polygon fill="{{ C.rouge }}" points="19.1,15.1 63.5,15.1 63.5,61.3 41.3,66.4 19.1,61.3"/>
+      <polygon fill="{{ C.blanc }}" points="20.0,21.1 62.6,21.1 62.6,60.6 41.3,65.48 20.0,60.6"/>
+    </svg>
+    <div class="abs entete" data-groupe="Panneau SPECIAL DATA"><span data-plein>{{ T.entete }}</span></div>
+
+    <div class="abs bloc titre" data-groupe="Quiz">
+      <div class="ligne">{% for seg in T.titre %}{% if seg is string %}{{ seg }}{% elif seg[1] == 'it' %}<span class="it">{{ seg[0] }}</span>{% else %}<span data-ruby="{{ seg[1] }}">{{ seg[0] }}</span>{% endif %}{% endfor %}</div>
+    </div>
+    <div class="abs bloc question" data-groupe="Quiz">
+      <div class="q">{{ T.numero }}</div>
+      {% for ligne in T.question %}
+      <div class="ligne suite">{% for seg in ligne %}{% if seg is string %}{{ seg }}{% else %}<span data-ruby="{{ seg[1] }}">{{ seg[0] }}</span>{% endif %}{% endfor %}</div>
+      {% endfor %}
+    </div>
+    <div class="abs bloc reponse" data-groupe="Quiz">
+      <div class="ligne">{% for seg in T.reponse %}{% if seg is string %}{{ seg }}{% else %}<span data-ruby="{{ seg[1] }}">{{ seg[0] }}</span>{% endif %}{% endfor %}</div>
+    </div>
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGE DÉTOURÉ">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="mentions" style="inset:0">
+    <div class="abs bas bas1" data-groupe="Mentions du bas">{{ T.bas[0] }}</div>
+    <div class="abs bas bas2" data-groupe="Mentions du bas">{{ T.bas[1] }}</div>
+    <div class="abs bas bas3" data-groupe="Mentions du bas">{{ T.bas[2] }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm; border-radius: {{ rayon - SECU if rayon > SECU else 0 }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
