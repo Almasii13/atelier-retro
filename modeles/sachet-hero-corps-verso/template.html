@@ -18,7 +18,7 @@
 
   /* Repères tournés : l'accroche rouge (−15,8°) et l'encadré vertical (90°) */
   .rot-accroche { left: 0; top: 0; width: 0; height: 0; transform: rotate({{ G.angle_accroche }}deg); transform-origin: 0 0; }
-  .accroche { font: 900 3.4mm/1 var(--f-gothic); color: {{ C.rouge }}; transform: skewX(-10deg);
+  .accroche { font: 900 3.4mm/1 var(--f-gothic); color: {{ C.rouge }}; transform: skewX(-10deg); transform-origin: 0 100%;
               -webkit-text-stroke: .8mm #fff; paint-order: stroke fill; letter-spacing: -.1mm; }
   .rot-boite { left: {{ bx[2] }}mm; top: {{ bx[1] }}mm; width: 0; height: 0; transform: rotate(90deg); transform-origin: 0 0; }
   .vb { font: 700 1.6mm/1 var(--f-gothic); color: #1a1a1a; }
@@ -49,7 +49,7 @@
 
   <div class="abs" data-calque="texte" style="inset:0">
     <div class="abs rot-accroche" data-groupe="Accroche rouge">
-      {% for l in T.accroche %}<div class="t accroche a{{ loop.index }}" data-groupe="Accroche rouge">{{ l }}</div>{% endfor %}
+      {% set A = G.accroche %}{% for l in T.accroche %}<div class="t accroche a{{ loop.index }}" data-groupe="Accroche rouge" style="left:{{ A.departs[loop.index0] }}mm; top:{{ A.haut + loop.index0 * A.ligne }}mm; font-size:{{ A.corps }}mm">{{ l }}</div>{% endfor %}
     </div>
 
     <svg class="abs" data-groupe="Encadrés" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
