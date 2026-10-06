@@ -154,3 +154,54 @@ def barres(bits):
         else:
             i += 1
     return out
+
+
+def eclaboussures(zone, densite=1.0, graine=7, taille=1.0):
+    """Taches de peinture (grosses taches irrégulières, gouttes satellites, petits points, traînées)
+    réparties dans le rectangle zone = (x0, y0, x1, y1) en mm. Renvoie une liste de polygones découpés à la zone."""
+    rnd = random.Random(graine)
+    x0, y0, x1, y1 = zone
+    aire = (x1 - x0) * (y1 - y0)
+    polys = []
+
+    def tache(cx, cy, r, n=30, rugosite=0.32, pointes=0):
+        harm = [(rnd.uniform(0, 2 * math.pi), rnd.uniform(0.3, 1) / k) for k in range(2, 7)]
+        pics = [rnd.uniform(0, 2 * math.pi) for _ in range(pointes)]
+        pts = []
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            f = 1 + rugosite * sum(amp * math.sin(k * a + ph) for k, (ph, amp) in enumerate(harm, start=2))
+            for p in pics:
+                d = math.atan2(math.sin(a - p), math.cos(a - p))
+                f += 0.5 * math.exp(-(d / 0.2) ** 2)
+            pts.append((cx + math.cos(a) * r * f, cy + math.sin(a) * r * f * rnd.uniform(.92, 1.08)))
+        return pts
+
+    def ajoute(pts):
+        c = _decoupe(pts, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
+        if len(c) >= 3:
+            polys.append([[round(x, 2), round(y, 2)] for x, y in c])
+
+    n_grosses = max(1, int(aire / 140 * densite))
+    for _ in range(n_grosses):
+        cx, cy = rnd.uniform(x0 - 2, x1 + 2), rnd.uniform(y0 - 2, y1 + 2)
+        r = rnd.uniform(1.6, 4.2) * taille
+        ajoute(tache(cx, cy, r, n=40, rugosite=.38, pointes=rnd.randint(0, 3)))
+        # gouttes satellites et traînée
+        ang = rnd.uniform(0, 2 * math.pi)
+        for k in range(rnd.randint(3, 9)):
+            a = ang + rnd.gauss(0, .7)
+            d = r * rnd.uniform(1.2, 2.8)
+            ajoute(tache(cx + math.cos(a) * d, cy + math.sin(a) * d, rnd.uniform(.18, .65) * taille, n=16, rugosite=.2))
+    for _ in range(int(aire / 22 * densite)):  # petits points isolés
+        ajoute(tache(rnd.uniform(x0, x1), rnd.uniform(y0, y1), rnd.uniform(.12, .45) * taille, n=12, rugosite=.15))
+    for _ in range(int(aire / 260 * densite)):  # traînées allongées
+        cx, cy = rnd.uniform(x0, x1), rnd.uniform(y0, y1)
+        a = rnd.uniform(0, math.pi); L = rnd.uniform(2, 6) * taille; e = rnd.uniform(.25, .6) * taille
+        pts = []
+        for i in range(24):
+            t = 2 * math.pi * i / 24
+            u, v = math.cos(t) * L / 2, math.sin(t) * e / 2 * (1 + .5 * math.cos(t))
+            pts.append((cx + u * math.cos(a) - v * math.sin(a), cy + u * math.sin(a) + v * math.cos(a)))
+        ajoute(pts)
+    return polys
