@@ -127,3 +127,30 @@ def prisme(region, periode, phase=(0, 0), couleurs=None, filet=0.0):
 
 def chemin_svg(polys):
     return " ".join("M " + " L ".join(f"{x},{y}" for x, y in p) + " Z" for p in polys)
+
+
+def ean13(code):
+    """Code EAN-13 → (13 chiffres avec clé, chaîne de 95 modules '1' barre / '0' espace)."""
+    L = {'0': '0001101', '1': '0011001', '2': '0010011', '3': '0111101', '4': '0100011', '5': '0110001', '6': '0101111', '7': '0111011', '8': '0110111', '9': '0001011'}
+    G = {'0': '0100111', '1': '0110011', '2': '0011011', '3': '0100001', '4': '0011101', '5': '0111001', '6': '0000101', '7': '0010001', '8': '0001001', '9': '0010111'}
+    R = {k: ''.join('1' if c == '0' else '0' for c in v) for k, v in L.items()}
+    PAR = {'0': 'LLLLLL', '1': 'LLGLGG', '2': 'LLGGLG', '3': 'LLGGGL', '4': 'LGLLGG', '5': 'LGGLLG', '6': 'LGGGLL', '7': 'LGLGLG', '8': 'LGLGGL', '9': 'LGGLGL'}
+    d = code[:12]
+    s = sum(int(c) * (3 if i % 2 else 1) for i, c in enumerate(d))
+    full = d + str((10 - s % 10) % 10)
+    bits = '101' + ''.join((L if p == 'L' else G)[c] for p, c in zip(PAR[full[0]], full[1:7])) + '01010' + ''.join(R[c] for c in full[7:]) + '101'
+    return full, bits
+
+
+def barres(bits):
+    """Groupes de modules noirs consécutifs → [(début, largeur)] en modules."""
+    out, i = [], 0
+    while i < len(bits):
+        if bits[i] == '1':
+            j = i
+            while j < len(bits) and bits[j] == '1':
+                j += 1
+            out.append((i, j - i)); i = j
+        else:
+            i += 1
+    return out

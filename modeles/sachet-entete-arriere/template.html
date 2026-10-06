@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set R = repere_photo %}
+{# Cotes relevées en pixels sur la photo du sachet, converties en mm : X(px) = (px − x0) / k #}
+{% macro X(v) %}{{ '%.3f' % ((v - R.x0) / R.k) }}{% endmacro %}
+{% macro Y(v) %}{{ '%.3f' % ((v - R.y0) / R.k) }}{% endmacro %}
+{% macro D(v) %}{{ '%.3f' % (v / R.k) }}{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .noir { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; background: {{ C.noir }}; }
+{% include 'sachet-hero/_commun.css' %}
+  .boite { left: {{ X(431) }}mm; top: {{ Y(33) }}mm; width: {{ D(270) }}mm; height: {{ D(145) }}mm; background: {{ C.creme }}; }
+  .contenu-titre { left: {{ X(463) }}mm; top: {{ Y(46) }}mm; font: 500 {{ C.boite_corps }}mm/1 var(--f-gothic); color: #1a1a1a; white-space: nowrap; letter-spacing: .05mm; }
+  .ligne-boite { left: {{ X(441) }}mm; width: {{ D(249) }}mm; display: flex; justify-content: space-between; align-items: baseline;
+                 font: 500 {{ C.boite_corps * 1.12 }}mm/1 var(--f-gothic); color: #1a1a1a; white-space: nowrap; letter-spacing: -.05mm; }
+  .trou { left: {{ X(322) }}mm; top: {{ Y(57) }}mm; width: {{ D(84) }}mm; height: {{ D(80) }}mm; border-radius: 50%; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0"><div class="noir"></div></div>
+  <div class="zone-reservee trou" data-calque="zone:trou" data-label="TROU"></div>
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% set lx = X(37)|float %}{% set ly = Y(44)|float %}{% set le = 1.055 %}
+    {% include 'sachet-hero/_logo.html' %}
+    <div class="abs boite" data-groupe="Contenu du sachet"></div>
+    <div class="abs contenu-titre" data-groupe="Contenu du sachet">{{ T.contenu_titre }}</div>
+    {% for g, d, y in T.contenu %}
+    <div class="abs ligne-boite" data-groupe="Contenu du sachet" style="top:{{ Y(y) }}mm"><span>{{ g }}</span><span>{{ d }}</span></div>
+    {% endfor %}
+  </div>
+  {% if not propre %}<div class="repere coupe" style="inset:0"></div><div class="repere secu" style="inset:{{ SECU }}mm"></div>{% endif %}
+</div>
+</body>
+</html>

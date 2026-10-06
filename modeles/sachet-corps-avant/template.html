@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set R = repere_photo %}
+{# Cotes relevées en pixels sur la photo du sachet, converties en mm : X(px) = (px − x0) / k #}
+{% macro X(v) %}{{ '%.3f' % ((v - R.x0) / R.k) }}{% endmacro %}
+{% macro Y(v) %}{{ '%.3f' % ((v - R.y0) / R.k) }}{% endmacro %}
+{% macro D(v) %}{{ '%.3f' % (v / R.k) }}{% endmacro %}
+
+{% set Z = taches %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .noir { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; background: {{ C.noir }}; }
+  .bleu { left: {{ X(40) }}mm; top: {{ Y(300) }}mm; width: {{ D(662) }}mm; height: {{ D(760) }}mm; background: {{ C.bleu }}; border-radius: {{ D(16) }}mm; }
+
+  .total { left: {{ X(253) }}mm; top: {{ Y(287) }}mm; --ruby-ecart: .55mm; }
+  .total .ligne { font: 900 {{ C.total_corps }}mm/1 var(--f-gothic); color: #fff; white-space: nowrap; letter-spacing: -.08mm; }
+  .total .rt { font: 700 .95mm/1 var(--f-gothic); color: #fff; }
+  .pilule { left: {{ X(233) }}mm; top: {{ Y(340) }}mm; width: {{ D(253) }}mm; height: {{ D(27) }}mm; background: {{ C.rouge }};
+            border: .2mm solid #fff; border-radius: {{ D(14) }}mm; display: flex; align-items: center; justify-content: center; }
+  .pilule span { font: 900 {{ C.pilule_corps }}mm/1 var(--f-gothic); color: #fff; letter-spacing: -.05mm; white-space: nowrap; }
+
+  .info { --ruby-ecart: .45mm; }
+  .info .ligne { font: 900 {{ C.info_corps }}mm/1 var(--f-gothic); color: #111; white-space: nowrap; letter-spacing: -.05mm;
+                 -webkit-text-stroke: .55mm #fff; paint-order: stroke fill; }
+  .info .rt { font: 700 .9mm/1 var(--f-gothic); color: #111; -webkit-text-stroke: .32mm #fff; paint-order: stroke fill; letter-spacing: .02mm; }
+  .info .it { display: inline-block; transform: skewX(-14deg); }
+  .info1 { left: {{ X(109) }}mm; top: {{ Y(389) }}mm; }
+  .info2 { left: {{ X(198) }}mm; top: {{ Y(441) }}mm; }
+  .info3 { left: {{ X(169) }}mm; top: {{ Y(476) }}mm; }
+  .info3 .ligne { font-size: {{ C.info3_corps }}mm; font-weight: 700; -webkit-text-stroke-width: .4mm; letter-spacing: -.02mm; }
+
+  .prix { left: {{ X(480) }}mm; top: {{ Y(970) }}mm; width: {{ D(175) }}mm; height: {{ D(108) }}mm; }
+  .prix .chiffre { position: absolute; left: {{ D(13) }}mm; top: {{ D(13) }}mm; font: 900 {{ C.prix_corps }}mm/1 "M Rounded", var(--f-gothic); color: {{ C.jaune }}; letter-spacing: -.1mm; white-space: nowrap; }
+  .prix .yen { font-size: .42em; margin-left: .25mm; }
+  .prix .nb { position: absolute; left: 0; right: 0; top: {{ D(72) }}mm; text-align: center; font: 900 {{ C.nb_corps }}mm/1 var(--f-gothic); color: #fff; white-space: nowrap; letter-spacing: -.05mm; }
+  .copy { left: {{ X(168) }}mm; top: {{ Y(1121) }}mm; width: {{ D(381) }}mm; line-height: 0; }
+  .copy span { font: 700 {{ C.copy_corps }}mm/1 var(--f-gothic); color: #fff; }
+
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .zone-logo { left: {{ X(60) }}mm; top: {{ Y(962) }}mm; width: {{ D(385) }}mm; height: {{ D(140) }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="noir"></div>
+    <div class="abs bleu"></div>
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <path data-nom="Éclaboussures" fill="{{ C.taches }}" d="{{ chemin_svg(Z) }}"/>
+      <path data-nom="Demi-lune jaune" fill="{{ C.jaune_lune }}" d="M {{ X(250) }} {{ Y(316) }} A {{ D(111) }} {{ D(22) }} 0 0 0 {{ X(472) }} {{ Y(316) }} Z"/>
+      <rect data-nom="Bandeau noir du haut" fill="{{ C.noir }}" x="{{ X(238) }}" y="{{ Y(270) }}" width="{{ D(246) }}" height="{{ D(46) }}"/>
+    </svg>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGES DÉTOURÉS">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs bloc total" data-groupe="Nombre de cartes"><div class="ligne">{% for seg in T.total %}{% if seg is string %}{{ seg }}{% else %}<span data-ruby="{{ seg[1] }}">{{ seg[0] }}</span>{% endif %}{% endfor %}</div></div>
+    <div class="abs pilule" data-groupe="Spéciale data"><span>{{ T.pilule }}</span></div>
+    {% for ligne in T.info %}
+    <div class="abs bloc info info{{ loop.index }}" data-groupe="Contenu spécial"><div class="ligne">{% for seg in ligne %}{% if seg is string %}{{ seg }}{% elif seg[1] == 'it' %}<span class="it">{{ seg[0] }}</span>{% else %}<span data-ruby="{{ seg[1] }}">{{ seg[0] }}</span>{% endif %}{% endfor %}</div></div>
+    {% endfor %}
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="prix" style="inset:0">
+    <div class="abs prix" data-groupe="Prix">
+      <svg class="abs" style="left:0;top:0;width:100%;height:100%;overflow:visible" viewBox="0 0 {{ D(175) }} {{ D(108) }}">
+        <ellipse data-nom="Pastille prix" cx="{{ D(87.5) }}" cy="{{ D(54) }}" rx="{{ D(87.5) }}" ry="{{ D(54) }}" fill="{{ C.rouge }}"/>
+      </svg>
+      <div class="chiffre">{{ T.prix }}<span class="yen">{{ T.yen }}</span></div>
+      <div class="nb">{{ T.nombre }}</div>
+    </div>
+    <div class="abs copy" data-groupe="Mention"><span data-plein>{{ T.copyright }}</span></div>
+  </div>
+  {% if not propre %}<div class="repere coupe" style="inset:0"></div><div class="repere secu" style="inset:{{ SECU }}mm"></div>{% endif %}
+</div>
+</body>
+</html>

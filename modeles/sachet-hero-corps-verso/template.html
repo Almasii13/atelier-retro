@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Corps de sachet (verso) 70,7 × 98,3 mm d'après le sachet « ヒーローコレクション 第3弾 » (1995). #}
+{% set P = G.panneau %}{% set bx = G.boite %}{% set cb = G.codebarre %}
+{% set code, modules = ean13(T.ean) %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+
+  /* Repères tournés : l'accroche rouge (−15,8°) et l'encadré vertical (90°) */
+  .rot-accroche { left: 0; top: 0; width: 0; height: 0; transform: rotate({{ G.angle_accroche }}deg); transform-origin: 0 0; }
+  .accroche { font: 900 3.4mm/1 var(--f-gothic); color: {{ C.rouge }}; transform: skewX(-10deg);
+              -webkit-text-stroke: .8mm #fff; paint-order: stroke fill; letter-spacing: -.1mm; }
+  .rot-boite { left: {{ bx[2] }}mm; top: {{ bx[1] }}mm; width: 0; height: 0; transform: rotate(90deg); transform-origin: 0 0; }
+  .vb { font: 700 1.6mm/1 var(--f-gothic); color: #1a1a1a; }
+  .st { font: 7mm/1 "Archivo Black", sans-serif; color: #111; }
+  .rot-code { left: {{ cb[2] }}mm; top: {{ cb[1] }}mm; width: 0; height: 0; transform: rotate(90deg); transform-origin: 0 0; }
+  .chiffres { font: 500 2.1mm/1 var(--f-gothic); color: #111; }
+
+  .adresse { font: 700 2.1mm/1 var(--f-gothic); color: #fff; }
+  .num-sceau { font: 900 1.5mm/1 var(--f-gothic); color: #111; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .zone-sceau { left: {{ G.sceau[0] + 0.4 }}mm; top: {{ G.sceau[1] + 0.4 }}mm; width: {{ G.sceau[2] - G.sceau[0] - 0.8 }}mm; height: {{ G.sceau[3] - G.sceau[1] - 0.8 }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond noir" x="{{ -FP-2 }}" y="{{ -FP-2 }}" width="{{ L + 2*FP + 4 }}" height="{{ H + 2*FP + 4 }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Panneau bleu" x="{{ P[0] }}" y="{{ P[1] }}" width="{{ P[2] - P[0] }}" height="{{ P[3] - P[1] }}" fill="{{ C.bleu }}"/>
+      <path data-nom="Éclaboussures" fill="{{ C.taches }}" d="{% for p in taches %}M {% for x, y in p %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+    </svg>
+  </div>
+
+  {% set u = img('personnages') %}
+  <div class="abs" data-calque="image:personnages" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u else 'vide' }}" data-label="PERSONNAGES DÉTOURÉS">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs rot-accroche" data-groupe="Accroche rouge">
+      {% for l in T.accroche %}<div class="t accroche a{{ loop.index }}" data-groupe="Accroche rouge">{{ l }}</div>{% endfor %}
+    </div>
+
+    <svg class="abs" data-groupe="Encadrés" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Encadré vertical" x="{{ bx[0] }}" y="{{ bx[1] }}" width="{{ bx[2] - bx[0] }}" height="{{ bx[3] - bx[1] }}" fill="{{ C.creme }}"/>
+      <rect data-nom="Encadré code-barres" x="{{ cb[0] }}" y="{{ cb[1] }}" width="{{ cb[2] - cb[0] }}" height="{{ cb[3] - cb[1] }}" fill="{{ C.creme }}"/>
+      {% set m = (G.barres[3] - G.barres[1]) / 95 %}
+      <path data-nom="Code-barres EAN-13" fill="#111" d="{% for i, n in barres(modules) %}M {{ G.barres[0] }},{{ '%.3f' % (G.barres[1] + i*m) }} L {{ G.barres[2] }},{{ '%.3f' % (G.barres[1] + i*m) }} L {{ G.barres[2] }},{{ '%.3f' % (G.barres[1] + (i+n)*m) }} L {{ G.barres[0] }},{{ '%.3f' % (G.barres[1] + (i+n)*m) }} Z {% endfor %}"/>
+      {% set s = G.sceau %}<rect data-nom="Sceau" x="{{ s[0] }}" y="{{ s[1] }}" width="{{ s[2] - s[0] }}" height="{{ s[3] - s[1] }}" fill="{{ C.sceau }}" stroke="#555" stroke-width=".15"/>
+    </svg>
+
+    <div class="abs rot-boite" data-groupe="Encadré vertical">
+      {% for l in T.boite %}<div class="t vb b{{ loop.index }}" data-groupe="Encadré vertical">{{ l }}</div>{% endfor %}
+      <div class="t st" data-groupe="Encadré vertical">ST</div>
+      <div class="t vb b3num" data-groupe="Encadré vertical">3</div>
+    </div>
+    <div class="abs rot-code" data-groupe="Code-barres">
+      <div class="t chiffres" data-groupe="Code-barres">{{ code }}</div>
+    </div>
+
+    {% for l in T.adresse %}<div class="t adresse d{{ loop.index }}" data-groupe="Adresse">{{ l }}</div>{% endfor %}
+    <div class="t num-sceau" data-groupe="Sceau">2</div>
+  </div>
+
+  {% set u3 = img('sceau') %}
+  <div class="abs" data-calque="image:sceau" style="inset:0">
+    <div class="slot detoure zone-sceau {{ '' if u3 else 'vide' }}" data-label="SCEAU">{% if u3 %}<img src="{{ u3 }}">{% endif %}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

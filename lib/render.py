@@ -40,7 +40,7 @@ def format_fini(fiche):
 
 
 def construire_html(fiche, dossier, propre):
-    env = Environment(loader=FileSystemLoader(RACINE / "modeles" / fiche["modele"]), autoescape=False)
+    env = Environment(loader=FileSystemLoader([RACINE / "modeles" / fiche["modele"], RACINE / "modeles"]), autoescape=False)
     images = fiche.get("images", {})
 
     def img(cle):
@@ -53,8 +53,9 @@ def construire_html(fiche, dossier, propre):
     env.globals.update(
         sin=math.sin, cos=math.cos, tan=math.tan, radians=math.radians,
         etoile=formes.etoile, zone_etoile=formes.zone_texte_etoile, zone_cercle=formes.zone_texte_cercle,
-        polygone=formes.polygone, prisme=formes.prisme, chemin_svg=formes.chemin_svg, clip=formes.clip_polygone, arc=formes.texte_arc, img=img)
+        polygone=formes.polygone, prisme=formes.prisme, ean13=formes.ean13, barres=formes.barres, chemin_svg=formes.chemin_svg, clip=formes.clip_polygone, arc=formes.texte_arc, img=img)
     largeur, hauteur = format_fini(fiche)
+    env.globals["calage_script"] = "<script>window.ATELIER_CALAGE = " + json.dumps(fiche.get("calage", {}), ensure_ascii=False) + ";</script>"
     return env.get_template("template.html").render(
         **fiche, lib=(RACINE / "lib").as_uri(), propre=propre,
         L=largeur, H=hauteur, FP=fiche.get("fond_perdu", 3), SECU=fiche.get("securite", 2.5))

@@ -1,0 +1,12 @@
+  .page { font-family: var(--f-gothic); }
+  .logo-serie { position: absolute; width: 21.5mm; height: 10.9mm; }
+  .logo-serie > .abs { line-height: 0; }
+  .l-dai { left: 7.9mm; top: .72mm; width: 6mm; text-align: center; font: 900 1.9mm/1 var(--f-gothic); color: #141414; letter-spacing: .05mm; line-height: 1 !important; }
+  .l-3 { font: 2.45mm/1 "Archivo Black", sans-serif; color: {{ C.logo_rouge_fonce }}; margin: 0 .1mm; -webkit-text-stroke: .12mm #141414; }
+  .l-titre, .l-titre-ombre { left: -.33mm; top: 3.37mm; width: 21.95mm; }
+  .l-titre span, .l-titre-ombre span { font: 5.0mm/5.0mm "Dela Gothic", sans-serif; letter-spacing: -.25mm; }
+  .l-titre span { color: {{ C.logo_gris }}; -webkit-text-stroke: .22mm #1c1c1c; paint-order: stroke fill; }
+  .l-titre-ombre { transform: translate(.28mm, .28mm); }
+  .l-titre-ombre span { color: #2a2a2a; -webkit-text-stroke: .22mm #2a2a2a; }
+  .l-hero { left: 4.75mm; top: 7.5mm; width: 11.2mm; }
+  .l-hero span { font: 1.8mm/1.8mm "Archivo Black", sans-serif; color: #141414; letter-spacing: .02mm; }

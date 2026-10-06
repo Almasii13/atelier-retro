@@ -1,0 +1,41 @@
+{
+ "format": {
+  "largeur": 70.7,
+  "hauteur": 20.5
+ },
+ "fond_perdu": 3,
+ "securite": 1.5,
+ "couleurs": {
+  "noir": "#0b0a0c",
+  "logo_rouge": "#e1392b",
+  "logo_rouge_fonce": "#c4241c",
+  "logo_jaune": "#f4cf33",
+  "logo_gris": "#b4b0a7",
+  "jaune": "#f3ec4a",
+  "creme": "#f1edc0",
+  "slogan_corps": 3.2,
+  "present_corps": 2.35,
+  "boite_corps": 2.1
+ },
+ "images": {},
+ "libelles_calques": {
+  "fond": "Fond noir",
+  "zone:trou": "Repère trou de suspension",
+  "texte": "Logo & textes"
+ },
+ "modele": "sachet-entete-avant",
+ "titre_fichier": "Sachet HERO COLLECTION — en-tête avant",
+ "repere_photo": {
+  "x0": 25,
+  "y0": 51.9,
+  "k": 9.62
+ },
+ "textes": {
+  "slogan": [
+   "ワンランク",
+   "アップのカード",
+   "コレクション!!"
+  ],
+  "present": "プレゼントカードが出たら特製アルバムがもらえるよ！"
+ }
+}

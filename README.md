@@ -24,6 +24,7 @@ Exports :
 - `<nom>_photoshop.jsx` : **script Photoshop** qui reconstruit le document en vrais calques — textes modifiables, formes vectorielles, image en masque d'écrêtage, zones réservées, repères. Photoshop > Fichier > Scripts > Parcourir… Le PSD est enregistré à côté du script. Installer d'abord les polices de `lib/fonts`.
 - Furigana : `data-ruby` sur la base → petit texte posé au-dessus (calque séparé dans Photoshop).
 - Dégradés : fonds en `linear-gradient` → calques de remplissage dégradé ; texte découpé dans un dégradé → incrustation de dégradé.
+- `lib/calage.py` : **calage automatique** — chaque texte listé dans `cibles` (cotes d'encre relevées sur la référence, éventuellement dans un repère tourné) est ajusté en corps, étirement et position jusqu'à < 0,25 mm ; le résultat est écrit dans `calage`.
 - `outils/mesurer_encre.py` : compare l'encre de chaque texte à des cotes cibles (mm) relevées sur la référence.
 - `<nom>_photoshop_verification.png` : contrôle du script sans Photoshop (original | reconstruction depuis les données du script | différence), via `outils/verifier_jsx.py`.
 
@@ -33,6 +34,9 @@ Exports :
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
+| `sachet-hero-tete` | Entête de sachet 70,7×20,5 (variantes recto / verso) : logo de série ovale, accroche jaune ou encadré « セット内容 », repère du trou | Sachet « ヒーローコレクション 第3弾 » (1995) | En test (V1) |
+| `sachet-hero-corps-recto` | Corps de sachet 70,7×98,3 : fond bleu éclaboussé, contenu avec furigana, pilule et ovale prix | idem | En test (V1) |
+| `sachet-hero-corps-verso` | Corps de sachet 70,7×98,3 : panneau illustré, accroche rouge inclinée, encadré vertical, code-barres EAN-13 vectoriel, adresse, sceau | idem | En test (V1) |
 | `carte-hero-wgl` | Recto de carte 65×90 : bandes noires, fenêtre prisme pyramide vectorielle, titre bleu en arche (échelle verticale par lettre), CARD / numéro / NUMBER | Carte prisme « HERO COLLECTION » WGL-1 (Goku SSJ3) | En test (V1) |
 | `carte-hero-diagonale` | Recto de carte 65×90 : fond bleu / prisme séparés par une diagonale, grand titre au trait découpé par la diagonale (masques vectoriels), filet parallèle, bandeau rouge | Carte prisme « HERO COLLECTION » WGL-1 (Vegeta & Trunks) | En test (V1) |
 | `carte-special-data` | Dos de carte 65×90 (coins arrondis 3,2 mm) : bande verticale, panneau SPECIAL DATA, quiz avec furigana, éclaboussures vectorisées | PP card « SUPER SAIYAN BATTLE / SPECIAL DATA » (1995) | En test (V1) |

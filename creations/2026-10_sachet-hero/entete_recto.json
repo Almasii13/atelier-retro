@@ -1,0 +1,138 @@
+{
+ "modele": "sachet-hero-tete",
+ "format": {
+  "largeur": 70.7,
+  "hauteur": 20.5
+ },
+ "fond_perdu": 3,
+ "securite": 2,
+ "couleurs": {
+  "noir": "#0b0a0c",
+  "jaune_ovale": "#f2d22e",
+  "rouge_ovale": "#e0292b",
+  "gris_haut": "#e2e2e2",
+  "gris_bas": "#8a8a8a",
+  "gris_contour": "#353535",
+  "encre_logo": "#1a1a1a",
+  "jaune": "#f5ee62",
+  "jaune_contour": "#2b2a10",
+  "creme": "#f0e9b6"
+ },
+ "libelles_calques": {
+  "fond": "Fond noir",
+  "logo_serie": "Logo de série",
+  "texte": "Textes",
+  "zone:trou": "Repère trou"
+ },
+ "titre_fichier": "Sachet HERO COLLECTION 3 — entête recto",
+ "variante": "recto",
+ "ovale": {
+  "cx": 13.35,
+  "cy": 8.1,
+  "rx": 10.7,
+  "ry": 5.35,
+  "bord": 0.55
+ },
+ "textes": {
+  "serie": "ヒ・ロ・コレクション",
+  "accroche": [
+   "ワンランク",
+   "アップのカード",
+   "コレクション!!"
+  ],
+  "cadeau": "プレゼントカードが出たら特製アルバムがもらえるよ！",
+  "trou": [
+   35.2,
+   8.8,
+   7.2
+  ]
+ },
+ "cibles": {
+  ".serie-num": [
+   10.1,
+   3.5,
+   15.3,
+   5.6
+  ],
+  ".serie-titre": [
+   3.15,
+   6.5,
+   23.95,
+   10.5
+  ],
+  ".serie-en": [
+   9.0,
+   11.25,
+   18.4,
+   12.0
+  ],
+  ".a1": [
+   45.05,
+   3.5,
+   59.75,
+   5.95
+  ],
+  ".a2": [
+   45.2,
+   7.0,
+   64.9,
+   9.3
+  ],
+  ".a3": [
+   44.95,
+   10.45,
+   64.5,
+   12.9
+  ],
+  ".cadeau": [
+   5.65,
+   14.35,
+   62.15,
+   16.65
+  ]
+ },
+ "calage": {
+  ".serie-num": {
+   "fs": 0.8931,
+   "sx": 0.9261,
+   "dx": 9.886,
+   "dy": 4.214
+  },
+  ".serie-titre": {
+   "fs": 1.1671,
+   "sx": 0.4891,
+   "dx": 3.026,
+   "dy": 5.521
+  },
+  ".serie-en": {
+   "fs": 1.3968,
+   "sx": 0.7438,
+   "dx": 8.955,
+   "dy": 11.01
+  },
+  ".cadeau": {
+   "fs": 1.0381,
+   "sx": 0.9276,
+   "dx": 5.508,
+   "dy": 14.458
+  },
+  ".a1": {
+   "fs": 1.156,
+   "sx": 1.1987,
+   "dx": 44.766,
+   "dy": 3.195
+  },
+  ".a2": {
+   "fs": 1.0094,
+   "sx": 1.2759,
+   "dx": 45.203,
+   "dy": 6.903
+  },
+  ".a3": {
+   "fs": 1.156,
+   "sx": 1.2214,
+   "dx": 44.797,
+   "dy": 10.287
+  }
+ }
+}
