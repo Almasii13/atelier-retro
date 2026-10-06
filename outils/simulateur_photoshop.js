@@ -42,6 +42,7 @@ function nouveauCalque(type, nom) {
 global.executeAction = (id, d) => {
   if (id === "c:Mk  ") {
     const u = d.v["c:Usng"];
+    if (u && !u.v) { if (!actif) throw new Error("masque sans calque"); actif.masque = true; return; }
     if (u && u.v["s:textKey"] !== undefined) {
       const t = u.v["s:textKey"], runs = u.v["s:textStyleRange"].l, paras = u.v["s:paragraphStyleRange"].l;
       let fin = 0;
@@ -69,4 +70,5 @@ console.log("Calques créés :", JSON.stringify(par));
 console.log("Groupes :", calques.filter(l => l.type === "groupe").map(g => (g.parent && g.parent.name ? g.parent.name + " / " : "") + g.name).join(" | "));
 console.log("Écrêtés :", calques.filter(l => l.grouped).map(l => l.name).join(", "));
 console.log("Avec contour :", calques.filter(l => l.effet).map(l => l.name).join(", "));
+console.log("Avec masque vectoriel :", calques.filter(l => l.masque).map(l => l.name).join(", "));
 console.log(journal.join("\n"));

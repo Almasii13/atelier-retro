@@ -33,6 +33,8 @@ Exports :
 |---|---|---|---|
 | `obi-vhs-jp-classique` | Obi VHS enveloppant, bandeaux noirs + tranche rouge | Libre | V1 (abandonnée) |
 | `obi-vhs-starburst` | Obi VHS enveloppant (verso / tranche / face), 188 mm | Obi LD « Ariel VISUAL 1 » — face calquée élément par élément | En test (V3) |
+| `carte-hero-wgl` | Recto de carte 65×90 : bandes noires, fenêtre prisme pyramide vectorielle, titre bleu en arche (échelle verticale par lettre), CARD / numéro / NUMBER | Carte prisme « HERO COLLECTION » WGL-1 (Goku SSJ3) | En test (V1) |
+| `carte-hero-diagonale` | Recto de carte 65×90 : fond bleu / prisme séparés par une diagonale, grand titre au trait découpé par la diagonale (masques vectoriels), filet parallèle, bandeau rouge | Carte prisme « HERO COLLECTION » WGL-1 (Vegeta & Trunks) | En test (V1) |
 | `carte-special-data` | Dos de carte 65×90 (coins arrondis 3,2 mm) : bande verticale, panneau SPECIAL DATA, quiz avec furigana, éclaboussures vectorisées | PP card « SUPER SAIYAN BATTLE / SPECIAL DATA » (1995) | En test (V1) |
 | `affiche-vertical-4dx` | Affiche portrait B5 (échelle libre) : accroche haute, personnage détouré, accroche verticale mincho, grand logo italique | Affiche « 機動警察パトレイバー the Movie 4DX » (2020) | En test (V1) |
 | `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV, repère incliné unique | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V4) |

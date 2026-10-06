@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set P = prisme_param %}
+{# Recto de carte 65 × 90 mm d'après une carte « HERO COLLECTION » prisme (WGL-1, Goku SSJ3).
+   Fond noir, fenêtre prisme pyramide, grand titre bleu en arche, ligne CARD / numéro / NUMBER, mention ©. #}
+{% set Z = P.zone %}
+{% set prs = prisme([(Z[0], Z[1]), (Z[2], Z[1]), (Z[2], Z[3]), (Z[0], Z[3])], P.periode, P.phase, none, P.filet) %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .noir { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; background: {{ C.noir }}; }
+
+  /* Grand titre bleu : lettres condensées, bas en arche (plus courtes au centre) */
+  .titre { left: {{ T.titre_boite[0] }}mm; top: {{ T.titre_boite[1] }}mm; width: {{ T.titre_boite[2] - T.titre_boite[0] }}mm; height: 12mm; line-height: 0; }
+  .titre .mot { white-space: nowrap; }
+  .titre .l { display: inline-block; transform-origin: 50% 0; font: {{ C.titre_corps }}mm/{{ C.titre_corps * 0.86 }}mm "Anton", sans-serif;
+              color: {{ C.titre_fond }}; -webkit-text-stroke: .5mm {{ C.titre_contour }}; paint-order: stroke fill; letter-spacing: .25mm; }
+
+  .card, .number { top: 82.0mm; font: 700 2.0mm/1 "Tinos", serif; color: {{ C.or }}; letter-spacing: .08mm; white-space: nowrap; }
+  .card { left: 15.5mm; }
+  .number { left: 44.0mm; }
+  .num { left: 23.95mm; top: 79.5mm; font: 700 5.1mm/1 "Tinos", serif; color: {{ C.vert }}; letter-spacing: .1mm; white-space: nowrap; }
+  .copy { left: 16.15mm; top: 86.45mm; font: 700 1.52mm/1 var(--f-gothic); color: #fff; white-space: nowrap; letter-spacing: -.02mm;
+          -webkit-text-stroke: .28mm #111; paint-order: stroke fill; }
+
+  .zone-logo { left: {{ T.logo[0] }}mm; top: {{ T.logo[1] }}mm; width: {{ T.logo[2] - T.logo[0] }}mm; height: {{ T.logo[3] - T.logo[1] }}mm; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="noir"></div>
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% for cle, coul in C.facettes.items() %}{% if cle in prs %}<path data-nom="Prisme – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(prs[cle]) }}"/>{% endif %}{% endfor %}
+    </svg>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGE DÉTOURÉ">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% set n = T.titre|length %}
+    <div class="abs titre" data-groupe="Titre"><span class="mot" data-plein>{% for ch in T.titre %}{% set t = (loop.index0 / (n - 1)) * 2 - 1 %}<span class="l" style="transform: scaleY({{ '%.4f' % (1 - C.arche * (1 - t*t)) }})">{{ ch }}</span>{% endfor %}</span></div>
+    <div class="abs card" data-groupe="Numéro">{{ T.card }}</div>
+    <div class="abs num" data-groupe="Numéro">{{ T.numero }}</div>
+    <div class="abs number" data-groupe="Numéro">{{ T.number }}</div>
+    <div class="abs copy" data-groupe="Mention">{{ T.copyright }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

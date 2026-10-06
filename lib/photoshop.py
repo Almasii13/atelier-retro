@@ -22,10 +22,12 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Anton": [(0, "Anton-Regular")],
     "Ultra": [(0, "Ultra-Regular")],
     "Tinos": [(0, "Tinos-Bold")],
+    "Arvo": [(0, "Arvo-Bold")],
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
+CAPITALE = {"Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
 UNE_GRAISSE = {"Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
@@ -39,7 +41,7 @@ def police_ps(st):
 
 CSS_ENCRE = """
   html, body { background: transparent !important; overflow: visible !important; }
-  body * { visibility: hidden !important; }
+  body * { visibility: hidden !important; clip-path: none !important; }
   [data-encre], [data-encre] * { visibility: visible !important; background: transparent !important;
     -webkit-text-stroke-width: 0 !important; outline: none !important; box-shadow: none !important;
     -webkit-text-fill-color: #000 !important; }
@@ -107,6 +109,8 @@ def mesurer_textes(page, scene):
         ux, uy = qx - px, qy - py
         vx, vy = rx - px, ry - py
         it["echelleX"] = math.hypot(ux, uy) / 100
+        _n = math.hypot(ux, uy) or 1
+        it["echelleY"] = abs(ux * vy - uy * vx) / _n / 100  # hauteur perpendiculaire à la ligne de base
         nx, ny = -uy, ux  # perpendiculaire à u (repère écran, y vers le bas)
         it["biais"] = math.degrees(math.atan2(nx * vy - ny * vx, nx * vx + ny * vy))
         it["encre"] = [lx1 - lx0, ly1 - ly0]
@@ -160,7 +164,8 @@ def construire_scene_ps(scene, fiche):
         if t == "forme":
             sortie["items"].append({**base, "type": "forme", "couleur": _couleur(it["couleur"]), "chemins": chemin(it["chemins"])})
         elif t in ("image", "zone"):
-            sortie["items"].append({**base, "type": t, "cle": it["cle"], "label": it.get("label", ""), "chemins": chemin(it["chemins"])})
+            sortie["items"].append({**base, "type": t, "cle": it["cle"], "label": it.get("label", ""), "chemins": chemin(it["chemins"]),
+                                    "detoure": bool(it.get("detoure"))})
         elif t == "degrade":
             sortie["items"].append({**base, "type": "degrade", "chemins": chemin(it["chemins"]),
                                     "angle": 90 - it["degrade"]["angle"],
@@ -203,7 +208,10 @@ def construire_scene_ps(scene, fiche):
                              "couleur": _couleur(st["couleur"]),
                              "italique": bool(st["italique"] or abs(it.get("biais", 0)) > 2),
                              "gras": st["famille"] in UNE_GRAISSE and st["graisse"] >= 600,
-                             "echelleH": round(it.get("echelleX", 1) * 100, 2)})
+                             "echelleH": round(it.get("echelleX", 1) * 100, 2),
+                             "echelleV": round(it.get("echelleY", 1) * st.get("echelleV", 1) * 100, 2),
+                             # lettres raccourcies par le haut fixe (arche) : on remonte la ligne de base d'autant
+                             "decalage": round(_doc(taille) * CAPITALE.get(st["famille"], 0.72) * (1 - st.get("echelleV", 1)), 2)})
             # runs contigus de 0 à len(texte)
             runs.sort(key=lambda r: r["de"])
             if runs:
@@ -221,12 +229,17 @@ def construire_scene_ps(scene, fiche):
                     "vertical": bool(it.get("vertical")),
                     "boite": (({"l": _doc(it["boite"]["l"]) * 1.6 + 40, "h": _doc(it["boite"]["h"])} if it.get("vertical")
                                else {"l": _doc(it["boite"]["l"]) + 1, "h": _doc(it["boite"]["h"]) * 1.6 + 40}) if it["boite"] else None)}
+            if it.get("masque"):
+                item["masque"] = [[_doc(x), _doc(y)] for x, y in it["masque"]]
             if it.get("degradeTexte"):
                 d = it["degradeTexte"]
                 item["degradeTexte"] = {"angle": round(90 - d["angle"] - it["angle"], 2),
                                         "stops": [{"c": _couleur(st["c"]), "pos": st["pos"]} for st in d["stops"]]}
             if contour:
-                item["contour"] = {"taille": _doc(contour["contour"]) / 2, "couleur": _couleur(contour["contourCouleur"])}
+                seul = all((r["st"]["couleur"] or {}).get("a", 1) == 0 for r in it["runs"])
+                item["contour"] = {"taille": _doc(contour["contour"]) if seul else _doc(contour["contour"]) / 2,
+                                   "couleur": _couleur(contour["contourCouleur"]), "centre": seul}
+                item["contourSeul"] = seul
             sortie["items"].append(item)
     sortie["polices"] = sorted(polices)
     return sortie

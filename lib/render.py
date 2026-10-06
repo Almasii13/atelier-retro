@@ -53,7 +53,7 @@ def construire_html(fiche, dossier, propre):
     env.globals.update(
         sin=math.sin, cos=math.cos, tan=math.tan, radians=math.radians,
         etoile=formes.etoile, zone_etoile=formes.zone_texte_etoile, zone_cercle=formes.zone_texte_cercle,
-        polygone=formes.polygone, clip=formes.clip_polygone, arc=formes.texte_arc, img=img)
+        polygone=formes.polygone, prisme=formes.prisme, chemin_svg=formes.chemin_svg, clip=formes.clip_polygone, arc=formes.texte_arc, img=img)
     largeur, hauteur = format_fini(fiche)
     return env.get_template("template.html").render(
         **fiche, lib=(RACINE / "lib").as_uri(), propre=propre,

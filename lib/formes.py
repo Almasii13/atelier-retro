@@ -62,3 +62,68 @@ def texte_arc(d, texte, couleur="#e4007f", taille=2.6, depart=-150, fin=-30, fam
              f'<text fill="{couleur}" style="font: {graisse} {taille}px {famille}; font-feature-settings: \'palt\' 1" '
              f'text-anchor="middle"><textPath href="#{gid}" startOffset="50%" dx="{dx}">{texte}</textPath></text>')
     return _svg(d, d, corps)
+
+
+# ---------------------------------------------------------------------------
+# Motif « prisme pyramide » (cartes holographiques des années 90)
+# ---------------------------------------------------------------------------
+def _decoupe(poly, region):
+    """Sutherland–Hodgman : découpe un polygone par une région convexe (sens quelconque)."""
+    def aire(p):
+        return sum(p[i][0] * p[(i + 1) % len(p)][1] - p[(i + 1) % len(p)][0] * p[i][1] for i in range(len(p))) / 2
+    sens = 1 if aire(region) > 0 else -1
+    sortie = poly
+    for i in range(len(region)):
+        a, b = region[i], region[(i + 1) % len(region)]
+        dedans = lambda p: sens * ((b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])) >= 0
+        def inter(p, q):
+            x1, y1, x2, y2 = p[0], p[1], q[0], q[1]
+            x3, y3, x4, y4 = a[0], a[1], b[0], b[1]
+            den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+            t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den
+            return (x1 + t * (x2 - x1), y1 + t * (y2 - y1))
+        entree, sortie = sortie, []
+        if not entree:
+            break
+        for j in range(len(entree)):
+            p, q = entree[j], entree[(j + 1) % len(entree)]
+            if dedans(q):
+                if not dedans(p):
+                    sortie.append(inter(p, q))
+                sortie.append(q)
+            elif dedans(p):
+                sortie.append(inter(p, q))
+    return sortie
+
+
+def prisme(region, periode, phase=(0, 0), couleurs=None, filet=0.0):
+    """Losanges en damier (deux familles A et B), chacun coupé en 4 facettes N/E/S/O.
+    Renvoie {cle_couleur: [polygones]} découpés dans la région convexe (mm)."""
+    px, py = (periode, periode) if isinstance(periode, (int, float)) else periode
+    p = max(px, py)
+    hx, hy = px / 2, py / 2
+    xs = [q[0] for q in region]; ys = [q[1] for q in region]
+    x0, x1, y0, y1 = min(xs) - p, max(xs) + p, min(ys) - p, max(ys) + p
+    out = {}
+    def ajoute(cle, poly):
+        c = _decoupe(poly, region)
+        if len(c) >= 3:
+            out.setdefault(cle, []).append([(round(x, 3), round(y, 3)) for x, y in c])
+    i0 = math.floor((x0 - phase[0]) / px) - 1
+    j0 = math.floor((y0 - phase[1]) / py) - 1
+    for i in range(i0, i0 + int((x1 - x0) / px) + 3):
+        for j in range(j0, j0 + int((y1 - y0) / py) + 3):
+            for fam, (dx, dy) in (("A", (0, 0)), ("B", (hx, hy))):
+                cx, cy = phase[0] + i * px + dx, phase[1] + j * py + dy
+                if not (x0 <= cx <= x1 and y0 <= cy <= y1):
+                    continue
+                N, E, S, O, C = (cx, cy - hy), (cx + hx, cy), (cx, cy + hy), (cx - hx, cy), (cx, cy)
+                ajoute(fam + "N", [O, N, C]); ajoute(fam + "E", [N, E, C])
+                ajoute(fam + "S", [E, S, C]); ajoute(fam + "O", [S, O, C])
+                if filet and fam == "B":
+                    ajoute("filet", [(cx - filet / 2, cy - hy * .45), (cx + filet / 2, cy - hy * .45), (cx + filet / 2, cy + hy * .45), (cx - filet / 2, cy + hy * .45)])
+    return out
+
+
+def chemin_svg(polys):
+    return " ".join("M " + " L ".join(f"{x},{y}" for x, y in p) + " Z" for p in polys)

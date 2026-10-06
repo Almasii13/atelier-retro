@@ -1,0 +1,91 @@
+{
+ "modele": "carte-hero-diagonale",
+ "titre_fichier": "Carte HERO COLLECTION WGL-1 — recto 65x90",
+ "format": {
+  "largeur": 65,
+  "hauteur": 90
+ },
+ "fond_perdu": 3,
+ "securite": 2.5,
+ "rayon": 3.2,
+ "geo": {
+  "pente": 0.729,
+  "diag_c": 47.3,
+  "filet_c": 64.2,
+  "filet_ep": 0.8,
+  "regle": [
+   85.85,
+   0.6
+  ]
+ },
+ "couleurs": {
+  "bleu": "#0a1577",
+  "filet_diag": "#1a2a8c",
+  "rouge": "#8e2220",
+  "regle": "#140f16",
+  "trait_clair": "#d6cfe6",
+  "trait_fonce": "#1d1f5c",
+  "trait_ep": 0.3,
+  "trait_corps": 17.0,
+  "trait_echelle": 1.118,
+  "trait_approche": 0.3,
+  "serie_corps": 4.8,
+  "facettes": {
+   "AN": "#5f4e18",
+   "AE": "#6e5219",
+   "AS": "#69501b",
+   "AO": "#a6661c",
+   "BN": "#f3df33",
+   "BE": "#eae531",
+   "BS": "#e0bf26",
+   "BO": "#f8ef74",
+   "filet": "#3a2c0e"
+  }
+ },
+ "prisme_param": {
+  "periode": [
+   7.0,
+   6.6
+  ],
+  "phase": [
+   4.0,
+   1.2
+  ],
+  "filet": 0.22
+ },
+ "images": {
+  "personnage": "images/personnages.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond bleu & prisme",
+  "titre_trait": "Titre au trait & filet",
+  "image:personnage": "Personnages",
+  "texte": "Bas de carte"
+ },
+ "textes": {
+  "trait": [
+   [
+    "DRAGON",
+    1.97,
+    2.0
+   ],
+   [
+    "BALL",
+    18.63,
+    2.0
+   ],
+   [
+    "Z",
+    34.89,
+    6.94
+   ]
+  ],
+  "trait_x": 2.0,
+  "serie": "HERO COLLECTION  WGL-1  DRAGONBALL Z",
+  "serie_boite": [
+   2.8,
+   80.0,
+   62.3
+  ]
+ }
+}

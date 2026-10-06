@@ -1,0 +1,76 @@
+{
+ "modele": "carte-hero-wgl",
+ "titre_fichier": "Carte HERO WGL-1 — recto 65x90",
+ "format": {
+  "largeur": 65,
+  "hauteur": 90
+ },
+ "fond_perdu": 3,
+ "securite": 2.5,
+ "rayon": 3.2,
+ "couleurs": {
+  "noir": "#0a080c",
+  "titre_fond": "#1566c9",
+  "titre_contour": "#9fd2f6",
+  "titre_corps": 13.0,
+  "arche": 0.22,
+  "or": "#c9a33c",
+  "vert": "#1d7434",
+  "facettes": {
+   "AN": "#6b5b1a",
+   "AE": "#5f5615",
+   "AS": "#74621a",
+   "AO": "#a8701e",
+   "BN": "#f6ec3a",
+   "BE": "#ece02a",
+   "BS": "#e3c626",
+   "BO": "#fbf27a",
+   "filet": "#3d3510"
+  }
+ },
+ "prisme_param": {
+  "zone": [
+   -5,
+   7.35,
+   70,
+   67.55
+  ],
+  "periode": [
+   7.0,
+   6.6
+  ],
+  "phase": [
+   0.0,
+   5.4
+  ],
+  "filet": 0.22
+ },
+ "images": {
+  "personnage": "images/personnage.png",
+  "logo": "images/logo.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond noir & prisme",
+  "image:personnage": "Personnage",
+  "image:logo": "Logo",
+  "texte": "Textes"
+ },
+ "textes": {
+  "titre": "DRAGONBALLZ",
+  "titre_boite": [
+   6.2,
+   69.95,
+   59.0
+  ],
+  "card": "CARD",
+  "numero": "WGL-1",
+  "number": "NUMBER",
+  "copyright": "©バードスタジオ/集英社・フジテレビ・東映動画",
+  "logo": [
+   24.3,
+   2.2,
+   61.6,
+   12.9
+  ]
+ }
+}

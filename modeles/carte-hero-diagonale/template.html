@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set P = prisme_param %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après une carte « HERO COLLECTION » prisme (WGL-1, Vegeta & Trunks).
+   Diagonale : y = c − m·x (mm). Haut-gauche bleu avec grand titre au trait, bas-droite prisme, filet bleu parallèle. #}
+{% set m = G.pente %}{% set c0 = G.diag_c %}{% set cs = G.filet_c %}{% set e = G.filet_ep %}
+{% set X0 = -FP - 2 %}{% set X1 = L + FP + 2 %}{% set Y0 = -FP - 2 %}{% set Y1 = H + FP + 2 %}
+{% set zone_prisme = [(X0, c0 - m * X0), (X1, c0 - m * X1), (X1, Y1), (X0, Y1)] %}
+{% set prs = prisme(zone_prisme, P.periode, P.phase, none, P.filet) %}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% macro clip_mm(pts) %}polygon({% for x, y in pts %}{{ '%.3f' % x }}mm {{ '%.3f' % y }}mm{{ ', ' if not loop.last }}{% endfor %}){% endmacro %}
+{% set bleu_pts = [(X0, Y0), (X1, Y0), (X1, c0 - m * X1), (X0, c0 - m * X0)] %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+
+  /* Grand titre au trait : même texte posé deux fois, découpé par la diagonale (clair sur le bleu, marine sur le prisme) */
+  .trait { position: absolute; inset: 0; }
+  .trait.sur-bleu { clip-path: {{ clip_mm(bleu_pts) }}; }
+  .trait.sur-prisme { clip-path: {{ clip_mm(zone_prisme) }}; }
+  .ligne-titre { left: {{ T.trait_x }}mm; white-space: nowrap; font: {{ C.trait_corps }}mm/1 "Anton", sans-serif;
+                 transform: scaleX({{ C.trait_echelle }}); transform-origin: 0 0; letter-spacing: {{ C.trait_approche }}mm;
+                 color: transparent; -webkit-text-stroke: {{ C.trait_ep }}mm currentColor; }
+  .sur-bleu .ligne-titre { -webkit-text-stroke-color: {{ C.trait_clair }}; }
+  .sur-prisme .ligne-titre { -webkit-text-stroke-color: {{ C.trait_fonce }}; }
+
+  .serie { left: {{ T.serie_boite[0] }}mm; top: {{ T.serie_boite[1] }}mm; width: {{ T.serie_boite[2] - T.serie_boite[0] }}mm; line-height: 0; }
+  .serie span { font: 700 {{ C.serie_corps }}mm/{{ C.serie_corps }}mm "Arvo", serif; color: {{ C.rouge }}; letter-spacing: .05mm; word-spacing: .6mm; }
+  .regle { left: -{{ FP + 2 }}mm; width: {{ L + 2*FP + 4 }}mm; top: {{ G.regle[0] }}mm; height: {{ G.regle[1] }}mm; background: {{ C.regle }}; }
+
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <polygon data-nom="Fond bleu" fill="{{ C.bleu }}" points="{{ poly([(X0, Y0), (X1, Y0), (X1, Y1), (X0, Y1)]) }}"/>
+      {% for cle, coul in C.facettes.items() %}{% if cle in prs %}<path data-nom="Prisme – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(prs[cle]) }}"/>{% endif %}{% endfor %}
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="titre_trait" style="inset:0">
+    {% for cote in ['sur-bleu', 'sur-prisme'] %}
+    <div class="trait {{ cote }}">
+      {% for l in T.trait %}<div class="abs ligne-titre" data-groupe="Titre au trait ({{ 'sur le bleu' if cote == 'sur-bleu' else 'sur le prisme' }})" style="top:{{ l[1] }}mm; left:{{ l[2] }}mm">{{ l[0] }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+    <svg class="abs" data-groupe="Filet diagonal" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <polygon data-nom="Filet diagonal" fill="{{ C.filet_diag }}" points="{{ poly([(X0, cs - m * X0 - e/2), (X1, cs - m * X1 - e/2), (X1, cs - m * X1 + e/2), (X0, cs - m * X0 + e/2)]) }}"/>
+    </svg>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGES DÉTOURÉS">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs serie" data-groupe="Bas de carte"><span data-plein>{{ T.serie }}</span></div>
+    <div class="abs regle" data-groupe="Bas de carte"></div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

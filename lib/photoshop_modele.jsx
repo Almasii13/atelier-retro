@@ -215,6 +215,8 @@
       st.putUnitDouble(sTID("size"), sTID("pointsUnit"), ru.taille);
       st.putInteger(sTID("tracking"), ru.approche);
       st.putDouble(sTID("horizontalScale"), ru.echelleH);
+      if (ru.echelleV && Math.abs(ru.echelleV - 100) > 0.5) st.putDouble(sTID("verticalScale"), ru.echelleV);
+      if (ru.decalage && Math.abs(ru.decalage) > 0.05) st.putUnitDouble(sTID("baselineShift"), sTID("pointsUnit"), ru.decalage);
       st.putBoolean(sTID("syntheticItalic"), ru.italique);
       st.putBoolean(sTID("syntheticBold"), ru.gras);
       if (ru.interligne) { st.putBoolean(sTID("autoLeading"), false); st.putUnitDouble(sTID("leading"), sTID("pointsUnit"), ru.interligne); }
@@ -248,14 +250,38 @@
     if (Math.abs(angle) > 0.01) l.rotate(angle, AnchorPosition.MIDDLECENTER);
   }
 
-  function contour(taille, rgb) {
+  // Masque vectoriel (polygone, px document) sur le calque actif
+  function masqueVectoriel(points) {
+    var pts = [];
+    for (var i = 0; i < points.length; i++) {
+      var pp = new PathPointInfo();
+      pp.kind = PointKind.CORNERPOINT; pp.anchor = points[i]; pp.leftDirection = points[i]; pp.rightDirection = points[i];
+      pts.push(pp);
+    }
+    var sp = new SubPathInfo(); sp.operation = ShapeOperation.SHAPEADD; sp.closed = true; sp.entireSubPath = pts;
+    var cible = doc.activeLayer;
+    var chemin = doc.pathItems.add("atelier_masque_" + (nChemin++), [sp]);
+    try {
+      doc.activeLayer = cible;
+      chemin.select();
+      var d = new ActionDescriptor(), r = new ActionReference();
+      r.putClass(cTID("Path")); d.putReference(cTID("null"), r);
+      var r2 = new ActionReference(); r2.putEnumerated(cTID("Path"), cTID("Path"), sTID("vectorMask"));
+      d.putReference(cTID("At  "), r2);
+      var r3 = new ActionReference(); r3.putEnumerated(cTID("Path"), cTID("Ordn"), cTID("Trgt"));
+      d.putReference(cTID("Usng"), r3);
+      executeAction(cTID("Mk  "), d, DialogModes.NO);
+    } finally { try { chemin.remove(); } catch (e) {} }
+  }
+
+  function contour(taille, rgb, centre) {
     var d = new ActionDescriptor(), r = new ActionReference();
     r.putProperty(cTID("Prpr"), cTID("Lefx")); r.putEnumerated(cTID("Lyr "), cTID("Ordn"), cTID("Trgt"));
     d.putReference(cTID("null"), r);
     var fx = new ActionDescriptor(), s = new ActionDescriptor();
     fx.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
     s.putBoolean(cTID("enab"), true);
-    s.putEnumerated(cTID("Styl"), cTID("FStl"), cTID("OutF"));
+    s.putEnumerated(cTID("Styl"), cTID("FStl"), cTID(centre ? "CtrF" : "OutF"));
     s.putEnumerated(cTID("PntT"), cTID("FrFl"), cTID("SClr"));
     s.putEnumerated(cTID("Md  "), cTID("BlnM"), cTID("Nrml"));
     s.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
@@ -278,7 +304,9 @@
       }
     }
     placer(l, it.centre, it.angle);
-    if (it.contour) contour(it.contour.taille, it.contour.couleur);
+    if (it.contour) contour(it.contour.taille, it.contour.couleur, it.contour.centre);
+    if (it.contourSeul) { try { l.fillOpacity = 0; } catch (e) {} }
+    if (it.masque) { try { masqueVectoriel(it.masque); } catch (e) { erreurs.push(it.nom + " (masque) : " + e.message); } }
     if (it.degradeTexte) { try { incrustationDegrade(it.degradeTexte); } catch (e) { erreurs.push(it.nom + " (dégradé du texte) : " + e.message); } }
     return l;
   }
@@ -309,6 +337,7 @@
         else if (it.type === "arc") { arc(it, cont); }
         else if (it.type === "image") {
           l = forme(it.chemins, [128, 128, 128], "Forme – " + it.calqueNom); ranger(l, cont);
+          if (it.detoure) { try { l.fillOpacity = 0; } catch (e) {} }  // image détourée : la forme découpe sans se voir
           var img = doc.artLayers.add(); img.name = ">> " + it.calqueNom + " : colle ton image ici";
           ranger(img, cont); img.grouped = true;
         }

@@ -17,7 +17,7 @@ INVERSE = {"ZenKakuGothicNew-Black": ("Zen Kaku", 900), "ZenKakuGothicNew-Bold":
            "ZenKakuGothicNew-Medium": ("Zen Kaku", 500), "DelaGothicOne-Regular": ("Dela Gothic", 400),
            "ZenOldMincho-Black": ("Zen Old Mincho", 900), "YujiSyuku-Regular": ("Yuji Syuku", 400),
            "RoundedMplus1c-ExtraBold": ("M Rounded", 800), "Anton-Regular": ("Anton", 400),
-           "ArchivoBlack-Regular": ("Archivo Black", 400), "Ultra-Regular": ("Ultra", 400), "Tinos-Bold": ("Tinos", 700),
+           "ArchivoBlack-Regular": ("Archivo Black", 400), "Arvo-Bold": ("Arvo", 700), "Ultra-Regular": ("Ultra", 400), "Tinos-Bold": ("Tinos", 700),
            "ZenOldMincho-Bold": ("Zen Old Mincho", 700), "ZenOldMincho-SemiBold": ("Zen Old Mincho", 600), "ZenOldMincho-Medium": ("Zen Old Mincho", 500)}
 ALIGN = {"left": ("left", "auto"), "center": ("center", "auto"), "right": ("right", "auto"),
          "justifyLeft": ("justify", "left"), "justifyAll": ("justify", "justify")}
@@ -59,6 +59,8 @@ def main(jsx, original):
     W, H = sc["largeur"] / K, sc["hauteur"] / K
     svg, textes = [], []
     for i, it in enumerate(sc["items"]):
+        if it["type"] == "image" and it.get("detoure"):
+            continue
         if it["type"] in ("forme", "image", "degrade"):
             coul = it.get("couleur", [128, 128, 128])
             if it["type"] == "degrade":
@@ -67,6 +69,8 @@ def main(jsx, original):
             svg.append(f'<path d="{d}" fill="rgb({",".join(map(str, coul))})"/>')
         elif it["type"] == "texte":
             textes.append(texte_html(it, i))
+            if it.get("contourSeul"):
+                textes[-1] = textes[-1].replace('style="position', 'style="-webkit-text-fill-color:transparent;position', 1)
             if it.get("contour"):
                 c = it["contour"]
                 textes[-1] = textes[-1].replace('style="position', f'style="-webkit-text-stroke:{c["taille"] * 2 / K}px rgb({",".join(map(str, c["couleur"]))});paint-order:stroke fill;position', 1)
