@@ -55,8 +55,8 @@
     <div class="t bloc titre" data-groupe="En-tête du corps">カード<span data-ruby="ぜん">全</span>100<span data-ruby="しゅるい">種類</span></div>
     <div class="t pilule-txt" data-groupe="En-tête du corps">{{ T.pilule }}</div>
 
-    <div class="t bloc blanc-cerne l1" data-groupe="Contenu">●<span class="lat" data-ruby="ドラゴンボールゼット">DBZ</span><span data-ruby="ご">語</span><span data-ruby="ろく">録</span>　●<span data-ruby="れっしん">裂震</span>！<span class="lat" data-ruby="ゼット">Z</span>クイズ<span data-ruby="だいねっせん">大熱戦</span>!!</div>
-    <div class="t bloc blanc-cerne l2" data-groupe="Contenu">●<span data-ruby="ドラゴンボールゼットスーパー"><span class="lat">DBZ</span>超</span>データファイル</div>
+    {% set LG = T.l1 %}<div class="t bloc blanc-cerne l1" data-groupe="Contenu">{% for sg in LG %}{% if sg is string %}{{ sg }}{% elif sg[1] == 'lat' %}<span class="lat">{{ sg[0] }}</span>{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
+    {% set LG = T.l2 %}<div class="t bloc blanc-cerne l2" data-groupe="Contenu">{% for sg in LG %}{% if sg is string %}{{ sg }}{% elif sg[1] == 'lat' %}<span class="lat">{{ sg[0] }}</span>{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
     <div class="t blanc-cerne l3" data-groupe="Contenu">{{ T.l3 }}</div>
 
     <svg class="abs" data-groupe="Prix" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
