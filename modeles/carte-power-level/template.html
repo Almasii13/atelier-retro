@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après une carte « Super Battle » Dragon Ball GT n° 749 (Goku & Trunks).
+   Fond de flammes, cadre noir, damier prisme rouge, badge octogonal, bandeau nom incliné, encadré texte,
+   bloc POWER LEVEL + échelle 1–5. Toutes les cotes en mm (repère page finie) ; le bandeau est posé
+   dans un repère tourné (u, v) d'angle G.angle_bandeau, d'origine le coin haut-gauche de la page. #}
+{% set F = G.cadre %}{% set ep = G.cadre_ep %}
+{% set inner = [(F[0]+ep, F[1]+ep), (F[2]-ep, F[1]+ep), (F[2]-ep, F[3]-ep), (F[0]+ep, F[3]-ep)] %}
+{% set dam = prisme_carre(inner, G.damier.periode, G.damier.phase) %}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% macro octo(x0, y0, x1, y1, c) %}{{ poly([(x0+c, y0), (x1-c, y0), (x1, y0+c), (x1, y1-c), (x1-c, y1), (x0+c, y1), (x0, y1-c), (x0, y0+c)]) }}{% endmacro %}
+{% macro rect(r) %}x="{{ r[0] }}" y="{{ r[1] }}" width="{{ '%.3f' % (r[2]-r[0]) }}" height="{{ '%.3f' % (r[3]-r[1]) }}"{% endmacro %}
+{% set O = G.octogone %}{% set B = G.bandeau %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .it { display: inline-block; transform: skewX(-12deg); }
+  .bloc { --ruby-ecart: {{ G.ruby_ecart }}mm; }
+
+  /* Repère tourné du bandeau */
+  .axe { left: 0; top: 0; width: 0; height: 0; transform: rotate({{ G.angle_bandeau }}deg); transform-origin: 0 0; }
+  .ban-nom1 { font: 700 1.25mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_blanc }}; }
+  .ban-nom2 { font: 700 2.2mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_blanc }}; }
+  .ban-l2 { font: italic 2.6mm/1 "Noto JP Black", sans-serif; color: {{ C.texte_blanc }}; }
+  .ban-l2 { --ruby-ecart: {{ G.ruby_ecart_bandeau }}mm; --ruby-decalage: {{ G.ruby_decalage_bandeau }}mm; }
+  .ban-l2 .rt { font: 700 1.12mm/1 "BIZ UDP", sans-serif; font-style: normal; letter-spacing: .22mm; color: {{ C.texte_blanc }}; }
+  .ban-num { font: 2.1mm/1 "Oswald M", sans-serif; color: {{ C.texte_blanc }}; }
+
+  /* Encadré texte */
+  .tb { font: 700 2.15mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_fonce }}; }
+  .tb { --ruby-ecart: {{ G.ruby_ecart }}mm; }
+  .tb .rt { font: 700 1.09mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_fonce }}; }
+
+  /* POWER LEVEL (dégradé brun → noir comme l'impression d'origine) et grand chiffre */
+  .pw { font: 3mm/1 "Work Sans BI", sans-serif; font-style: italic; letter-spacing: -.05mm;
+        background: linear-gradient(180deg, {{ C.power_haut }} 0%, {{ C.power_haut }} 22%, {{ C.power_bas }} 62%, {{ C.power_bas }} 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .pw-11 { font: 12mm/1 "Work Sans BI", sans-serif; font-style: italic; color: {{ C.rouge_chiffre }}; letter-spacing: -.2mm;
+           -webkit-text-stroke: {{ G.chiffre_contour * 2 }}mm {{ C.noir }}; paint-order: stroke fill; }
+  .cel { font: 2.6mm/1 "Archivo Black", sans-serif; color: #fff; }
+
+  /* Badge 打 */
+  .octo-da { font: 800 7mm/1 "M Rounded", sans-serif;
+             background: linear-gradient(180deg, {{ C.or_haut }} 0%, {{ C.or_bas }} 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ G.logo[2] - G.logo[0] }}mm; height: {{ G.logo[3] - G.logo[1] }}mm; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ===== FOND : flammes ===== #}
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Flammes – rouge" x="{{ -FP-1 }}" y="{{ -FP-1 }}" width="{{ L + 2*FP + 2 }}" height="{{ H + 2*FP + 2 }}" fill="{{ C.feu[0] }}"/>
+      {% for cle in ['rouge_orange', 'orange', 'jaune'] %}
+      <path data-nom="Flammes – {{ cle }}" fill="{{ C.feu[loop.index] }}" d="{% for p in feu[cle] %}M {% for x, y in p %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+      {% endfor %}
+    </svg>
+  </div>
+
+  {# ===== CADRE : liseré noir + damier prisme ===== #}
+  <div class="abs" data-calque="cadre" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Cadre noir" {{ rect(F) }} fill="{{ C.noir }}"/>
+      {% for cle, coul in C.damier.items() %}{% if cle in dam %}<path data-nom="Damier – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(dam[cle]) }}"/>{% endif %}{% endfor %}
+    </svg>
+  </div>
+
+  {% set u2 = img('personnages') %}
+  <div class="abs" data-calque="image:personnages" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGES DÉTOURÉS">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Panneau du bas ----- #}
+    <svg class="abs" data-groupe="Panneau du bas" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond noir du panneau" {{ rect(G.panneau) }} fill="{{ C.noir }}"/>
+      <rect data-nom="Encadré texte" {{ rect(G.encadre) }} fill="{{ C.encadre }}"/>
+      <rect data-nom="Bloc POWER LEVEL" {{ rect(G.jaune) }} fill="{{ C.jaune }}"/>
+      {% for c in G.cases %}<rect data-nom="Case {{ loop.index }}" {{ rect(c) }} fill="{{ C.vert if loop.index == G.niveau else C.gris }}"/>{% endfor %}
+      {% set d = G.cases[-1] %}{% set e = G.barre_ep / 2 %}
+      <polygon data-nom="Barre oblique" fill="{{ C.noir }}" points="{{ poly([(d[0]+0.25-e, d[3]-0.25), (d[2]-0.25-e, d[1]+0.25), (d[2]-0.25+e, d[1]+0.25), (d[0]+0.25+e, d[3]-0.25)]) }}"/>
+    </svg>
+
+    {% for l in T.encadre %}
+    <div class="t bloc tb tb{{ loop.index }}" data-groupe="Encadré texte">{% for sg in l %}{% if sg is string %}{{ sg }}{% elif sg[1] == 'it' %}<span class="it">{{ sg[0] }}</span>{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
+    {% endfor %}
+
+    <div class="t pw pw-power" data-groupe="POWER LEVEL">{{ T.power[0] }}</div>
+    <div class="t pw pw-level" data-groupe="POWER LEVEL">{{ T.power[1] }}</div>
+    {% for n in T.echelle %}<div class="t cel cel{{ loop.index }}" data-groupe="Échelle">{{ n }}</div>{% endfor %}
+    <div class="t pw-11" data-groupe="POWER LEVEL">{{ T.niveau_power }}</div>
+
+    {# ----- Bandeau nom (repère tourné) ----- #}
+    <div class="abs axe" data-groupe="Bandeau">
+      <svg class="abs" data-groupe="Bandeau" style="left:0;top:0;width:1mm;height:1mm;overflow:visible" viewBox="0 0 1 1">
+        <polygon data-nom="Bandeau noir" fill="{{ C.bande_noire }}" points="{{ poly([(B.u_debut, B.noir[0]), (B.coupe_noir[0], B.noir[0]), (B.coupe_noir[1], B.noir[1]), (B.u_debut, B.noir[1])]) }}"/>
+        <polygon data-nom="Bandeau rouge" fill="{{ C.bande_rouge }}" points="{{ poly([(B.u_debut, B.rouge[0]), (B.coupe_rouge[0], B.rouge[0]), (B.coupe_rouge[1], B.rouge[1]), (B.u_debut, B.rouge[1])]) }}"/>
+        {% set lx = B.coupe_noir %}{% set le = B.liseret / 2 %}
+        <polygon data-nom="Liseré bleu" fill="{{ C.liseret }}" points="{{ poly([(lx[0]-le, B.noir[0]), (lx[0]+le, B.noir[0]), (lx[1]+le, B.noir[1]), (lx[1]-le, B.noir[1])]) }}"/>
+        <circle data-nom="Pastille numéro" cx="{{ B.pastille[0] }}" cy="{{ B.pastille[1] }}" r="{{ B.pastille[2] }}" fill="{{ C.bande_noire }}"/>
+      </svg>
+      <div class="t ban-nom1" data-groupe="Bandeau">{{ T.nom_lecture }}</div>
+      <div class="t ban-nom2" data-groupe="Bandeau">{{ T.nom }}</div>
+      <div class="t bloc ban-l2" data-groupe="Bandeau">{% for sg in T.attaque %}{% if sg is string %}{{ sg }}{% elif sg[1] == 'it' %}<span class="it">{{ sg[0] }}</span>{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
+      <div class="t ban-num" data-groupe="Bandeau">{{ T.numero }}</div>
+    </div>
+
+    {# ----- Badge octogonal ----- #}
+    <svg class="abs" data-groupe="Badge" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set b = O.blanc %}{% set c = O.chanfrein %}{% set eo = O.bord_noir %}{% set eb = O.bord_blanc %}{% set t8 = 0.41421 %}
+      <polygon data-nom="Badge – contour noir" fill="{{ C.noir }}" points="{{ octo(b[0]-eo, b[1]-eo, b[2]+eo, b[3]+eo, c + eo*t8) }}"/>
+      <polygon data-nom="Badge – anneau blanc" fill="{{ C.blanc }}" points="{{ octo(b[0], b[1], b[2], b[3], c) }}"/>
+      <polygon data-nom="Badge – fond noir" fill="{{ C.noir }}" points="{{ octo(b[0]+eb, b[1]+eb, b[2]-eb, b[3]-eb, c - eb*t8) }}"/>
+    </svg>
+    <div class="t octo-da" data-groupe="Badge">{{ T.badge }}</div>
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

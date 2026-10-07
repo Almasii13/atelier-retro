@@ -19,6 +19,10 @@
 @font-face { font-family: "Arvo"; font-weight: 700; src: url("fonts/Arvo-Bold.ttf"); }
 @font-face { font-family: "Tinos"; font-weight: 700; src: url("fonts/Tinos-Bold.ttf"); }
 @font-face { font-family: "Archivo Black"; src: url("fonts/ArchivoBlack-Regular.ttf"); }
+@font-face { font-family: "Work Sans BI"; font-style: italic; src: url("fonts/WorkSans-BlackItalic.ttf"); }
+@font-face { font-family: "Noto JP Black"; src: url("fonts/NotoSansJP-Black.ttf"); }
+@font-face { font-family: "Oswald M"; src: url("fonts/Oswald-Medium.ttf"); }
+@font-face { font-family: "BIZ UDP"; font-weight: 700; src: url("fonts/BIZUDPGothic-Bold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }

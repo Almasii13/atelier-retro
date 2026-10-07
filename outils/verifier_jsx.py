@@ -17,7 +17,7 @@ INVERSE = {"ZenKakuGothicNew-Black": ("Zen Kaku", 900), "ZenKakuGothicNew-Bold":
            "ZenKakuGothicNew-Medium": ("Zen Kaku", 500), "DelaGothicOne-Regular": ("Dela Gothic", 400),
            "ZenOldMincho-Black": ("Zen Old Mincho", 900), "YujiSyuku-Regular": ("Yuji Syuku", 400),
            "RoundedMplus1c-ExtraBold": ("M Rounded", 800), "Anton-Regular": ("Anton", 400),
-           "ArchivoBlack-Regular": ("Archivo Black", 400), "Arvo-Bold": ("Arvo", 700), "Ultra-Regular": ("Ultra", 400), "PassionOne-Regular": ("Passion One", 400), "Tinos-Bold": ("Tinos", 700),
+           "ArchivoBlack-Regular": ("Archivo Black", 400), "Arvo-Bold": ("Arvo", 700), "Ultra-Regular": ("Ultra", 400), "PassionOne-Regular": ("Passion One", 400), "Tinos-Bold": ("Tinos", 700), "WorkSans-BlackItalic": ("Work Sans BI", 400), "NotoSansJP-Black": ("Noto JP Black", 400), "Oswald-Medium": ("Oswald M", 400), "BIZUDPGothic-Bold": ("BIZ UDP", 700),
            "ZenOldMincho-Bold": ("Zen Old Mincho", 700), "ZenOldMincho-SemiBold": ("Zen Old Mincho", 600), "ZenOldMincho-Medium": ("Zen Old Mincho", 500)}
 ALIGN = {"left": ("left", "auto"), "center": ("center", "auto"), "right": ("right", "auto"),
          "justifyLeft": ("justify", "left"), "justifyAll": ("justify", "justify")}

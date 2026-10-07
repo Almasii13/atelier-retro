@@ -205,3 +205,25 @@ def eclaboussures(zone, densite=1.0, graine=7, taille=1.0):
             pts.append((cx + u * math.cos(a) - v * math.sin(a), cy + u * math.sin(a) + v * math.cos(a)))
         ajoute(pts)
     return polys
+
+
+def prisme_carre(region, periode, phase=(0, 0)):
+    """Damier de carrés alignés (prisme « carré » des cartes 90s) : chaque carré est coupé en 4 facettes
+    triangulaires N/E/S/O par ses diagonales ; familles A (i+j pair) et B (impair).
+    Renvoie {cle: [polygones]} découpés dans la région convexe (mm)."""
+    px, py = (periode, periode) if isinstance(periode, (int, float)) else periode
+    xs = [q[0] for q in region]; ys = [q[1] for q in region]
+    out = {}
+    i0 = math.floor((min(xs) - phase[0]) / px) - 1
+    j0 = math.floor((min(ys) - phase[1]) / py) - 1
+    for i in range(i0, i0 + int((max(xs) - min(xs)) / px) + 3):
+        for j in range(j0, j0 + int((max(ys) - min(ys)) / py) + 3):
+            x0, y0 = phase[0] + i * px, phase[1] + j * py
+            x1, y1, cx, cy = x0 + px, y0 + py, x0 + px / 2, y0 + py / 2
+            fam = "A" if (i + j) % 2 == 0 else "B"
+            for cle, tri in (("N", [(x0, y0), (x1, y0), (cx, cy)]), ("E", [(x1, y0), (x1, y1), (cx, cy)]),
+                             ("S", [(x1, y1), (x0, y1), (cx, cy)]), ("O", [(x0, y1), (x0, y0), (cx, cy)])):
+                c = _decoupe(tri, region)
+                if len(c) >= 3:
+                    out.setdefault(fam + cle, []).append([(round(x, 3), round(y, 3)) for x, y in c])
+    return out

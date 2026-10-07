@@ -25,11 +25,16 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Tinos": [(0, "Tinos-Bold")],
     "Arvo": [(0, "Arvo-Bold")],
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
+    "Work Sans BI": [(0, "WorkSans-BlackItalic")],
+    "Noto JP Black": [(0, "NotoSansJP-Black")],
+    "Oswald M": [(0, "Oswald-Medium")],
+    "BIZ UDP": [(0, "BIZUDPGothic-Bold")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
 CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
-UNE_GRAISSE = {"Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
+NATIF_ITALIQUE = {"Work Sans BI"}  # polices déjà italiques : pas d'italique synthétique en plus
+UNE_GRAISSE = {"Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
@@ -69,7 +74,12 @@ def mesurer_textes(page, scene):
                 e.style.setProperty('transform', 'none', 'important');
             }
             window.__touches = touches;
-            const r = el.getBoundingClientRect();
+            // rotations neutralisées : un texte d'un repère tourné peut tomber hors de la fenêtre (coordonnées
+            // négatives) ; on le ramène dedans par une translation provisoire, sans effet sur ses mesures locales
+            el.style.setProperty('translate', '0px 0px', 'important');
+            let r = el.getBoundingClientRect();
+            const dx = Math.max(0, 60 - r.left), dy = Math.max(0, 60 - r.top);
+            if (dx || dy) { el.style.setProperty('translate', dx + 'px ' + dy + 'px', 'important'); r = el.getBoundingClientRect(); }
             return [r.left, r.top, r.width, r.height];
         }""", sel)
         marge = 40
@@ -84,6 +94,7 @@ def mesurer_textes(page, scene):
         page.evaluate("""sel => {
             const el = document.querySelector(sel);
             delete el.dataset.encre;
+            el.style.removeProperty('translate');
             for (const [e, v, p] of window.__touches) { if (v) e.style.setProperty('transform', v, p); else e.style.removeProperty('transform'); }
         }""", sel)
         if not bb:
@@ -196,7 +207,7 @@ def construire_scene_ps(scene, fiche):
         elif t == "arc":
             st = it["style"]; ps = police_ps(st); polices.add(ps)
             sortie["items"].append({**base, "type": "arc", "police": ps, "taille": _doc(st["taille"]),
-                                    "couleur": _couleur(st["couleur"]), "italique": st["italique"],
+                                    "couleur": _couleur(st["couleur"]), "italique": bool(st["italique"] and st["famille"] not in NATIF_ITALIQUE),
                                     "car": [{"c": c["c"], "centre": [_doc(c["centre"][0]), _doc(c["centre"][1])], "angle": round(c["angle"], 3)} for c in it["car"]]})
         elif t == "texte" and not it.get("vide"):
             runs = []
@@ -207,7 +218,7 @@ def construire_scene_ps(scene, fiche):
                              "approche": round(st["interlettre"] / taille * 1000) if taille else 0,
                              "interligne": _doc(st["interligne"]) if st["interligne"] else None,
                              "couleur": _couleur(st["couleur"]),
-                             "italique": bool(st["italique"] or abs(it.get("biais", 0)) > 2),
+                             "italique": bool((st["italique"] or abs(it.get("biais", 0)) > 2) and st["famille"] not in NATIF_ITALIQUE),
                              "gras": st["famille"] in UNE_GRAISSE and st["graisse"] >= 600,
                              "echelleH": round(it.get("echelleX", 1) * 100, 2),
                              "echelleV": round(it.get("echelleY", 1) * st.get("echelleV", 1) * 100, 2),

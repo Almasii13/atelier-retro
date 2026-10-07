@@ -79,8 +79,9 @@ def caler(chemin, tours=4, tol=0.08):
                         c["fs"] = round(c["fs"] * kh, 4)
                         c["sx"] = round(c["sx"] * kw / kh, 4)
                     else:               # position
-                        c["dx"] = round(c["dx"] + (tx0 - mx0), 3)
-                        c["dy"] = round(c["dy"] + (ty0 - my0), 3)
+                        # recalage sur le centre de l'encre (centrage exact dans les formes)
+                        c["dx"] = round(c["dx"] + ((tx0 + tx1) - (mx0 + mx1)) / 2, 3)
+                        c["dy"] = round(c["dy"] + ((ty0 + ty1) - (my0 + my1)) / 2, 3)
             print(f"tour {tour + 1} : écart max {pire:.2f} mm")
         m = mesurer(nav, fiche, chemin.parent, cibles)
         nav.close()
