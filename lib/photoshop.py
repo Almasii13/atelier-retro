@@ -21,14 +21,15 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "M Rounded": [(0, "RoundedMplus1c-ExtraBold")],
     "Anton": [(0, "Anton-Regular")],
     "Ultra": [(0, "Ultra-Regular")],
+    "Passion One": [(0, "PassionOne-Regular")],
     "Tinos": [(0, "Tinos-Bold")],
     "Arvo": [(0, "Arvo-Bold")],
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
-CAPITALE = {"Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
-UNE_GRAISSE = {"Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
+CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
+UNE_GRAISSE = {"Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
