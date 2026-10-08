@@ -84,7 +84,7 @@
   // ---------- Formes vectorielles ----------
   var nChemin = 0;
   // remplissage : null (couleur unie rgb) ou {angle, stops} (dégradé linéaire)
-  function forme(chemins, rgb, nom, remplissage) {
+  function forme(chemins, rgb, nom, remplissage, xor) {
     var subs = [];
     for (var c = 0; c < chemins.length; c++) {
       var pts = [];
@@ -94,7 +94,7 @@
         pts.push(pp);
       }
       var sp = new SubPathInfo();
-      sp.operation = ShapeOperation.SHAPEADD; sp.closed = true; sp.entireSubPath = pts;
+      sp.operation = (xor && c > 0) ? ShapeOperation.SHAPEXOR : ShapeOperation.SHAPEADD; sp.closed = true; sp.entireSubPath = pts;
       subs.push(sp);
     }
     var chemin = doc.pathItems.add("atelier_tmp_" + (nChemin++), subs);
@@ -331,7 +331,7 @@
       var it = SCENE.items[n];
       try {
         var cont = groupeDe(it), l;
-        if (it.type === "forme") { l = forme(it.chemins, it.couleur, it.nom); ranger(l, cont); }
+        if (it.type === "forme") { l = forme(it.chemins, it.couleur, it.nom, null, it.xor); ranger(l, cont); }
         else if (it.type === "degrade") { l = formeDegradee(it); ranger(l, cont); }
         else if (it.type === "texte") { l = texte(it); ranger(l, cont); }
         else if (it.type === "arc") { arc(it, cont); }

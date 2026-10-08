@@ -23,6 +23,9 @@
 @font-face { font-family: "Noto JP Black"; src: url("fonts/NotoSansJP-Black.ttf"); }
 @font-face { font-family: "Oswald M"; src: url("fonts/Oswald-Medium.ttf"); }
 @font-face { font-family: "BIZ UDP"; font-weight: 700; src: url("fonts/BIZUDPGothic-Bold.ttf"); }
+@font-face { font-family: "Roboto Cond"; src: url("fonts/RobotoCondensed-SemiBold.ttf"); }
+@font-face { font-family: "Rokkitt Black"; src: url("fonts/Rokkitt-Black.ttf"); }
+@font-face { font-family: "M Rounded Black"; src: url("fonts/MPLUSRounded1c-Black.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }

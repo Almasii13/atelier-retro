@@ -21,7 +21,7 @@ global.ActionReference = class { putClass() {} putProperty() {} putEnumerated() 
 global.DialogModes = { NO: 3 }; global.Units = { PIXELS: 1 }; global.TypeUnits = { POINTS: 1 };
 global.NewDocumentMode = { RGB: 1 }; global.DocumentFill = { WHITE: 1 };
 global.ElementPlacement = { PLACEATBEGINNING: 1, INSIDE: 2, PLACEBEFORE: 3 };
-global.AnchorPosition = { MIDDLECENTER: 1 }; global.PointKind = { CORNERPOINT: 1 }; global.ShapeOperation = { SHAPEADD: 1 };
+global.AnchorPosition = { MIDDLECENTER: 1 }; global.PointKind = { CORNERPOINT: 1 }; global.ShapeOperation = { SHAPEADD: 1, SHAPEXOR: 2 };
 global.SelectionType = { REPLACE: 1 }; global.Direction = { VERTICAL: 1, HORIZONTAL: 2 }; global.ResampleMethod = { NONE: 0 };
 global.Extension = { LOWERCASE: 1 };
 global.PathPointInfo = class {}; global.UnitValue = function (v, u) { this.v = v; }; global.SubPathInfo = class {};

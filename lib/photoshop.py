@@ -29,12 +29,15 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Noto JP Black": [(0, "NotoSansJP-Black")],
     "Oswald M": [(0, "Oswald-Medium")],
     "BIZ UDP": [(0, "BIZUDPGothic-Bold")],
+    "Roboto Cond": [(0, "RobotoCondensed-SemiBold")],
+    "Rokkitt Black": [(0, "Rokkitt-Black")],
+    "M Rounded Black": [(0, "RoundedMplus1c-Black")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
 CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
 NATIF_ITALIQUE = {"Work Sans BI"}  # polices déjà italiques : pas d'italique synthétique en plus
-UNE_GRAISSE = {"Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
+UNE_GRAISSE = {"Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
@@ -174,7 +177,8 @@ def construire_scene_ps(scene, fiche):
         base = {"calque": it["calque"], "calqueNom": calque_nom(it["calque"]), "groupe": it.get("groupe", ""), "nom": it["nom"]}
         t = it["type"]
         if t == "forme":
-            sortie["items"].append({**base, "type": "forme", "couleur": _couleur(it["couleur"]), "chemins": chemin(it["chemins"])})
+            sortie["items"].append({**base, "type": "forme", "couleur": _couleur(it["couleur"]), "chemins": chemin(it["chemins"]),
+                                    **({"xor": True} if it.get("xor") else {})})
         elif t in ("image", "zone"):
             sortie["items"].append({**base, "type": t, "cle": it["cle"], "label": it.get("label", ""), "chemins": chemin(it["chemins"]),
                                     "detoure": bool(it.get("detoure"))})
@@ -270,4 +274,10 @@ def exporter_jsx(page, fiche, base):
     jsx = "".join(c if ord(c) < 128 else f"\\u{ord(c):04x}" for c in jsx)
     jsx = jsx.replace("\r\n", "\n").replace("\n", "\r\n")  # fins de ligne Windows, lues partout
     pathlib.Path(f"{base}_photoshop.jsx").write_bytes(jsx.encode("ascii"))
+    # Même scène pour Illustrator (lib/illustrator_modele.jsx)
+    modele_ai = (RACINE / "lib" / "illustrator_modele.jsx").read_text(encoding="utf-8")
+    ai = modele_ai.replace("/*__SCENE__*/null", json.dumps(donnees, ensure_ascii=True))
+    ai = "".join(c if ord(c) < 128 else f"\\u{ord(c):04x}" for c in ai)
+    ai = ai.replace("\r\n", "\n").replace("\n", "\r\n")
+    pathlib.Path(f"{base}_illustrator.jsx").write_bytes(ai.encode("ascii"))
     return donnees

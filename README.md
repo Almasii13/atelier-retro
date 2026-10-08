@@ -22,6 +22,7 @@ Exports :
 - `<nom>.psd` : calques Photoshop — Fond / Forme + calque écrêté pour chaque image / repères des zones réservées (masqués) / Textes & graphismes.
 - `<nom>_calques/` : les mêmes calques en PNG transparents, pour le montage vidéo (glisser la VHS 3D ou la TV entre le fond et les textes).
 - `<nom>_photoshop.jsx` : **script Photoshop** qui reconstruit le document en vrais calques — textes modifiables, formes vectorielles, image en masque d'écrêtage, zones réservées, repères. Photoshop > Fichier > Scripts > Parcourir… Le PSD est enregistré à côté du script. Installer d'abord les polices de `lib/fonts`.
+- `<nom>_illustrator.jsx` : **script Illustrator** construit à partir de la même scène — plan de travail au format fini avec fond perdu, calques et sous-calques, tracés vectoriels (dégradés, tracés transparés), textes modifiables calés sur l'encre, groupes de découpe pour les images, zone de sécurité en repère. Illustrator > Fichier > Scripts > Autre script… Le .ai est enregistré à côté du script. Contrôle sans Illustrator : `node outils/simulateur_illustrator.js <script> [--arbre] [--svg apercu.svg]`.
 - Furigana : `data-ruby` sur la base → petit texte posé au-dessus (calque séparé dans Photoshop).
 - Dégradés : fonds en `linear-gradient` → calques de remplissage dégradé ; texte découpé dans un dégradé → incrustation de dégradé.
 - `outils/feu.py` : fond « marbre de feu » procédural (rouge / orange / jaune) vectorisé.
@@ -39,6 +40,7 @@ Exports :
 | `sachet-hero-tete` | Entête de sachet 70,7×20,5 (variantes recto / verso) : logo de série ovale, accroche jaune ou encadré « セット内容 », repère du trou | Sachet « ヒーローコレクション 第3弾 » (1995) | En test (V1) |
 | `sachet-hero-corps-recto` | Corps de sachet 70,7×98,3 : fond bleu éclaboussé, contenu avec furigana, pilule et ovale prix | idem | En test (V1) |
 | `sachet-hero-corps-verso` | Corps de sachet 70,7×98,3 : panneau illustré, accroche rouge inclinée, encadré vertical, code-barres EAN-13 vectoriel, adresse, sceau | idem | En test (V1) |
+| `carte-pocket-file` | Recto de carte 65×90 : fond dégradé bleu → blanc, onglet FILE (texte argent), fenêtre à encoche + damier prisme bleu, plaques nom / attaque centrées, titre POCKET MONSTERS (serif condensé, dégradé violet) | Carddass Pocket Monsters FILE No.009 | En test (V1) |
 | `carte-power-level` | Recto de carte 65×90 : fond de flammes vectoriel, cadre + damier prisme carré, badge octogonal, bandeau nom incliné (furigana), encadré texte, bloc POWER LEVEL + échelle 1–5 | Carte « Super Battle » Dragon Ball GT n° 749 | En test (V1) |
 | `carte-hero-wgl` | Recto de carte 65×90 : bandes noires, fenêtre prisme pyramide vectorielle, titre bleu en arche (échelle verticale par lettre), CARD / numéro / NUMBER | Carte prisme « HERO COLLECTION » WGL-1 (Goku SSJ3) | En test (V1) |
 | `carte-hero-diagonale` | Recto de carte 65×90 : fond bleu / prisme séparés par une diagonale, grand titre au trait découpé par la diagonale (masques vectoriels), filet parallèle, bandeau rouge | Carte prisme « HERO COLLECTION » WGL-1 (Vegeta & Trunks) | En test (V1) |

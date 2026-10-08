@@ -227,3 +227,40 @@ def prisme_carre(region, periode, phase=(0, 0)):
                 if len(c) >= 3:
                     out.setdefault(fam + cle, []).append([(round(x, 3), round(y, 3)) for x, y in c])
     return out
+
+
+def prisme_carre_multi(regions, periode, phase=(0, 0)):
+    """prisme_carre sur plusieurs régions convexes (fenêtre non convexe découpée en morceaux convexes)."""
+    out = {}
+    for r in regions:
+        for k, v in prisme_carre(r, periode, phase).items():
+            out.setdefault(k, []).extend(v)
+    return out
+
+
+def arrondi(pts, rayons, n=10):
+    """Polygone à coins arrondis (congés circulaires), échantillonné : [(x, y), ...] en mm.
+    rayons : un nombre ou une liste (un rayon par sommet, 0 = angle vif)."""
+    k = len(pts)
+    rs = rayons if isinstance(rayons, (list, tuple)) else [rayons] * k
+    out = []
+    for i in range(k):
+        p0, p1, p2 = pts[i - 1], pts[i], pts[(i + 1) % k]
+        r = rs[i]
+        if not r:
+            out.append((round(p1[0], 3), round(p1[1], 3))); continue
+        u = (p0[0] - p1[0], p0[1] - p1[1]); v = (p2[0] - p1[0], p2[1] - p1[1])
+        lu, lv = math.hypot(*u), math.hypot(*v)
+        u = (u[0] / lu, u[1] / lu); v = (v[0] / lv, v[1] / lv)
+        theta = math.acos(max(-1, min(1, u[0] * v[0] + u[1] * v[1])))  # angle intérieur
+        t = r / math.tan(theta / 2)  # recul du point de tangence
+        a = (p1[0] + u[0] * t, p1[1] + u[1] * t); b = (p1[0] + v[0] * t, p1[1] + v[1] * t)
+        bis = (u[0] + v[0], u[1] + v[1]); lb = math.hypot(*bis); bis = (bis[0] / lb, bis[1] / lb)
+        dc = r / math.sin(theta / 2)
+        c = (p1[0] + bis[0] * dc, p1[1] + bis[1] * dc)
+        a0 = math.atan2(a[1] - c[1], a[0] - c[0]); a1 = math.atan2(b[1] - c[1], b[0] - c[0])
+        da = (a1 - a0 + math.pi) % (2 * math.pi) - math.pi
+        for j in range(n + 1):
+            an = a0 + da * j / n
+            out.append((round(c[0] + r * math.cos(an), 3), round(c[1] + r * math.sin(an), 3)))
+    return out

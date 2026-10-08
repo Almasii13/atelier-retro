@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après une Carddass « POCKET MONSTERS » (FILE No.009).
+   Fond dégradé bleu → blanc, onglet FILE, fenêtre à encoche (cadre gris anthracite) garnie d'un damier
+   prisme bleu, deux plaques (nom / attaque), titre POCKET MONSTERS. Toutes les cotes en mm (page finie). #}
+{% set E = G.cadre_ext %}{% set I = G.cadre_int %}
+{% set ext = arrondi(E.points, E.rayons) %}{% set int = arrondi(I.points, I.rayons) %}
+{% set dam = prisme_carre_multi(G.damier.regions, G.damier.periode, G.damier.phase) %}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% macro rr(r, rx, nom, coul) %}<rect data-nom="{{ nom }}" x="{{ r[0] }}" y="{{ r[1] }}" width="{{ '%.3f' % (r[2]-r[0]) }}" height="{{ '%.3f' % (r[3]-r[1]) }}" rx="{{ rx }}" fill="{{ coul }}"/>{% endmacro %}
+{% macro dedans(r, e) %}{{ [r[0]+e, r[1]+e, r[2]-e, r[3]-e] }}{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .fond-degrade { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm;
+    background: linear-gradient(180deg{% for y, c in C.fond %}, {{ c }} {{ '%.2f' % ((y + FP) / (H + 2*FP) * 100) }}%{% endfor %}); }
+
+  /* FILE No.009 : capitales condensées, dégradé argent */
+  .file { font: 400 3.4mm/1 "Roboto Cond", sans-serif;
+          background: linear-gradient(180deg{% for p, c in C.argent %}, {{ c }} {{ p }}%{% endfor %});
+          -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* Plaques nom / attaque */
+  .plaque { font: 400 3mm/1 "M Rounded Black", sans-serif; color: {{ C.texte_plaque }}; }
+  /* POCKET MONSTERS : serif à empattements, très condensé, dégradé violet */
+  .pm { font: 400 9mm/1 "Rokkitt Black", serif;
+        background: linear-gradient(180deg{% for p, c in C.titre %}, {{ c }} {{ p }}%{% endfor %});
+        -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  {% for cle, v in G.interlettres.items() %}.{{ cle }} { letter-spacing: {{ v }}mm; }
+  {% endfor %}
+  .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ G.logo[2] - G.logo[0] }}mm; height: {{ G.logo[3] - G.logo[1] }}mm; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ===== FOND : dégradé bleu ciel → blanc ===== #}
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="fond-degrade" data-nom="Fond dégradé"></div>
+  </div>
+
+  {# ===== FENÊTRE : damier prisme + cadre à encoche ===== #}
+  <div class="abs" data-calque="cadre" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% for cle, coul in C.damier.items() %}{% if cle in dam %}<path data-nom="Damier – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(dam[cle]) }}"/>{% endif %}{% endfor %}
+      <path data-nom="Cadre de la fenêtre" fill="{{ C.cadre }}" fill-rule="evenodd" d="{{ chemin_svg([ext, int]) }}"/>
+    </svg>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="POKÉMON DÉTOURÉ">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Onglet FILE ----- #}
+    <svg class="abs" data-groupe="Onglet FILE" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {{ rr(G.onglet, G.onglet_rayon, "Onglet noir", C.onglet) }}
+    </svg>
+    <div class="t file file-a" data-groupe="Onglet FILE">{{ T.file[0] }}</div>
+    <div class="t file file-b" data-groupe="Onglet FILE">{{ T.file[1] }}</div>
+
+    {# ----- Plaque nom (dessous) puis plaque attaque (dessus) ----- #}
+    {% for cle in ['nom', 'attaque'] %}{% set P = G.plaques[cle] %}
+    <svg class="abs" data-groupe="Plaque {{ cle }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {{ rr(P.boite, P.rayon, "Plaque " ~ cle ~ " – liseré", C.liseret) }}
+      {% set b = P.boite %}{% set e = P.liseret %}
+      {{ rr([b[0]+e, b[1]+e, b[2]-e, b[3]-e], [P.rayon - e, 0.05]|max, "Plaque " ~ cle ~ " – fond", C.plaques[cle]) }}
+      {% if cle == 'attaque' %}<polygon data-nom="Triangle ▶" fill="{{ C.texte_plaque }}" points="{{ poly(G.triangle) }}"/>{% endif %}
+    </svg>
+    <div class="t plaque pl-{{ cle }}" data-groupe="Plaque {{ cle }}">{{ T[cle] }}</div>
+    {% endfor %}
+
+    {# ----- POCKET MONSTERS ----- #}
+    <div class="t pm pm-a" data-groupe="Titre">{{ T.titre[0] }}</div>
+    <div class="t pm pm-b" data-groupe="Titre">{{ T.titre[1] }}</div>
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
