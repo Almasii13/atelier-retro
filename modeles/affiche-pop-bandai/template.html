@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Repère 1080 × 1920 px : p(v) = v × L / 1080 mm #}
+{% set k = L / 1080 %}
+{% macro p(v) %}{{ '%.3f' % (v * k) }}mm{% endmacro %}
+{# boîte à coins coupés : x, y, l, h, c #}
+{% macro coupe(x, y, w, h, c) %}{{ x+c }},{{ y }} {{ x+w-c }},{{ y }} {{ x+w }},{{ y+c }} {{ x+w }},{{ y+h-c }} {{ x+w-c }},{{ y+h }} {{ x+c }},{{ y+h }} {{ x }},{{ y+h-c }} {{ x }},{{ y+c }}{% endmacro %}
+<style>
+  /* Modèle « affiche pop Bandai » — 1080 × 1920 px.
+     Inspiré des planches Carddass 100 : bandeau rouge, pastille verte, gros logos, bandeau diagonal bleu,
+     explosions jaunes, cadre vert autour de la carte, boîte blanche, pied de page bleu en petits caractères. */
+  body { width: {{ L }}mm; height: {{ H }}mm; background: {{ C.bleu }}; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.noir }}; font-family: var(--f-gothic); left: 0; top: 0; }
+  .fond { position: absolute; left: 0; top: 0; width: {{ p(1080) }}; height: {{ p(1600) }}; background: linear-gradient(180deg, {{ C.orange1 }} 0%, {{ C.orange2 }} 100%); }
+  .fond-pied { position: absolute; left: 0; top: {{ p(1600) }}; width: {{ p(1080) }}; height: {{ p(320) }}; background: {{ C.bleu }}; }
+  .svg { left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+
+  .t { white-space: nowrap; line-height: 1; }
+  .carte { left: {{ p(G.carte[0]) }}; top: {{ p(G.carte[1]) }}; width: {{ p(G.carte[2]) }}; height: {{ p(G.carte[3]) }}; }
+  .logo-or { left: {{ p(G.logo_or[0]) }}; top: {{ p(G.logo_or[1]) }}; width: {{ p(G.logo_or[2]) }}; height: {{ p(G.logo_or[3]) }}; }
+  .logo-db { left: {{ p(G.logo_db[0]) }}; top: {{ p(G.logo_db[1]) }}; width: {{ p(G.logo_db[2]) }}; height: {{ p(G.logo_db[3]) }}; }
+  .slot.vide.logo-or, .slot.vide.logo-db { background: rgba(0,0,0,.08); outline: {{ p(2) }} dashed rgba(0,0,0,.4); }
+  .slot.vide.logo-or::after, .slot.vide.logo-db::after { color: rgba(0,0,0,.6); font: 700 {{ p(22) }}/1.3 var(--f-latin); }
+
+  /* barre rouge du haut */
+  .pastille { left: {{ p(26) }}; top: {{ p(22) }}; width: {{ p(210) }}; height: {{ p(54) }}; display: flex; align-items: center; justify-content: center; font: 900 {{ p(30) }}/1 var(--f-gothic); color: #fff; letter-spacing: {{ p(2) }}; }
+  .barre-titre { left: {{ p(260) }}; top: {{ p(18) }}; width: {{ p(600) }}; height: {{ p(60) }}; display: flex; align-items: center; justify-content: center; font: 900 {{ p(46) }}/1 var(--f-gothic); color: #fff; letter-spacing: {{ p(6) }}; white-space: nowrap; }
+  .barre-an { left: {{ p(870) }}; top: {{ p(8) }}; width: {{ p(190) }}; height: {{ p(80) }}; display: flex; align-items: center; justify-content: center; font: {{ p(58) }}/1 var(--f-latin); color: {{ C.jaune }}; white-space: nowrap; }
+
+  .sous-logo { left: {{ p(40) }}; top: {{ p(262) }}; width: {{ p(480) }}; height: {{ p(46) }}; display: flex; align-items: center; justify-content: center; font: 900 {{ p(22) }}/1 var(--f-gothic); white-space: nowrap; letter-spacing: 0; }
+
+  .grand { left: {{ p(40) }}; width: {{ p(470) }}; top: {{ p(352) }}; height: {{ p(130) }}; font: 400 {{ p(112) }}/1 var(--f-gothic-lourd); color: #fff; white-space: nowrap; text-align: center; }
+  .grand.o { color: {{ C.noir }}; transform: translate({{ p(6) }}, {{ p(6) }}); }
+  .grand-en { left: {{ p(40) }}; width: {{ p(470) }}; top: {{ p(488) }}; text-align: center; font: 700 {{ p(26) }}/1 var(--f-latin); letter-spacing: {{ p(6) }}; color: {{ C.rouge }}; white-space: nowrap; }
+
+  /* bandeau diagonal */
+  .axe { left: {{ p(540) }}; top: {{ p(G.bande_cy) }}; width: 0; height: 0; transform: rotate({{ G.angle }}deg); transform-origin: 0 0; }
+  .bande-l1 { left: {{ p(-520) }}; top: {{ p(-62) }}; width: {{ p(1040) }}; height: {{ p(70) }}; display: flex; align-items: center; justify-content: center; font: 900 {{ p(58) }}/1 var(--f-gothic); color: #fff; white-space: nowrap; letter-spacing: {{ p(1) }}; }
+  .bande-l1.o { color: {{ C.noir }}; transform: translate({{ p(4) }}, {{ p(4) }}); }
+  .bande-l2 { left: {{ p(-520) }}; top: {{ p(24) }}; width: {{ p(1040) }}; height: {{ p(30) }}; display: flex; align-items: center; justify-content: center; font: 700 {{ p(24) }}/1 var(--f-latin); color: {{ C.jaune }}; letter-spacing: {{ p(4) }}; white-space: nowrap; }
+
+  /* bulles d'info */
+  .b-rouge { font: 400 {{ p(104) }}/1 var(--f-gothic-lourd); color: {{ C.rouge }}; white-space: nowrap; }
+  .b-jp { font: 900 {{ p(44) }}/1 var(--f-gothic); color: {{ C.noir }}; white-space: nowrap; }
+  .b-en { font: 700 {{ p(19) }}/1 var(--f-latin); letter-spacing: {{ p(3) }}; color: {{ C.rouge }}; white-space: nowrap; }
+  .ruban { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .ruban b { font: 900 {{ p(38) }}/1 var(--f-gothic); color: #fff; white-space: nowrap; }
+  .ruban i { font: 700 {{ p(17) }}/1 var(--f-latin); font-style: normal; letter-spacing: {{ p(3) }}; color: {{ C.jaune }}; margin-top: {{ p(8) }}; white-space: nowrap; }
+  .ruban.clair b { color: {{ C.rouge }}; font-size: {{ p(36) }}; }
+  .ruban.clair i { color: {{ C.bleu }}; }
+  .puce { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .puce b { font: 900 {{ p(34) }}/1 var(--f-gothic); color: #fff; white-space: nowrap; }
+  .puce i { font: 700 {{ p(16) }}/1 var(--f-latin); font-style: normal; letter-spacing: {{ p(2) }}; color: #fff; margin-top: {{ p(6) }}; white-space: nowrap; }
+  .boite { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .boite b { font: 900 {{ p(34) }}/1 var(--f-gothic); color: {{ C.rouge }}; white-space: nowrap; }
+  .boite i { font: 700 {{ p(20) }}/1 var(--f-gothic); font-style: normal; color: {{ C.noir }}; margin-top: {{ p(8) }}; white-space: nowrap; }
+  .etiquette { display: flex; align-items: center; justify-content: center; font: 400 {{ p(21) }}/1 var(--f-latin); color: #fff; white-space: nowrap; letter-spacing: {{ p(2) }}; }
+
+  /* pied bleu */
+  .pied { color: #fff; font: 700 {{ p(24) }}/{{ p(34) }} var(--f-gothic); left: {{ p(50) }}; width: {{ p(980) }}; }
+  .pied.fin { font-size: {{ p(21) }}; line-height: {{ p(30) }}; color: #dbe4ff; }
+  .pied-en { left: 0; width: {{ p(1080) }}; text-align: center; white-space: nowrap; font: 700 {{ p(17) }}/1 var(--f-latin); letter-spacing: {{ p(2.4) }}; color: {{ C.jaune }}; }
+  .pied-en.e2 { color: #fff; }
+  .pied-en.e3 { font: 700 {{ p(14) }}/1 var(--f-gothic); letter-spacing: {{ p(1.4) }}; color: #aebcf0; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ============ CALQUE 1 : fond ============ #}
+  <div class="fond" data-calque="fond">
+    <div class="abs fond-orange" style="left:0;top:0;width:100%;height:100%"></div>
+  </div>
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs svg" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+      <rect data-nom="Pied bleu" x="0" y="1600" width="1080" height="320" fill="{{ C.bleu }}"/>
+      <rect data-nom="Pied liseré" x="0" y="1600" width="1080" height="8" fill="{{ C.jaune }}"/>
+      {# explosions jaunes #}
+      <path data-nom="Explosion – logo" d="{{ etoiles.logo }}" fill="{{ C.creme }}"/>
+      <path data-nom="Explosion – carte" d="{{ etoiles.carte }}" fill="{{ C.jaune_clair }}"/>
+      <path data-nom="Explosion – haut gauche" d="{{ etoiles.coin }}" fill="{{ C.jaune_clair }}"/>
+      {# barre rouge #}
+      <rect data-nom="Barre rouge" x="0" y="0" width="1080" height="98" fill="{{ C.rouge }}"/>
+      <rect data-nom="Barre liseré" x="0" y="98" width="1080" height="6" fill="{{ C.noir }}"/>
+      <polygon data-nom="Pastille verte" points="{{ coupe(22, 22, 218, 56, 14) }}" fill="{{ C.vert }}"/>
+      {# cartouche blanc sous le logo Dragon Ball #}
+      <rect data-nom="Cartouche ombre" x="46" y="268" width="480" height="46" fill="{{ C.noir }}"/>
+      <rect data-nom="Cartouche" x="40" y="262" width="480" height="46" fill="#fff"/>
+      {# bandeau diagonal #}
+      <polygon data-nom="Bandeau ombre" points="0,{{ G.bande[0] + 12 }} 1080,{{ G.bande[1] + 12 }} 1080,{{ G.bande[3] + 12 }} 0,{{ G.bande[2] + 12 }}" fill="{{ C.noir }}"/>
+      <polygon data-nom="Bandeau" points="0,{{ G.bande[0] }} 1080,{{ G.bande[1] }} 1080,{{ G.bande[3] }} 0,{{ G.bande[2] }}" fill="{{ C.bleu }}"/>
+      <polygon data-nom="Bandeau filet haut" points="0,{{ G.bande[0] }} 1080,{{ G.bande[1] }} 1080,{{ G.bande[1] + 10 }} 0,{{ G.bande[0] + 10 }}" fill="{{ C.jaune }}"/>
+      <polygon data-nom="Bandeau filet bas" points="0,{{ G.bande[2] - 10 }} 1080,{{ G.bande[3] - 10 }} 1080,{{ G.bande[3] }} 0,{{ G.bande[2] }}" fill="{{ C.jaune }}"/>
+      {# cadre vert de la carte #}
+      {% set c = G.carte %}
+      <polygon data-nom="Cadre ombre" points="{{ coupe(c[0]-28+8, c[1]-28+8, c[2]+56, c[3]+56, 22) }}" fill="{{ C.noir }}"/>
+      <polygon data-nom="Cadre vert" points="{{ coupe(c[0]-28, c[1]-28, c[2]+56, c[3]+56, 22) }}" fill="{{ C.vert }}"/>
+      <polygon data-nom="Cadre blanc" points="{{ coupe(c[0]-14, c[1]-14, c[2]+28, c[3]+28, 14) }}" fill="#fff"/>
+      <polygon data-nom="Étiquette" points="{{ coupe(c[0]-28, c[1]-62, 300, 56, 12) }}" fill="{{ C.rouge }}"/>
+      {# bulle 7,500 #}
+      <path data-nom="Explosion 7500 ombre" d="{{ etoiles.bulle_o }}" fill="{{ C.rouge }}"/>
+      <path data-nom="Explosion 7500" d="{{ etoiles.bulle }}" fill="#fff"/>
+      {# rubans #}
+      <rect data-nom="Ruban 1 ombre" x="{{ G.ruban1[0] + 8 }}" y="{{ G.ruban1[1] + 8 }}" width="{{ G.ruban1[2] }}" height="{{ G.ruban1[3] }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Ruban 1" x="{{ G.ruban1[0] }}" y="{{ G.ruban1[1] }}" width="{{ G.ruban1[2] }}" height="{{ G.ruban1[3] }}" fill="{{ C.bleu }}"/>
+      <rect data-nom="Ruban 2 ombre" x="{{ G.ruban2[0] + 8 }}" y="{{ G.ruban2[1] + 8 }}" width="{{ G.ruban2[2] }}" height="{{ G.ruban2[3] }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Ruban 2" x="{{ G.ruban2[0] }}" y="{{ G.ruban2[1] }}" width="{{ G.ruban2[2] }}" height="{{ G.ruban2[3] }}" fill="#fff"/>
+      {# puces #}
+      {% for pu in G.puces %}
+        <polygon data-nom="Puce ombre" points="{{ coupe(pu[0]+6, pu[1]+6, pu[2], 70, 12) }}" fill="{{ C.noir }}"/>
+        <polygon data-nom="Puce" points="{{ coupe(pu[0], pu[1], pu[2], 70, 12) }}" fill="{{ pu[3] }}"/>
+      {% endfor %}
+      {# boîte blanche #}
+      <rect data-nom="Boîte ombre" x="{{ G.boite[0] + 8 }}" y="{{ G.boite[1] + 8 }}" width="{{ G.boite[2] }}" height="{{ G.boite[3] }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Boîte" x="{{ G.boite[0] }}" y="{{ G.boite[1] }}" width="{{ G.boite[2] }}" height="{{ G.boite[3] }}" fill="#fff"/>
+      <rect data-nom="Boîte liseré" x="{{ G.boite[0] }}" y="{{ G.boite[1] }}" width="{{ G.boite[2] }}" height="8" fill="{{ C.rouge }}"/>
+    </svg>
+  </div>
+
+  {# ============ CALQUE 2 : images ============ #}
+  {% set u = img('carte') %}
+  <div class="abs" data-calque="image:carte" style="inset:0">
+    <div class="slot carte {{ '' if u else 'vide' }}" data-label="TA CARTE&#10;6,5 × 9 cm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% set uo = img('logo_or') %}
+  <div class="abs" data-calque="image:logo_or" style="inset:0">
+    <div class="slot detoure logo-or {{ '' if uo else 'vide' }}" data-label="LOGO SUPER MUSEUM&#10;PNG transparent">{% if uo %}<img src="{{ uo }}">{% endif %}</div>
+  </div>
+  {% set ul = img('logo_db') %}
+  <div class="abs" data-calque="image:logo_db" style="inset:0">
+    <div class="slot detoure logo-db {{ '' if ul else 'vide' }}" data-label="LOGO&#10;PNG transparent">{% if ul %}<img src="{{ ul }}">{% endif %}</div>
+  </div>
+
+  {# ============ CALQUE 3 : textes ============ #}
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs pastille" data-groupe="Barre">{{ T.pastille }}</div>
+    <div class="abs barre-titre" data-groupe="Barre">{{ T.barre }}</div>
+    <div class="abs barre-an" data-groupe="Barre">{{ T.annee }}</div>
+    <div class="abs sous-logo" data-groupe="Cartouche">{{ T.sous_logo }}</div>
+
+    <div class="abs grand o" data-groupe="Grand titre">{{ T.grand }}</div>
+    <div class="abs grand" data-groupe="Grand titre">{{ T.grand }}</div>
+    <div class="abs grand-en" data-groupe="Grand titre">{{ T.grand_en }}</div>
+
+    <div class="abs axe" data-groupe="Bandeau">
+      <div class="abs bande-l1 o">{{ T.bande1 }}</div>
+      <div class="abs bande-l1">{{ T.bande1 }}</div>
+      <div class="abs bande-l2">{{ T.bande2 }}</div>
+    </div>
+
+    <div class="abs etiquette" data-groupe="Carte" style="left:{{ p(G.carte[0] - 28) }}; top:{{ p(G.carte[1] - 62) }}; width:{{ p(300) }}; height:{{ p(56) }}">{{ T.etiquette }}</div>
+
+    <div class="abs t b-rouge" data-groupe="Bulle 7500" style="left:{{ p(G.bulle[0] - 190) }}; width:{{ p(380) }}; top:{{ p(G.bulle[1] - 92) }}; text-align:center">{{ T.bulle_n }}</div>
+    <div class="abs t b-jp" data-groupe="Bulle 7500" style="left:{{ p(G.bulle[0] - 190) }}; width:{{ p(380) }}; top:{{ p(G.bulle[1] + 26) }}; text-align:center">{{ T.bulle_jp }}</div>
+    <div class="abs t b-en" data-groupe="Bulle 7500" style="left:{{ p(G.bulle[0] - 190) }}; width:{{ p(380) }}; top:{{ p(G.bulle[1] + 86) }}; text-align:center">{{ T.bulle_en }}</div>
+
+    <div class="abs ruban" data-groupe="Rubans" style="left:{{ p(G.ruban1[0]) }}; top:{{ p(G.ruban1[1]) }}; width:{{ p(G.ruban1[2]) }}; height:{{ p(G.ruban1[3]) }}"><b>{{ T.ruban1[0] }}</b><i>{{ T.ruban1[1] }}</i></div>
+    <div class="abs ruban clair" data-groupe="Rubans" style="left:{{ p(G.ruban2[0]) }}; top:{{ p(G.ruban2[1]) }}; width:{{ p(G.ruban2[2]) }}; height:{{ p(G.ruban2[3]) }}"><b>{{ T.ruban2[0] }}</b><i>{{ T.ruban2[1] }}</i></div>
+
+    {% for pu in G.puces %}
+      <div class="abs puce" data-groupe="Puces" style="left:{{ p(pu[0]) }}; top:{{ p(pu[1]) }}; width:{{ p(pu[2]) }}; height:{{ p(70) }}"><b>{{ T.puces[loop.index0][0] }}</b><i>{{ T.puces[loop.index0][1] }}</i></div>
+    {% endfor %}
+
+    <div class="abs boite" data-groupe="Boîte" style="left:{{ p(G.boite[0]) }}; top:{{ p(G.boite[1] + 8) }}; width:{{ p(G.boite[2]) }}; height:{{ p(G.boite[3] - 8) }}"><b>{{ T.boite[0] }}</b><i>{{ T.boite[1] }}</i></div>
+
+    {% for l in T.pied %}
+      <div class="abs pied {{ 'fin' if loop.index0 >= 2 else '' }}" data-groupe="Pied" style="top:{{ p(G.pied + loop.index0 * 38 + (6 if loop.index0 >= 2 else 0)) }}; height:{{ p(34) }}">{{ l }}</div>
+    {% endfor %}
+    <div class="abs pied-en" data-groupe="Pied" style="top:{{ p(G.pied_en) }}">{{ T.en1 }}</div>
+    <div class="abs pied-en e2" data-groupe="Pied" style="top:{{ p(G.pied_en + 28) }}">{{ T.en2 }}</div>
+    <div class="abs pied-en e3" data-groupe="Pied" style="top:{{ p(G.pied_en + 58) }}">{{ T.en3 }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
