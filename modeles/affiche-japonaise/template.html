@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Cotes dans un repère de 1080 × 1920 px : p(v) = v × L / 1080 mm #}
+{% set k = L / 1080 %}
+{% macro p(v) %}{{ '%.3f' % (v * k) }}mm{% endmacro %}
+{% macro escalier(x, y, w, h, s) %}{{ x+2*s }},{{ y }} {{ x+w-2*s }},{{ y }} {{ x+w-2*s }},{{ y+s }} {{ x+w-s }},{{ y+s }} {{ x+w-s }},{{ y+2*s }} {{ x+w }},{{ y+2*s }} {{ x+w }},{{ y+h-2*s }} {{ x+w-s }},{{ y+h-2*s }} {{ x+w-s }},{{ y+h-s }} {{ x+w-2*s }},{{ y+h-s }} {{ x+w-2*s }},{{ y+h }} {{ x+2*s }},{{ y+h }} {{ x+2*s }},{{ y+h-s }} {{ x+s }},{{ y+h-s }} {{ x+s }},{{ y+h-2*s }} {{ x }},{{ y+h-2*s }} {{ x }},{{ y+2*s }} {{ x+s }},{{ y+2*s }} {{ x+s }},{{ y+s }} {{ x+2*s }},{{ y+s }}{% endmacro %}
+<style>
+  /* Modèle « affiche japonaise » — 1080 × 1920 px.
+     Papier crème, soleil rouge rayonnant derrière la carte, grandes colonnes verticales en mincho,
+     cadre noir, infos en gros chiffres séparés par des filets (pas de tableau). */
+  body { width: {{ L }}mm; height: {{ H }}mm; background: {{ C.noir }}; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.noir }}; font-family: var(--f-gothic); left: 0; top: 0; }
+  .fond { position: absolute; inset: 0; background: {{ C.creme }}; }
+  .svg { left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+
+  .carte { left: {{ p(G.carte[0]) }}; top: {{ p(G.carte[1]) }}; width: {{ p(G.carte[2]) }}; height: {{ p(G.carte[3]) }}; }
+  .logo-or { left: {{ p(G.logo_or[0]) }}; top: {{ p(G.logo_or[1]) }}; width: {{ p(G.logo_or[2]) }}; height: {{ p(G.logo_or[3]) }}; }
+  .logo-db { left: {{ p(G.logo_db[0]) }}; top: {{ p(G.logo_db[1]) }}; width: {{ p(G.logo_db[2]) }}; height: {{ p(G.logo_db[3]) }}; }
+  .slot.vide.logo-or, .slot.vide.logo-db { background: rgba(0,0,0,.08); outline: {{ p(2) }} dashed rgba(0,0,0,.4); }
+  .slot.vide.logo-or::after, .slot.vide.logo-db::after { color: rgba(0,0,0,.6); font: 700 {{ p(22) }}/1.3 var(--f-latin); }
+
+  .kicker { left: 0; width: {{ p(1080) }}; top: {{ p(G.kicker) }}; height: {{ p(46) }}; text-align: center; font: 900 {{ p(40) }}/{{ p(46) }} var(--f-mincho); letter-spacing: {{ p(8) }}; }
+
+  .gros { font: 900 {{ p(G.tate_gros[2]) }}/1 var(--f-mincho); color: {{ C.noir }}; width: {{ p(G.tate_gros[2] * 1.1) }}; }
+  .gros.g { left: {{ p(G.tate_gros[0]) }}; top: {{ p(G.tate_gros[1]) }}; height: {{ p(G.tate_gros[2] * 4) }}; }
+  .gros.d { left: {{ p(G.tate_gros_d[0]) }}; top: {{ p(G.tate_gros_d[1]) }}; height: {{ p(G.tate_gros_d[2] * 3) }}; font-size: {{ p(G.tate_gros_d[2]) }}; width: {{ p(G.tate_gros_d[2] * 1.1) }}; color: {{ C.rouge }}; }
+  .petit { font: 700 {{ p(38) }}/1 var(--f-mincho); width: {{ p(44) }}; color: {{ C.noir }}; }
+  .entete { font: 700 {{ p(30) }}/1 var(--f-mincho); width: {{ p(36) }}; color: {{ C.noir }}; }
+  .sceau { left: {{ p(G.sceau[0] - G.sceau[2]) }}; top: {{ p(G.sceau[1] - G.sceau[2]) }}; width: {{ p(2*G.sceau[2]) }}; height: {{ p(2*G.sceau[2]) }};
+           display: flex; align-items: center; justify-content: center; font: 900 {{ p(G.sceau[2] * 1.25) }}/1 var(--f-mincho); color: {{ C.creme }}; }
+
+  /* Infos : gros chiffre + libellé japonais + libellé anglais, séparées par des filets */
+  .info { top: {{ p(G.info_y) }}; width: {{ p(G.info_w) }}; height: {{ p(240) }}; text-align: center; }
+  .info .n { display: block; font: {{ p(84) }}/{{ p(124) }} var(--f-latin); color: {{ C.noir }}; letter-spacing: {{ p(-2) }}; white-space: nowrap; }
+  .info .n.r { color: {{ C.rouge }}; }
+  .info .jp { display: block; margin-top: {{ p(6) }}; font: 900 {{ p(36) }}/{{ p(44) }} var(--f-mincho); white-space: nowrap; }
+  .info .en { display: block; margin-top: {{ p(4) }}; font: 700 {{ p(19) }}/{{ p(24) }} var(--f-latin); letter-spacing: {{ p(3) }}; color: {{ C.rouge }}; white-space: nowrap; }
+
+  /* Bandeau noir */
+  .bandeau-texte { left: 0; width: {{ p(1080) }}; top: {{ p(G.bandeau[0]) }}; height: {{ p(G.bandeau[1]) }}; display: flex; align-items: center; justify-content: center;
+                   color: {{ C.creme }}; font: 900 {{ p(38) }}/1 var(--f-mincho); letter-spacing: {{ p(6) }}; white-space: nowrap; }
+
+  .mention { left: 0; width: {{ p(1080) }}; text-align: center; white-space: nowrap; font: 700 {{ p(17) }}/1 var(--f-latin); letter-spacing: {{ p(2.4) }}; color: {{ C.noir }}; }
+  .mention.m2 { color: {{ C.rouge }}; }
+  .mention.m3 { font-size: {{ p(14) }}; letter-spacing: {{ p(1.6) }}; font-family: var(--f-gothic); font-weight: 700; color: #4b4237; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ============ CALQUE 1 : fond — papier, rayons, soleil, cadre ============ #}
+  <div class="fond" data-calque="fond">
+    <svg class="abs svg" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+      <path data-nom="Rayons" d="{{ rayons }}" fill="{{ C.rayon }}"/>
+      <circle data-nom="Soleil" cx="{{ G.soleil[0] }}" cy="{{ G.soleil[1] }}" r="{{ G.soleil[2] }}" fill="{{ C.rouge }}"/>
+      <circle data-nom="Soleil – cœur" cx="{{ G.soleil[0] }}" cy="{{ G.soleil[1] }}" r="{{ G.soleil[2] - 34 }}" fill="{{ C.rouge_vif }}"/>
+      {# cadre or en escalier autour de la carte #}
+      {% set c = G.carte %}{% set m = 24 %}
+      <polygon points="{{ escalier(c[0]-m, c[1]-m, c[2]+2*m, c[3]+2*m, 14) }}" fill="{{ C.noir }}"/>
+      <polygon points="{{ escalier(c[0]-m+9, c[1]-m+9, c[2]+2*m-18, c[3]+2*m-18, 11) }}" fill="{{ C.or }}"/>
+      <polygon points="{{ escalier(c[0]-m+17, c[1]-m+17, c[2]+2*m-34, c[3]+2*m-34, 8) }}" fill="{{ C.noir }}"/>
+      {# sceau rouge « 特 » #}
+      <rect data-nom="Sceau" x="{{ G.sceau[0] - G.sceau[2] }}" y="{{ G.sceau[1] - G.sceau[2] }}" width="{{ 2*G.sceau[2] }}" height="{{ 2*G.sceau[2] }}" fill="{{ C.noir }}"/>
+      <rect x="{{ G.sceau[0] - G.sceau[2] + 8 }}" y="{{ G.sceau[1] - G.sceau[2] + 8 }}" width="{{ 2*G.sceau[2] - 16 }}" height="{{ 2*G.sceau[2] - 16 }}" fill="{{ C.rouge }}"/>
+      {# filets entre les infos #}
+      {% for x in G.filets %}<rect data-nom="Filet" x="{{ x }}" y="{{ G.info_y + 10 }}" width="4" height="200" fill="{{ C.noir }}"/>{% endfor %}
+      <rect data-nom="Filet haut" x="140" y="{{ G.filet_haut }}" width="800" height="4" fill="{{ C.noir }}"/>
+      <rect data-nom="Filet haut 2" x="140" y="{{ G.filet_haut + 9 }}" width="800" height="2" fill="{{ C.rouge }}"/>
+      {# bandeau noir #}
+      <rect data-nom="Bandeau" x="0" y="{{ G.bandeau[0] }}" width="1080" height="{{ G.bandeau[1] }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Bandeau liseré" x="0" y="{{ G.bandeau[0] + G.bandeau[1] }}" width="1080" height="6" fill="{{ C.rouge }}"/>
+      {# cadre noir de l'affiche + liseré or intérieur #}
+      <path data-nom="Cadre" fill-rule="evenodd" fill="{{ C.noir }}" d="M 0,0 1080,0 1080,1920 0,1920 Z M 26,26 26,1894 1054,1894 1054,26 Z"/>
+      <path data-nom="Liseré or" fill-rule="evenodd" fill="{{ C.or }}" d="M 26,26 1054,26 1054,1894 26,1894 Z M 32,32 32,1888 1048,1888 1048,32 Z"/>
+    </svg>
+  </div>
+
+  {# ============ CALQUE 2 : images ============ #}
+  {% set u = img('carte') %}
+  <div class="abs" data-calque="image:carte" style="inset:0">
+    <div class="slot carte {{ '' if u else 'vide' }}" data-label="TA CARTE&#10;6,5 × 9 cm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% set uo = img('logo_or') %}
+  <div class="abs" data-calque="image:logo_or" style="inset:0">
+    <div class="slot detoure logo-or {{ '' if uo else 'vide' }}" data-label="LOGO DORÉ&#10;PNG transparent">{% if uo %}<img src="{{ uo }}">{% endif %}</div>
+  </div>
+  {% set ul = img('logo_db') %}
+  <div class="abs" data-calque="image:logo_db" style="inset:0">
+    <div class="slot detoure logo-db {{ '' if ul else 'vide' }}" data-label="LOGO&#10;PNG transparent">{% if ul %}<img src="{{ ul }}">{% endif %}</div>
+  </div>
+
+  {# ============ CALQUE 3 : textes ============ #}
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs tate entete" data-groupe="En-tête" style="left:{{ p(G.entete_g[0]) }}; top:{{ p(G.entete_g[1]) }}; height:{{ p(36 * T.entete_g|length) }}">{{ T.entete_g }}</div>
+    <div class="abs tate entete" data-groupe="En-tête" style="left:{{ p(G.entete_d[0]) }}; top:{{ p(G.entete_d[1]) }}; height:{{ p(36 * T.entete_d|length) }}">{{ T.entete_d }}</div>
+
+    <div class="abs kicker" data-groupe="Accroche">{{ T.kicker }}</div>
+
+    <div class="abs tate gros g" data-groupe="Grande colonne gauche">{{ T.gros_g }}</div>
+    <div class="abs tate gros d" data-groupe="Grande colonne droite">{{ T.gros_d }}</div>
+    <div class="abs tate petit" data-groupe="Petite colonne" style="left:{{ p(G.petit_g[0]) }}; top:{{ p(G.petit_g[1]) }}; height:{{ p(38 * T.petit_g|length) }}">{{ T.petit_g }}</div>
+    <div class="abs tate petit" data-groupe="Petite colonne" style="left:{{ p(G.petit_d[0]) }}; top:{{ p(G.petit_d[1]) }}; height:{{ p(38 * T.petit_d|length) }}">{{ T.petit_d }}</div>
+
+    <div class="abs sceau" data-groupe="Sceau">{{ T.sceau }}</div>
+
+    {% for i in infos %}
+      <div class="abs info" data-groupe="Infos" style="left:{{ p(G.info_x[loop.index0] - G.info_w / 2) }}">
+        <span class="n {{ i.cl }}">{{ i.n }}</span><span class="jp">{{ i.jp }}</span><span class="en">{{ i.en }}</span>
+      </div>
+    {% endfor %}
+
+    <div class="abs bandeau-texte" data-groupe="Bandeau">{{ T.bandeau }}</div>
+
+    <div class="abs mention m1" data-groupe="Pied" style="top:{{ p(G.pied) }}">{{ T.m1 }}</div>
+    <div class="abs mention m2" data-groupe="Pied" style="top:{{ p(G.pied + 28) }}">{{ T.m2 }}</div>
+    <div class="abs mention m3" data-groupe="Pied" style="top:{{ p(G.pied + 56) }}">{{ T.m3 }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
