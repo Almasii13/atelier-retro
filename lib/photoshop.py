@@ -184,10 +184,11 @@ def construire_scene_ps(scene, fiche):
         t = it["type"]
         if t == "forme":
             sortie["items"].append({**base, "type": "forme", "couleur": _couleur(it["couleur"]), "chemins": chemin(it["chemins"]),
-                                    **({"xor": True} if it.get("xor") else {})})
+                                    **({"xor": True} if it.get("xor") else {}),
+                                    **({"opacite": it["opacite"]} if it.get("opacite") else {})})
         elif t in ("image", "zone"):
             sortie["items"].append({**base, "type": t, "cle": it["cle"], "label": it.get("label", ""), "chemins": chemin(it["chemins"]),
-                                    "detoure": bool(it.get("detoure"))})
+                                    "detoure": bool(it.get("detoure")), **({"image": it["cle"]} if t == "image" else {})})
         elif t == "degrade":
             sortie["items"].append({**base, "type": "degrade", "chemins": chemin(it["chemins"]),
                                     "angle": 90 - it["degrade"]["angle"],
@@ -287,6 +288,28 @@ def exporter_jsx(page, fiche, base):
         if cle and cle not in motifs:
             it.pop("motif")
     donnees["motifs"] = motifs
+    # Images des emplacements (fiche.images[clé]) : réduites à la taille de l'emplacement puis embarquées en base64
+    import io
+    images = {}
+    for it in donnees["items"]:
+        if it.get("type") != "image" or not it.get("image"):
+            continue
+        cle = it["image"]
+        chemin = pathlib.Path(base).parent / fiche.get("images", {}).get(cle, "")
+        if not chemin.is_file():
+            it.pop("image")
+            continue
+        if cle not in images:
+            xs = [p["a"][0] for c in it["chemins"] for p in c]
+            ys = [p["a"][1] for c in it["chemins"] for p in c]
+            bw, bh = max(xs) - min(xs), max(ys) - min(ys)
+            im = Image.open(chemin).convert("RGBA")
+            s = min(1.0, max(bw / im.width, bh / im.height))
+            if s < 1:
+                im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+            buf = io.BytesIO(); im.save(buf, "PNG", optimize=True)
+            images[cle] = {"b64": base64.b64encode(buf.getvalue()).decode(), "l": im.width, "h": im.height}
+    donnees["images"] = images
     import re, unicodedata
     nom = unicodedata.normalize("NFKD", pathlib.Path(base).name).encode("ascii", "ignore").decode()
     donnees["fichier"] = re.sub(r"[^A-Za-z0-9_-]+", "_", nom).strip("_") or "atelier"

@@ -347,6 +347,39 @@
     return l;
   }
 
+  // ---------- Images des emplacements (logos, photos) ----------
+  var fichiersImages = {};
+  function fichierImage(cle) {
+    if (fichiersImages[cle]) return fichiersImages[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_image_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.images[cle].b64)); f.close();
+    fichiersImages[cle] = f;
+    return f;
+  }
+  // base : calque forme sur lequel l'image est écrêtée (null = image posée librement, PNG détouré)
+  function poserImage(base, it) {
+    var src = app.open(fichierImage(it.image));
+    src.selection.selectAll(); src.selection.copy();
+    src.close(SaveOptions.DONOTSAVECHANGES);
+    app.activeDocument = doc;
+    if (base) doc.activeLayer = base;
+    var l = doc.paste();
+    if (!l || l === base) l = doc.activeLayer;
+    l.name = it.calqueNom;
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (var c = 0; c < it.chemins.length; c++) for (var p = 0; p < it.chemins[c].length; p++) {
+      var a = it.chemins[c][p].a;
+      x0 = Math.min(x0, a[0]); x1 = Math.max(x1, a[0]); y0 = Math.min(y0, a[1]); y1 = Math.max(y1, a[1]);
+    }
+    var b = l.bounds, w = px(b[2]) - px(b[0]), h = px(b[3]) - px(b[1]);
+    var s = it.detoure ? Math.min((x1 - x0) / w, (y1 - y0) / h) : Math.max((x1 - x0) / w, (y1 - y0) / h);
+    if (Math.abs(s - 1) > 0.002) l.resize(s * 100, s * 100, AnchorPosition.MIDDLECENTER);
+    var c2 = centreEncre(l);
+    l.translate((x0 + x1) / 2 - c2[0], (y0 + y1) / 2 - c2[1]);
+    if (base) l.grouped = true;
+    return l;
+  }
+
   function arc(it, conteneur) {
     var g = doc.layerSets.add(); g.name = it.nom; ranger(g, conteneur);
     for (var i = 0; i < it.car.length; i++) {
@@ -367,7 +400,10 @@
       var it = SCENE.items[n];
       try {
         var cont = groupeDe(it), l;
-        if (it.type === "forme") { l = forme(it.chemins, it.couleur, it.nom, null, it.xor); ranger(l, cont); }
+        if (it.type === "forme") {
+          l = forme(it.chemins, it.couleur, it.nom, null, it.xor); ranger(l, cont);
+          if (it.opacite) { try { l.opacity = it.opacite; } catch (e) {} }
+        }
         else if (it.type === "degrade") { l = formeDegradee(it); ranger(l, cont); }
         else if (it.type === "texte") {
           l = texte(it); ranger(l, cont);
@@ -377,10 +413,22 @@
         }
         else if (it.type === "arc") { arc(it, cont); }
         else if (it.type === "image") {
-          l = forme(it.chemins, [128, 128, 128], "Forme – " + it.calqueNom); ranger(l, cont);
-          if (it.detoure) { try { l.fillOpacity = 0; } catch (e) {} }  // image détourée : la forme découpe sans se voir
-          var img = doc.artLayers.add(); img.name = ">> " + it.calqueNom + " : colle ton image ici";
-          ranger(img, cont); img.grouped = true;
+          var avecImage = !!(it.image && SCENE.images && SCENE.images[it.image]);
+          if (avecImage && it.detoure) {
+            // logo / personnage détouré : l'image fournie est posée telle quelle (PNG transparent), sans forme dessous
+            try { l = poserImage(null, it); ranger(l, cont); }
+            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+          } else if (avecImage) {
+            l = forme(it.chemins, [128, 128, 128], "Forme \u2013 " + it.calqueNom); ranger(l, cont);
+            try { poserImage(l, it); }  // photo : calque écrêté sur la forme
+            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+          }
+          if (!avecImage) {
+            l = forme(it.chemins, [128, 128, 128], "Forme – " + it.calqueNom); ranger(l, cont);
+            if (it.detoure) { try { l.fillOpacity = 0; } catch (e) {} }  // image détourée : la forme découpe sans se voir
+            var img = doc.artLayers.add(); img.name = ">> " + it.calqueNom + " : colle ton image ici";
+            ranger(img, cont); img.grouped = true;
+          }
         }
         else if (it.type === "zone") {
           l = forme(it.chemins, [0, 160, 233], "Zone – " + it.label); ranger(l, cont); l.opacity = 30;

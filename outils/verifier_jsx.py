@@ -64,6 +64,13 @@ def main(jsx, original):
     W, H = sc["largeur"] / K, sc["hauteur"] / K
     svg, textes = [], []
     for i, it in enumerate(sc["items"]):
+        if it["type"] == "image" and it.get("image") and sc.get("images", {}).get(it["image"]):
+            # image embarquée : posée comme le script la pose (contain pour un PNG détouré, cover sinon)
+            xs = [q["a"][0] for ch in it["chemins"] for q in ch]; ys = [q["a"][1] for ch in it["chemins"] for q in ch]
+            m = sc["images"][it["image"]]
+            svg.append(f'<image x="{min(xs) / K}" y="{min(ys) / K}" width="{(max(xs) - min(xs)) / K}" height="{(max(ys) - min(ys)) / K}" '
+                       f'preserveAspectRatio="xMidYMid {"meet" if it.get("detoure") else "slice"}" href="data:image/png;base64,{m["b64"]}"/>')
+            continue
         if it["type"] == "image" and it.get("detoure"):
             continue
         if it["type"] in ("forme", "image", "degrade"):
@@ -72,7 +79,8 @@ def main(jsx, original):
                 coul = it["stops"][len(it["stops"]) // 2]["c"]
             d = " ".join("M " + " L ".join(f"{p['a'][0] / K},{p['a'][1] / K}" for p in ch) + " Z" for ch in it["chemins"])
             regle = ' fill-rule="evenodd"' if it.get("xor") else ""
-            svg.append(f'<path d="{d}"{regle} fill="rgb({",".join(map(str, coul))})"/>')
+            op = f' fill-opacity="{it["opacite"] / 100}"' if it.get("opacite") else ""
+            svg.append(f'<path d="{d}"{regle}{op} fill="rgb({",".join(map(str, coul))})"/>')
         elif it["type"] == "texte":
             textes.append(texte_html(it, i))
             if it.get("contourSeul"):

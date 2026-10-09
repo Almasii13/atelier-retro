@@ -270,6 +270,34 @@
     return g;
   }
 
+  // ---------- Images des emplacements (logos, photos) ----------
+  var fichiersImages = {};
+  function fichierImage(cle) {
+    if (fichiersImages[cle]) return fichiersImages[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_image_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.images[cle].b64)); f.close();
+    fichiersImages[cle] = f;
+    return f;
+  }
+  function poserImage(conteneur, it) {
+    var m = SCENE.images[it.image];
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (var c = 0; c < it.chemins.length; c++) for (var p = 0; p < it.chemins[c].length; p++) {
+      var q = P(it.chemins[c][p].a);
+      x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]);
+    }
+    var img = conteneur.placedItems.add();
+    img.file = fichierImage(it.image);
+    var w0 = m.l * K, h0 = m.h * K;
+    var s = it.detoure ? Math.min((x1 - x0) / w0, (y1 - y0) / h0) : Math.max((x1 - x0) / w0, (y1 - y0) / h0);
+    img.width = w0 * s; img.height = h0 * s;
+    var b = img.geometricBounds;
+    img.translate((x0 + x1) / 2 - (b[0] + b[2]) / 2, (y0 + y1) / 2 - (b[1] + b[3]) / 2);
+    try { img.embed(); img = conteneur.pageItems[0]; } catch (e0) {}  // incorporée : l'objet du dessus
+    try { img.name = it.calqueNom; } catch (e1) {}
+    return img;
+  }
+
   function arc(conteneur, it) {
     var sc = conteneur.layers.add(); sc.name = it.nom;
     for (var i = 0; i < it.car.length; i++) {
@@ -288,7 +316,7 @@
     var it = SCENE.items[n];
     try {
       var cont = calqueDe(it);
-      if (it.type === "forme") trace(cont, it.chemins, it.nom, uni(it.couleur));
+      if (it.type === "forme") { var fo = trace(cont, it.chemins, it.nom, uni(it.couleur)); if (it.opacite) { try { fo.opacity = it.opacite; } catch (e) {} } }
       else if (it.type === "degrade") {
         try { trace(cont, it.chemins, it.nom, degrade(it.stops, it.angle)); }
         catch (e) { erreurs.push(it.nom + " (dégradé remplacé par une couleur unie) : " + e.message);
@@ -302,11 +330,25 @@
       }
       else if (it.type === "arc") arc(cont, it);
       else if (it.type === "image") {
-        var g = cont.groupItems.add(); g.name = it.calqueNom + " : colle ton image dans ce groupe";
-        var fond = trace(g, it.chemins, "Emplacement (à remplacer)", uni([128, 128, 128]));
-        if (it.detoure) fond.opacity = 0;  // image détourée : la découpe ne se voit pas
-        var decoupe = trace(g, it.chemins, "Découpe – " + it.calqueNom, uni([128, 128, 128]));
-        decoupe.clipping = true; g.clipped = true;
+        var avecImage = !!(it.image && SCENE.images && SCENE.images[it.image]);
+        if (avecImage && it.detoure) {
+          // logo / personnage détouré : image posée telle quelle (PNG transparent)
+          try { poserImage(cont, it); } catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+        } else if (avecImage) {
+          var gi = cont.groupItems.add(); gi.name = it.calqueNom;
+          try {
+            poserImage(gi, it);
+            var dec = trace(gi, it.chemins, "D\u00e9coupe \u2013 " + it.calqueNom, uni([128, 128, 128]));
+            dec.clipping = true; gi.clipped = true;  // photo : découpée à la forme de l'emplacement
+          } catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+        }
+        if (!avecImage) {
+          var g = cont.groupItems.add(); g.name = it.calqueNom + " : colle ton image dans ce groupe";
+          var fond = trace(g, it.chemins, "Emplacement (à remplacer)", uni([128, 128, 128]));
+          if (it.detoure) fond.opacity = 0;  // image détourée : la découpe ne se voit pas
+          var decoupe = trace(g, it.chemins, "Découpe – " + it.calqueNom, uni([128, 128, 128]));
+          decoupe.clipping = true; g.clipped = true;
+        }
       }
       else if (it.type === "zone") {
         var z = trace(cont, it.chemins, "Zone – " + it.label, uni([0, 160, 233])); z.opacity = 30;

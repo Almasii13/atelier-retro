@@ -42,7 +42,8 @@ function nouveauCalque(type, nom) {
     textItem: { tracking: 0 },
     move(c, p) { if (!c) throw new Error("move sans conteneur"); this.parent = c; },
     translate(dx, dy) { if (isNaN(dx) || isNaN(dy)) throw new Error("translate NaN"); this.bounds = this.bounds.map((v, i) => v + (i % 2 ? dy : dx)); },
-    rotate(a) { if (isNaN(a)) throw new Error("rotate NaN"); this.angle = a; } };
+    rotate(a) { if (isNaN(a)) throw new Error("rotate NaN"); this.angle = a; },
+    resize(px, py, ancre) { if (!(px > 0 && py > 0)) throw new Error("resize invalide"); const [x0, y0, x1, y1] = this.bounds, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2; this.bounds = [cx + (x0 - cx) * px / 100, cy + (y0 - cy) * py / 100, cx + (x1 - cx) * px / 100, cy + (y1 - cy) * py / 100]; } };
   calques.push(l); actif = l; return l;
 }
 global.executeAction = (id, d) => {
