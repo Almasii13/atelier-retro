@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Verso de carte 65 × 90 mm d'après une Carddass « INVITATION CARDDASS ».
+   Fond noir, cadre or en escalier (symétrique), cartouche blanc en tête, titre italique rouge à ombre
+   jaune décalée, encadré blanc (4 lignes à furigana), bandeau or du copyright. Cotes en mm (page finie). #}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% macro rect(r) %}x="{{ r[0] }}" y="{{ r[1] }}" width="{{ '%.3f' % (r[2]-r[0]) }}" height="{{ '%.3f' % (r[3]-r[1]) }}"{% endmacro %}
+{% macro ligne(l) %}{% for sg in l %}{% if sg is string %}{{ sg }}{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+
+  .titre { font: italic 400 9mm/1 "OS Cond BI", sans-serif; }
+  .titre.rouge { color: {{ C.rouge }}; }
+  .titre.ombre { color: {{ C.jaune }}; }
+
+  /* Encadré : une ligne par calque (la 2e ligne s'aligne sur le texte, après la puce) */
+  .notice { font: 400 3.2mm/{{ G.interligne }} "MP1 Medium", sans-serif; color: {{ C.texte }}; --ruby-ecart: {{ G.ruby_ecart }}mm; }
+  .notice .rt { font: 400 1.3mm/1 "MP1 Medium", sans-serif; color: {{ C.texte }}; }
+  .copyright { font: 400 1.9mm/1 "MP1 Medium", sans-serif; color: {{ C.texte }}; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond noir" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.noir }}"/>
+      <polygon data-nom="Cadre or" fill="{{ C.or }}" points="{{ poly(G.cadre_or) }}"/>
+      <rect data-nom="Cartouche blanc (haut)" x="{{ G.cartouche[0] }}" y="{{ -FP }}" width="{{ '%.3f' % (G.cartouche[2] - G.cartouche[0]) }}" height="{{ '%.3f' % (G.cartouche[3] + FP) }}" fill="{{ C.blanc }}"/>
+      <rect data-nom="Encadré blanc" {{ rect(G.encadre) }} rx="{{ G.encadre_rayon }}" fill="{{ C.blanc }}"/>
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="t titre ombre ombre-1" data-groupe="Titre – ombre jaune">{{ T.titre[0] }}</div>
+    <div class="t titre ombre ombre-2" data-groupe="Titre – ombre jaune">{{ T.titre[1] }}</div>
+    <div class="t titre rouge rouge-1" data-groupe="Titre">{{ T.titre[0] }}</div>
+    <div class="t titre rouge rouge-2" data-groupe="Titre">{{ T.titre[1] }}</div>
+
+    {% for l in T.notice %}<div class="t notice ln{{ loop.index }}" data-groupe="Encadré">{{ ligne(l) }}</div>
+    {% endfor %}
+    <div class="t copyright" data-groupe="Copyright">{{ T.copyright }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

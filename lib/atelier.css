@@ -26,6 +26,11 @@
 @font-face { font-family: "Roboto Cond"; src: url("fonts/RobotoCondensed-SemiBold.ttf"); }
 @font-face { font-family: "Rokkitt Black"; src: url("fonts/Rokkitt-Black.ttf"); }
 @font-face { font-family: "M Rounded Black"; src: url("fonts/MPLUSRounded1c-Black.ttf"); }
+@font-face { font-family: "MP1 Black"; src: url("fonts/MPLUS1p-Black.ttf"); }
+@font-face { font-family: "MP1 Bold"; src: url("fonts/MPLUS1p-Bold.ttf"); }
+@font-face { font-family: "MP1 Medium"; src: url("fonts/MPLUS1p-Medium.ttf"); }
+@font-face { font-family: "Potta One"; src: url("fonts/PottaOne-Regular.ttf"); }
+@font-face { font-family: "OS Cond BI"; font-style: italic; src: url("fonts/OpenSans-CondensedBoldItalic.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }

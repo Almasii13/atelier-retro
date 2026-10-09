@@ -30,14 +30,19 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Oswald M": [(0, "Oswald-Medium")],
     "BIZ UDP": [(0, "BIZUDPGothic-Bold")],
     "Roboto Cond": [(0, "RobotoCondensed-SemiBold")],
+    "MP1 Black": [(0, "MPLUS1p-Black")],
+    "MP1 Bold": [(0, "MPLUS1p-Bold")],
+    "MP1 Medium": [(0, "MPLUS1p-Medium")],
+    "Potta One": [(0, "PottaOne-Regular")],
+    "OS Cond BI": [(0, "OpenSans-CondensedBoldItalic")],
     "Rokkitt Black": [(0, "Rokkitt-Black")],
     "M Rounded Black": [(0, "RoundedMplus1c-Black")],
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
 CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
-NATIF_ITALIQUE = {"Work Sans BI"}  # polices déjà italiques : pas d'italique synthétique en plus
-UNE_GRAISSE = {"Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
+NATIF_ITALIQUE = {"Work Sans BI", "OS Cond BI"}  # polices déjà italiques : pas d'italique synthétique en plus
+UNE_GRAISSE = {"MP1 Black", "MP1 Bold", "MP1 Medium", "Potta One", "OS Cond BI", "Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
@@ -54,6 +59,7 @@ CSS_ENCRE = """
   [data-encre], [data-encre] * { visibility: visible !important; background: transparent !important;
     -webkit-text-stroke-width: 0 !important; outline: none !important; box-shadow: none !important;
     -webkit-text-fill-color: #000 !important; }
+  [data-encre] .rt { visibility: hidden !important; }  /* furigana : calques à part, hors de l'encre de leur ligne */
 """
 
 
