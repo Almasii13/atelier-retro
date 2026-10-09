@@ -51,6 +51,7 @@ Exports :
 | `carte-hero-diagonale` | Recto de carte 65×90 : fond bleu / prisme séparés par une diagonale, grand titre au trait découpé par la diagonale (masques vectoriels), filet parallèle, bandeau rouge | Carte prisme « HERO COLLECTION » WGL-1 (Vegeta & Trunks) | En test (V1) |
 | `carte-special-data` | Dos de carte 65×90 (coins arrondis 3,2 mm) : bande verticale, panneau SPECIAL DATA, quiz avec furigana, éclaboussures vectorisées | PP card « SUPER SAIYAN BATTLE / SPECIAL DATA » (1995) | En test (V1) |
 | `affiche-vertical-4dx` | Affiche portrait B5 (échelle libre) : accroche haute, personnage détouré, accroche verticale mincho, grand logo italique | Affiche « 機動警察パトレイバー the Movie 4DX » (2020) | En test (V1) |
+| `affiche-carte-fiche` | Affiche 1080×1920 px : cadre central pour une carte, appels latéraux, tableau de caractéristiques, titre rouge à ombre jaune, plaque ご招待券 | Cartes Invitation Carddass (recto / verso) | En test (V1) |
 | `flyer-vhd-double` | Flyer B5 182×257 (haut ciel / bas sable), zones VHS 3D + TV, repère incliné unique | Pub VHD Victor/JVC, magazine « Anime Vision » 1985 | En test (V4) |
 
 ## Règles de mise en page (appliquées par tous les modèles)

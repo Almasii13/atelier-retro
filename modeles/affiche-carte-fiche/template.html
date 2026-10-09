@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Toutes les cotes sont données dans un repère de 1080 × 1920 px (format écran vertical) puis converties : p(v) = v × L / 1080 mm #}
+{% set k = L / 1080 %}
+{% macro p(v) %}{{ '%.3f' % (v * k) }}mm{% endmacro %}
+{# Contour « en escalier » (cadre or des cartes Invitation Carddass) : x, y, l, h, pas #}
+{% macro escalier(x, y, w, h, s) %}{{ x+2*s }},{{ y }} {{ x+w-2*s }},{{ y }} {{ x+w-2*s }},{{ y+s }} {{ x+w-s }},{{ y+s }} {{ x+w-s }},{{ y+2*s }} {{ x+w }},{{ y+2*s }} {{ x+w }},{{ y+h-2*s }} {{ x+w-s }},{{ y+h-2*s }} {{ x+w-s }},{{ y+h-s }} {{ x+w-2*s }},{{ y+h-s }} {{ x+w-2*s }},{{ y+h }} {{ x+2*s }},{{ y+h }} {{ x+2*s }},{{ y+h-s }} {{ x+s }},{{ y+h-s }} {{ x+s }},{{ y+h-2*s }} {{ x }},{{ y+h-2*s }} {{ x }},{{ y+2*s }} {{ x+s }},{{ y+2*s }} {{ x+s }},{{ y+s }} {{ x+2*s }},{{ y+s }}{% endmacro %}
+<style>
+  /* Modèle « affiche fiche de carte » — format 1080 × 1920 px.
+     Univers repris des cartes Invitation Carddass (fond noir, fenêtre bleu-violet rayée, cadre or en escalier,
+     bande argent, titre rouge à ombre jaune, plaque cuivre ご招待券, pastille 特) et des affiches de l'atelier
+     (accroche verticale / blocs de mentions du modèle 4DX, cartouches du flyer VHD). */
+  body { width: {{ L }}mm; height: {{ H }}mm; background: {{ C.noir }}; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: #fff; font-family: var(--f-gothic); left: 0; top: 0; }
+  .fond { position: absolute; inset: 0; background: {{ C.noir }}; }
+
+  .fenetre { left: {{ p(G.marge) }}; top: {{ p(G.marge) }}; width: {{ p(1080 - 2*G.marge) }}; height: {{ p(1920 - 2*G.marge) }};
+             border-radius: {{ p(14) }};
+             background: linear-gradient(180deg, {{ C.violet_haut }} 0%, {{ C.violet_mid }} 40%, {{ C.violet_bas }} 100%); }
+
+  /* Bande argent du haut */
+  .bande { left: {{ p(G.marge) }}; top: {{ p(G.marge) }}; width: {{ p(1080 - 2*G.marge) }}; height: {{ p(G.bande_h) }};
+           border-radius: {{ p(14) }} {{ p(14) }} 0 0;
+           background: linear-gradient(180deg, {{ C.argent_haut }}, {{ C.argent_bas }}); }
+  .bande-texte { left: {{ p(130) }}; top: {{ p(G.marge) }}; width: {{ p(880) }}; height: {{ p(G.bande_h) }};
+                 display: flex; align-items: center; color: {{ C.texte_noir }}; font: 900 {{ p(36) }}/1 var(--f-gothic); }
+  .bande-texte span { display: block; width: 100%; }
+
+  /* Titre */
+  .kicker { left: {{ p(60) }}; top: {{ p(152) }}; width: {{ p(960) }}; height: {{ p(46) }}; text-align: center;
+            font: 700 {{ p(38) }}/{{ p(46) }} var(--f-mincho); color: #fff; letter-spacing: {{ p(2) }}; }
+  .titre { height: {{ p(138) }}; transform: skewX(-9deg); transform-origin: 0 100%; }
+  .titre span { font: {{ p(120) }}/{{ p(138) }} var(--f-latin); color: {{ C.rouge_titre }}; text-shadow: {{ p(7) }} {{ p(7) }} 0 {{ C.jaune_titre }}; letter-spacing: {{ p(-2) }}; }
+  .titre.l1 { left: {{ p(70) }}; top: {{ p(206) }}; width: {{ p(930) }}; }
+  .titre.an { left: {{ p(808) }}; top: {{ p(366) }}; width: {{ p(200) }}; }
+  .titre.an span { font-size: {{ p(130) }}; }
+
+  /* Plaque cuivre « ご招待券 » + pastille 特 */
+  .plaque { left: {{ p(G.plaque[0]) }}; top: {{ p(G.plaque[1]) }}; width: {{ p(G.plaque[2]) }}; height: {{ p(G.plaque[3]) }}; }
+  .plaque-texte { left: {{ p(G.plaque[0] + 70) }}; top: {{ p(G.plaque[1] + 14) }}; width: {{ p(G.plaque[2] - 90) }}; height: {{ p(G.plaque[3] - 28) }}; }
+  .plaque-texte span { font: {{ p(92) }}/{{ p(G.plaque[3] - 28) }} var(--f-pinceau); font-family: "Potta One", var(--f-gothic-lourd);
+                       color: {{ C.orange }}; -webkit-text-stroke: {{ p(3) }} {{ C.contour }}; paint-order: stroke fill; letter-spacing: {{ p(2) }}; }
+  .pastille-texte { left: {{ p(G.pastille[0] - 48) }}; top: {{ p(G.pastille[1] - 48) }}; width: {{ p(96) }}; height: {{ p(96) }};
+                    display: flex; align-items: center; justify-content: center; font: 900 {{ p(78) }}/1 var(--f-gothic); color: #15110e; }
+
+  /* Cadre central de la carte */
+  .carte { left: {{ p(G.carte[0]) }}; top: {{ p(G.carte[1]) }}; width: {{ p(G.carte[2]) }}; height: {{ p(G.carte[3]) }}; border-radius: {{ p(G.carte[2] * 3.2 / 65) }}; }
+  .slot.vide.carte { background: linear-gradient(160deg, #2a2260, #181433); outline: {{ p(2) }} dashed rgba(255,255,255,.35); outline-offset: {{ p(-10) }}; }
+  .slot.vide.carte::after { font: 700 {{ p(26) }}/1.4 var(--f-latin); color: rgba(255,255,255,.55); letter-spacing: {{ p(2) }}; }
+
+  /* Appels de la carte */
+  .appel { width: {{ p(G.appel_w) }}; }
+  .appel.jp { display: block; font: 900 {{ p(31) }}/{{ p(40) }} var(--f-gothic); color: #fff; white-space: nowrap; }
+  .appel.en { display: block; font: 700 {{ p(15.5) }}/{{ p(20) }} var(--f-latin); color: {{ C.or_clair }}; letter-spacing: {{ p(0.8) }}; white-space: nowrap; }
+  .appel.g { text-align: right; }
+  .appel.d { text-align: left; }
+
+  /* Tableau des caractéristiques */
+  .tab-titre { left: {{ p(G.tab[0]) }}; top: {{ p(G.tab[1]) }}; width: {{ p(G.tab[2]) }}; height: {{ p(G.tab[4]) }};
+               background: {{ C.orange_plaque }}; border: {{ p(4) }} solid {{ C.noir }}; border-radius: {{ p(10) }} {{ p(10) }} 0 0; }
+  .tab-t1 { left: {{ p(G.tab[0] + 28) }}; top: {{ p(G.tab[1]) }}; height: {{ p(G.tab[4]) }}; display: flex; align-items: center; font: 900 {{ p(32) }}/1 var(--f-gothic); color: {{ C.noir }}; white-space: nowrap; }
+  .tab-t2 { left: {{ p(G.tab[0] + 230) }}; top: {{ p(G.tab[1]) }}; height: {{ p(G.tab[4]) }}; display: flex; align-items: center; font: 700 {{ p(17) }}/1 var(--f-latin); letter-spacing: {{ p(2) }}; color: {{ C.noir }}; white-space: nowrap; }
+  .tab-titre .t { position: absolute; left: {{ p(24) }}; top: 0; bottom: 0; display: flex; align-items: center; gap: {{ p(18) }};
+                  font: 900 {{ p(32) }}/1 var(--f-gothic); color: {{ C.noir }}; }
+  .tab-titre .t small { font: 700 {{ p(17) }}/1 var(--f-latin); letter-spacing: {{ p(2) }}; }
+  .ligne { left: {{ p(G.tab[0]) }}; width: {{ p(G.tab[2]) }}; height: {{ p(G.tab[5]) }}; display: flex; border-left: {{ p(4) }} solid {{ C.noir }}; border-right: {{ p(4) }} solid {{ C.noir }}; border-bottom: {{ p(3) }} solid {{ C.noir }}; box-sizing: border-box; }
+  .ligne .lib { width: {{ p(G.tab[3]) }}; background: {{ C.violet_bas }}; color: #fff; display: flex; flex-direction: column; justify-content: center; padding-left: {{ p(20) }}; box-sizing: border-box; border-right: {{ p(3) }} solid {{ C.noir }}; }
+  .ligne .lib b { font: 900 {{ p(26) }}/1.1 var(--f-gothic); }
+  .ligne .lib i { font: 700 {{ p(14) }}/1.2 var(--f-latin); font-style: normal; color: {{ C.or_clair }}; letter-spacing: {{ p(1.2) }}; }
+  .ligne .val { flex: 1; background: {{ C.creme }}; color: {{ C.texte_noir }}; display: flex; flex-direction: column; justify-content: center; padding: 0 {{ p(20) }}; box-sizing: border-box; min-width: 0; }
+  .ligne .val b { font: 900 {{ p(27) }}/1.15 var(--f-gothic); white-space: nowrap; }
+  .ligne .val i { font: 700 {{ p(15) }}/1.3 var(--f-latin); font-style: normal; color: #4a4655; letter-spacing: {{ p(0.4) }}; white-space: nowrap; }
+  .ligne:nth-of-type(odd) .val { background: #e4dfe7; }
+
+  /* Pied */
+  .copyright { left: {{ p(40) }}; width: {{ p(1000) }}; text-align: center; white-space: nowrap; }
+  .copyright.c1 { top: {{ p(G.pied) }}; font: 700 {{ p(24) }}/1 var(--f-gothic); color: #fff; }
+  .copyright.c2 { top: {{ p(G.pied + 38) }}; font: 700 {{ p(16) }}/1 var(--f-latin); color: {{ C.or_clair }}; letter-spacing: {{ p(3) }}; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ============ CALQUE 1 : fond, cadres, panneaux ============ #}
+  <div class="fond" data-calque="fond">
+    <div class="abs fenetre"></div>
+    <div class="abs bande"></div>
+    <svg class="abs" style="left:0;top:0;width:100%;height:100%;overflow:visible" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+      {% for r in rayures %}<line x1="{{ r[0] }}" y1="{{ r[1] }}" x2="{{ r[2] }}" y2="{{ r[3] }}" stroke="{{ r[4] }}" stroke-width="{{ r[5] }}"/>{% endfor %}
+    </svg>
+    {# fanion de la bande #}
+    <svg class="abs" style="left:0;top:0;width:100%;height:100%;overflow:visible" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+      <polygon points="52,50 96,50 96,86 112,88 52,126" fill="#15121a"/>
+      {# cadre or en escalier autour de la carte #}
+      {% set c = G.carte %}{% set m = G.cadre_marge %}
+      <polygon points="{{ escalier(c[0]-m, c[1]-m, c[2]+2*m, c[3]+2*m, 14) }}" fill="{{ C.or }}"/>
+      <polygon points="{{ escalier(c[0]-m+10, c[1]-m+10, c[2]+2*m-20, c[3]+2*m-20, 11) }}" fill="{{ C.noir }}"/>
+      <polygon points="{{ escalier(c[0]-m+16, c[1]-m+16, c[2]+2*m-32, c[3]+2*m-32, 9) }}" fill="none" stroke="{{ C.or_clair }}" stroke-width="2"/>
+      {# traits de repère vers la carte #}
+      {% for a in appels %}
+        {% set yy = G.appel_y[a.rang] + 38 %}
+        {% if a.cote == 'g' %}
+          <line x1="{{ G.appel_x_g + G.appel_w + 8 }}" y1="{{ yy }}" x2="{{ c[0] - m + 6 }}" y2="{{ yy }}" stroke="{{ C.or_clair }}" stroke-width="3"/>
+          <circle cx="{{ c[0] - m + 6 }}" cy="{{ yy }}" r="7" fill="{{ C.rouge_titre }}" stroke="#fff" stroke-width="2"/>
+        {% else %}
+          <line x1="{{ G.appel_x_d - 8 }}" y1="{{ yy }}" x2="{{ c[0] + c[2] + m - 6 }}" y2="{{ yy }}" stroke="{{ C.or_clair }}" stroke-width="3"/>
+          <circle cx="{{ c[0] + c[2] + m - 6 }}" cy="{{ yy }}" r="7" fill="{{ C.rouge_titre }}" stroke="#fff" stroke-width="2"/>
+        {% endif %}
+      {% endfor %}
+      {# plaque cuivre #}
+      {% set q = G.plaque %}
+      <rect x="{{ q[0] }}" y="{{ q[1] }}" width="{{ q[2] }}" height="{{ q[3] }}" rx="26" fill="{{ C.cuivre }}"/>
+      <rect x="{{ q[0] + 6 }}" y="{{ q[1] + 6 }}" width="{{ q[2] - 12 }}" height="{{ q[3] - 12 }}" rx="20" fill="{{ C.or_clair }}"/>
+      <rect x="{{ q[0] + 10 }}" y="{{ q[1] + 10 }}" width="{{ q[2] - 20 }}" height="{{ q[3] - 20 }}" rx="16" fill="{{ C.plaque }}"/>
+      {# pastille 特 : anneau segmenté #}
+      {% set s = G.pastille %}
+      <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] }}" fill="{{ C.bord_pastille }}"/>
+      <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] - 9 }}" fill="none" stroke="{{ C.rouge }}" stroke-width="{{ 20 }}" stroke-dasharray="{{ '%.2f' % (3.14159 * 2 * (s[2] - 9) / 16 * 0.62) }} {{ '%.2f' % (3.14159 * 2 * (s[2] - 9) / 16 * 0.38) }}"/>
+      <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] - 20 }}" fill="{{ C.or }}"/>
+      {# panneau du tableau : encadrement noir #}
+      <rect x="{{ G.tab[0] - 12 }}" y="{{ G.tab[1] - 12 }}" width="{{ G.tab[2] + 24 }}" height="{{ G.tab_h + 24 }}" fill="{{ C.noir }}"/>
+    </svg>
+  </div>
+
+  {# ============ CALQUE 2 : la carte (à glisser) ============ #}
+  {% set u = img('carte') %}
+  <div class="abs" data-calque="image:carte" style="inset:0">
+    <div class="slot carte {{ '' if u else 'vide' }}" data-label="TA CARTE&#10;6,5 × 9 cm">
+      {% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {# ============ CALQUE 3 : textes ============ #}
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs bande-texte" data-groupe="Bande"><span class="justifie-tout" data-fit data-fit-max="9.6" data-fit-min="6">{{ T.bande }}</span></div>
+
+    <div class="abs kicker" data-groupe="Titre">{{ T.kicker }}</div>
+    <div class="abs titre l1" data-groupe="Titre"><span data-plein>{{ T.titre }}</span></div>
+    <div class="abs titre an" data-groupe="Titre"><span data-plein>{{ T.annee }}</span></div>
+    <div class="abs plaque-texte" data-groupe="Plaque"><span data-plein>{{ T.invitation }}</span></div>
+    <div class="abs pastille-texte" data-groupe="Plaque">{{ T.special }}</div>
+
+    {% for a in appels %}
+      {% set ax = G.appel_x_g if a.cote == 'g' else G.appel_x_d %}
+      <div class="abs appel jp {{ a.cote }}" data-groupe="Appels" style="left:{{ p(ax) }}; top:{{ p(G.appel_y[a.rang]) }}; height:{{ p(40) }}"><span data-etire="1">{{ a.jp }}</span></div>
+      <div class="abs appel en {{ a.cote }}" data-groupe="Appels" style="left:{{ p(ax) }}; top:{{ p(G.appel_y[a.rang] + 42) }}; height:{{ p(20) }}"><span data-etire="1">{{ a.en }}</span></div>
+    {% endfor %}
+
+    <div class="abs tab-titre" data-groupe="Tableau"></div>
+    <div class="abs tab-t1" data-groupe="Tableau">{{ T.tab_titre }}</div>
+    <div class="abs tab-t2" data-groupe="Tableau">{{ T.tab_titre_en }}</div>
+    {% for l in lignes %}
+      <div class="abs ligne" data-groupe="Tableau" style="top:{{ p(G.tab[1] + G.tab[4] + loop.index0 * G.tab[5]) }}">
+        <div class="lib"><b>{{ l.jp }}</b><i>{{ l.en }}</i></div>
+        <div class="val"><b>{{ l.val }}</b><i>{{ l.val_en }}</i></div>
+      </div>
+    {% endfor %}
+
+    <div class="abs copyright c1" data-groupe="Pied">{{ T.copyright }}</div>
+    <div class="abs copyright c2" data-groupe="Pied">{{ T.signature }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
