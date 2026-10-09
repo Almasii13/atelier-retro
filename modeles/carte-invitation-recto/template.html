@@ -34,7 +34,7 @@
 
   .toku { font: 400 7mm/1 "Potta One", sans-serif; color: {{ C.texte_noir }}; }
   .shotai { font: 400 9mm/1 "MP1 Black", sans-serif;
-            background: linear-gradient(180deg{% for p, c in C.shotai %}, {{ c }} {{ p }}%{% endfor %});
+            background: {% if img('bois') %}url("{{ img('bois') }}") center / {{ '%.3f' % (G.bois[0] / ((calage or {}).get('.shotai', {}).get('sx', 1))) }}mm {{ G.bois[1] }}mm no-repeat, {% endif %}linear-gradient(180deg{% for p, c in C.shotai %}, {{ c }} {{ p }}%{% endfor %});
             -webkit-background-clip: text; background-clip: text; color: transparent; }
   /* contour noir : copie dessous (le contour ne mord pas sur le dégradé) */
   .shotai-contour { font: 400 9mm/1 "MP1 Black", sans-serif; color: {{ C.contour_shotai }};
@@ -54,6 +54,8 @@
     <div class="fenetre" data-groupe="Fond"></div>
     <div class="bande" data-groupe="Fond"></div>
     <svg class="abs" data-groupe="Fond" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set F = G.fenetre %}{% set a = G.liseret_fenetre %}
+      <path data-nom="Liseré gris de la fenêtre" fill="{{ C.liseret_gris }}" fill-rule="evenodd" d="{{ chemin_svg([[(F[0]-a[0], F[1]-a[0]), (F[2]+a[0], F[1]-a[0]), (F[2]+a[0], F[3]+a[0]), (F[0]-a[0], F[3]+a[0])], [(F[0]+a[1], F[1]+a[1]), (F[2]-a[1], F[1]+a[1]), (F[2]-a[1], F[3]-a[1]), (F[0]+a[1], F[3]-a[1])]]) }}"/>
       <polygon data-nom="Fanion noir" fill="{{ C.noir }}" points="{{ poly(G.fanion) }}"/>
     </svg>
   </div>
@@ -70,16 +72,18 @@
 
     {# ----- Plaque ご招待券 ----- #}
     <svg class="abs" data-groupe="Plaque" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
-      <rect data-nom="Plaque – liseré cuivre" {{ rect(P.boite) }} rx="{{ P.rayon }}" fill="{{ C.cuivre }}"/>
+      {% set b = P.boite %}{% set l = P.liseret_clair %}
+      <rect data-nom="Plaque – liseré clair" {{ rect(b) }} rx="{{ P.rayon }}" fill="{{ C.liseret_clair }}"/>
+      <rect data-nom="Plaque – bande cuivre" {{ rect([b[0]+l, b[1]+l, b[2]-l, b[3]-l]) }} rx="{{ P.rayon - l }}" fill="{{ C.cuivre }}"/>
       {% set e = P.liseret %}
       <rect data-nom="Plaque – fond" {{ rect([P.boite[0]+e, P.boite[1]+e, P.boite[2]-e, P.boite[3]-e]) }} rx="{{ P.rayon_int }}" fill="{{ C.plaque }}"/>
     </svg>
     <div class="t shotai-contour" data-groupe="Plaque">{{ T.plaque }}</div>
-    <div class="t shotai" data-groupe="Plaque">{{ T.plaque }}</div>
+    <div class="t shotai" data-groupe="Plaque" data-motif="bois">{{ T.plaque }}</div>
 
     {# ----- Pastille 特 ----- #}
     <svg class="abs" data-groupe="Pastille" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
-      <circle data-nom="Pastille – bord" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_bord }}" fill="{{ C.bord_pastille }}"/>
+      <circle data-nom="Pastille – liseré clair" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_bord }}" fill="{{ C.liseret_clair }}"/>
       <circle data-nom="Pastille – anneau orange" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_anneau }}" fill="{{ C.orange }}"/>
       {% for k in range(B.segments // 2) %}{% set a0 = -90 + 360 / B.segments * (2 * k + 0.5) %}
       <polygon data-nom="Pastille – segment rouge {{ k + 1 }}" fill="{{ C.rouge }}" points="{{ secteur(B.c[0], B.c[1], B.r_int, B.r_anneau, a0, a0 + 360 / B.segments) }}"/>

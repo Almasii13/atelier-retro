@@ -230,6 +230,46 @@
     }
     return tf;
   }
+  // ---------- Textures incrustées (motif bois…) ----------
+  // PNG embarqué en base64 : écrit dans le dossier temporaire, importé (incorporé), puis masqué par une
+  // copie du texte (masque d'écrêtage à texte vivant). Le texte d'origine reste dessous, modifiable.
+  function b64bin(s) {
+    var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", o = [], b = 0, n = 0;
+    for (var i = 0; i < s.length; i++) {
+      var c = t.indexOf(s.charAt(i));
+      if (c < 0) continue;
+      b = ((b << 6) | c) & 0xFFFFFF; n += 6;
+      if (n >= 8) { n -= 8; o.push(String.fromCharCode((b >> n) & 255)); }
+    }
+    return o.join("");
+  }
+  var fichiersMotifs = {};
+  function fichierMotif(cle) {
+    if (fichiersMotifs[cle]) return fichiersMotifs[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_motif_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.motifs[cle].b64)); f.close();
+    fichiersMotifs[cle] = f;
+    return f;
+  }
+  function poserMotif(conteneur, tf, it) {
+    var m = SCENE.motifs[it.motif];
+    var img = conteneur.placedItems.add();
+    img.file = fichierMotif(it.motif);
+    img.width = m.l * K; img.height = m.h * K;
+    var c = P(it.centre), b = img.geometricBounds;
+    img.translate(c[0] - (b[0] + b[2]) / 2, c[1] - (b[1] + b[3]) / 2);
+    try { img.embed(); img = conteneur.pageItems[0]; } catch (e0) {}  // incorporée : devient une image (RasterItem) au même rang
+    var masque = tf.duplicate();
+    masque.move(img, ElementPlacement.PLACEBEFORE);  // au-dessus de l'image
+    doc.selection = null;
+    masque.selected = true; img.selected = true;
+    app.executeMenuCommand("makeMask");  // masque d'écrêtage : le texte copié découpe la texture
+    var g = doc.selection[0];
+    if (g) g.name = "Motif " + it.motif + " (incrust\u00e9 dans \u00ab " + it.nom + " \u00bb)";
+    doc.selection = null;
+    return g;
+  }
+
   function arc(conteneur, it) {
     var sc = conteneur.layers.add(); sc.name = it.nom;
     for (var i = 0; i < it.car.length; i++) {
@@ -254,7 +294,12 @@
         catch (e) { erreurs.push(it.nom + " (dégradé remplacé par une couleur unie) : " + e.message);
                     trace(cont, it.chemins, it.nom, uni(couleurMoyenne(it.stops))); }
       }
-      else if (it.type === "texte") texte(cont, it);
+      else if (it.type === "texte") {
+        var tfx = texte(cont, it);
+        if (it.motif && SCENE.motifs && SCENE.motifs[it.motif]) {
+          try { poserMotif(cont, tfx, it); } catch (e) { erreurs.push(it.nom + " (motif " + it.motif + ") : " + e.message); }
+        }
+      }
       else if (it.type === "arc") arc(cont, it);
       else if (it.type === "image") {
         var g = cont.groupItems.add(); g.name = it.calqueNom + " : colle ton image dans ce groupe";

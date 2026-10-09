@@ -17,10 +17,12 @@ const dessin = [];  // pour l'aperçu SVG
 
 function strict(obj, nom, props) {
   const ok = new Set(props);
-  return new Proxy(obj, {
+  const px = new Proxy(obj, {
     set(t, k, v) { if (!ok.has(k) && !(k in t) && !String(k).startsWith("_")) throw new Error(`${nom}.${String(k)} : propriété inconnue d'Illustrator`); t[k] = v; return true; },
     get(t, k) { if (k in t || typeof k === "symbol" || String(k).startsWith("_") || k === "toJSON" || k === "then") return t[k]; throw new Error(`${nom}.${String(k)} : propriété inconnue d'Illustrator`); },
   });
+  if (obj && typeof obj === "object" && !Array.isArray(obj)) Object.defineProperty(obj, "_moi", { value: px, writable: true, enumerable: false });
+  return px;
 }
 const enumere = (...n) => Object.fromEntries(n.map((x, i) => [x, i + 1]));
 Object.assign(global, {
@@ -65,6 +67,8 @@ function baseElement(type, parent) {
     remove() { const p = this._parent; const i = p && p._enfants ? p._enfants.indexOf(this) : -1; if (i >= 0) p._enfants.splice(i, 1); },
     get geometricBounds() { return bornes(tousPoints(this)); },
   };
+  Object.defineProperty(o, "selected", { get() { return selection.includes(o._moi || o); },
+    set(v) { const moi = o._moi || o; selection = selection.filter(x => x !== moi); if (v) selection.push(moi); } });
   return o;
 }
 function tousPoints(o) { let r = o._pts ? [...o._pts] : []; (o._enfants || []).forEach(e => r = r.concat(tousPoints(e))); if (!r.length) throw new Error("bornes d'un objet vide"); return r; }
@@ -91,7 +95,19 @@ function conteneur(o) {
     add: () => ajoute(cadreTexte(o)),
     areaText: (chemin) => { if (!chemin || chemin.typename !== "PathItem") throw new Error("areaText : tracé attendu"); chemin.remove(); return ajoute(cadreTexte(o)); },
   }, "TextFrames", []);
-  Object.defineProperty(o, "pageItems", { get() { return o._enfants.filter(e => e.typename !== "Layer"); } });
+  o.placedItems = strict({ add: () => {
+    const im = baseElement("PlacedItem", o); im._pts = [[0, 0], [10, -10]]; im.file = null; im.selected = false;
+    Object.defineProperty(im, "width", { get: () => im._pts[1][0] - im._pts[0][0], set: (v) => { if (!(v > 0)) throw new Error("largeur image"); im._pts[1][0] = im._pts[0][0] + v; } });
+    Object.defineProperty(im, "height", { get: () => im._pts[0][1] - im._pts[1][1], set: (v) => { if (!(v > 0)) throw new Error("hauteur image"); im._pts[1][1] = im._pts[0][1] - v; } });
+    im.embed = function () {
+      if (!this.file || !fichiersEcrits[this.file.fsName]) throw new Error("image : fichier introuvable");
+      const b = fichiersEcrits[this.file.fsName]; if (b.slice(1, 4) !== "PNG") throw new Error("PNG invalide après décodage base64");
+      this.typename = "RasterItem"; journal.images = (journal.images || 0) + 1;
+    };
+    return ajoute(strict(im, "PlacedItem", []));
+  } }, "PlacedItems", []);
+  // Illustrator : pageItems[0] = l'objet du dessus
+  Object.defineProperty(o, "pageItems", { get() { return o._enfants.filter(e => e.typename !== "Layer").slice().reverse(); } });
   return o;
 }
 function attributs() {
@@ -146,6 +162,7 @@ function documentIA(w, h) {
     const stop = () => strict({ rampPoint: 0, midPoint: 50, color: null, opacity: 100 }, "GradientStop", []);
     g.gradientStops.push(stop(), stop()); g.gradientStops.add = () => { const s = stop(); g.gradientStops.push(s); return s; };
     return strict(g, "Gradient", []); } };
+  Object.defineProperty(d, "selection", { get: () => selection.length ? selection : null, set: (v) => { selection = v ? [].concat(v) : []; } });
   d.saveAs = (f, o) => { if (!(o instanceof Object)) throw new Error("saveAs"); journal.fichier = f.fsName; };
   return strict(d, "Document", []);
 }
@@ -157,7 +174,26 @@ global.app = {
   getIdentityMatrix: matIdent,
 };
 global.$ = { fileName: path.resolve(fichier) };
-global.File = function (n) { return { fsName: n, parent: { fsName: path.dirname(n) }, name: path.basename(n) }; };
+const fichiersEcrits = {};
+global.File = function (n) { return { fsName: n, parent: { fsName: path.dirname(n) }, name: path.basename(n), encoding: "", _c: "", _o: false,
+  open() { this._o = true; return true; }, write(t) { if (!this._o) throw new Error("écriture sans open"); this._c += t; return true; },
+  close() { this._o = false; fichiersEcrits[this.fsName] = this._c; return true; } }; };
+global.Folder = { temp: { fsName: "/tmp" } };
+let selection = [];
+app.executeMenuCommand = (cmd) => {
+  if (cmd !== "makeMask") throw new Error("commande inconnue " + cmd);
+  const sel = selection.filter(Boolean);
+  if (sel.length !== 2) throw new Error("makeMask : 2 objets attendus, " + sel.length + " sélectionnés");
+  const parent = sel[0]._parent;
+  if (sel[1]._parent !== parent) throw new Error("makeMask : objets dans des conteneurs différents");
+  const ordre = parent._enfants;
+  const haut = sel.reduce((a, b) => ordre.indexOf(a) > ordre.indexOf(b) ? a : b);
+  if (!["TextFrame", "PathItem", "CompoundPathItem"].includes(haut.typename)) throw new Error("makeMask : l'objet du dessus doit être un tracé ou un texte (" + haut.typename + ")");
+  const g = parent.groupItems.add(); g.clipped = true; journal.decoupesTexte = (journal.decoupesTexte || 0) + 1;
+  const bas = sel.find(x => x !== haut);
+  bas.move(g, ElementPlacement.PLACEATEND); haut.move(g, ElementPlacement.PLACEATEND);
+  selection = [g];
+};
 global.confirm = () => true;
 global.alert = (m) => journal.alertes.push(m);
 
@@ -175,6 +211,7 @@ let decoupes = 0, sansCouleur = 0;
   }
 }));
 console.log(journal.alertes.join("\n---\n"));
+console.log(`images incorporées ${journal.images || 0}, masques d'écrêtage à texte ${journal.decoupesTexte || 0}`);
 console.log(`\ncalques ${journal.calques}, tracés ${journal.traces}, tracés composés ${journal.composes}, groupes ${journal.groupes}, textes ${journal.textes}, dégradés ${journal.degrades}, découpes ${decoupes}`);
 if (sansCouleur) console.log(`ATTENTION : ${sansCouleur} tracés remplis sans couleur`);
 if (sortieSvg) {

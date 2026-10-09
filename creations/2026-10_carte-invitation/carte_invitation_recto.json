@@ -44,7 +44,7 @@
     81.4
    ],
    "r_bord": 7.45,
-   "r_anneau": 7.15,
+   "r_anneau": 7.2,
    "r_int": 5.6,
    "r_or": 5.3,
    "segments": 16
@@ -56,17 +56,26 @@
     53.45,
     88.3
    ],
-   "rayon": 1.3,
+   "rayon": 2.2,
    "liseret": 1.6,
-   "rayon_int": 0.5
+   "rayon_int": 1.1,
+   "liseret_clair": 0.25
   },
   "liseret_blanc": 0.22,
-  "contour_shotai": 0.24,
+  "contour_shotai": 0.3,
   "logo": [
    30.0,
    2.6,
    56.0,
    11.6
+  ],
+  "liseret_fenetre": [
+   0.1,
+   0.12
+  ],
+  "bois": [
+   31,
+   11
   ]
  },
  "couleurs": {
@@ -101,7 +110,7 @@
   "rouge": "#c0281b",
   "bord_pastille": "#d4783a",
   "or": "#c8962e",
-  "cuivre": "#a65c2c",
+  "cuivre": "#ad5a28",
   "plaque": "#eeeaea",
   "shotai": [
    [
@@ -117,11 +126,14 @@
     "#c4461c"
    ]
   ],
-  "contour_shotai": "#1a0f0a"
+  "contour_shotai": "#1a0f0a",
+  "liseret_gris": "#a9a8bb",
+  "liseret_clair": "#eea457"
  },
  "images": {
   "personnage": "images/personnage.png",
-  "logo": "images/logo.png"
+  "logo": "images/logo.png",
+  "bois": "images/bois.png"
  },
  "libelles_calques": {
   "fond": "Fond (carte, fenêtre, bande argent)",
@@ -170,10 +182,10 @@
    70.785
   ],
   ".shotai": [
-   20.34,
-   76.83999999999999,
-   48.66,
-   86.06
+   20.400000000000002,
+   76.89999999999999,
+   48.6,
+   86.0
   ],
   ".toku": [
    6.075,
@@ -182,48 +194,48 @@
    85.225
   ],
   ".shotai-contour": [
-   20.34,
-   76.83999999999999,
-   48.66,
-   86.06
+   20.400000000000002,
+   76.89999999999999,
+   48.6,
+   86.0
   ]
  },
  "calage": {
   ".v-main": {
-   "fs": 0.999,
-   "sx": 1.0032,
-   "dx": 59.704,
-   "dy": 8.715
+   "fs": 0.9997,
+   "sx": 0.9983,
+   "dx": 59.707,
+   "dy": 8.717
   },
   ".v-rt1": {
-   "fs": 0.9649,
-   "sx": 1.1674,
-   "dx": 62.281,
-   "dy": 11.549
+   "fs": 0.9654,
+   "sx": 1.168,
+   "dx": 62.28,
+   "dy": 11.54
   },
   ".v-rt2": {
-   "fs": 0.9283,
-   "sx": 1.2185,
-   "dx": 62.313,
-   "dy": 62.545
+   "fs": 0.9402,
+   "sx": 1.2001,
+   "dx": 62.312,
+   "dy": 62.521
   },
   ".shotai": {
-   "fs": 1.0793,
-   "sx": 0.7534,
-   "dx": 19.662,
-   "dy": 76.249
+   "fs": 1.0659,
+   "sx": 0.7612,
+   "dx": 19.717,
+   "dy": 76.548
   },
   ".toku": {
-   "fs": 1.1931,
-   "sx": 0.9236,
-   "dx": 6.019,
-   "dy": 76.475
+   "fs": 1.1919,
+   "sx": 0.9201,
+   "dx": 6.052,
+   "dy": 76.455
   },
   ".shotai-contour": {
-   "fs": 1.079,
-   "sx": 0.7549,
-   "dx": 19.664,
-   "dy": 76.31
+   "fs": 1.0611,
+   "sx": 0.7644,
+   "dx": 19.718,
+   "dy": 76.543
   }
  }
 }

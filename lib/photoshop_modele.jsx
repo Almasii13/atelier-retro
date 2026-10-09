@@ -311,6 +311,42 @@
     return l;
   }
 
+  // ---------- Textures incrustées (motif bois…) ----------
+  // Le PNG est embarqué en base64 dans le script : écrit dans le dossier temporaire, ouvert, copié,
+  // puis collé juste au-dessus du texte en calque écrêté (masque d'écrêtage) : le texte reste modifiable.
+  function b64bin(s) {
+    var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", o = [], b = 0, n = 0;
+    for (var i = 0; i < s.length; i++) {
+      var c = t.indexOf(s.charAt(i));
+      if (c < 0) continue;
+      b = ((b << 6) | c) & 0xFFFFFF; n += 6;
+      if (n >= 8) { n -= 8; o.push(String.fromCharCode((b >> n) & 255)); }
+    }
+    return o.join("");
+  }
+  var fichiersMotifs = {};
+  function fichierMotif(cle) {
+    if (fichiersMotifs[cle]) return fichiersMotifs[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_motif_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.motifs[cle].b64)); f.close();
+    fichiersMotifs[cle] = f;
+    return f;
+  }
+  function poserMotif(texteCalque, it) {
+    var tex = app.open(fichierMotif(it.motif));
+    tex.selection.selectAll(); tex.selection.copy();
+    tex.close(SaveOptions.DONOTSAVECHANGES);
+    app.activeDocument = doc;
+    doc.activeLayer = texteCalque;
+    var l = doc.paste();
+    if (!l || l === texteCalque) l = doc.activeLayer;
+    l.name = "Motif " + it.motif + " (incrust\u00e9 dans \u00ab " + it.nom + " \u00bb)";
+    var c = centreEncre(l);
+    l.translate(it.centre[0] - c[0], it.centre[1] - c[1]);
+    l.grouped = true;  // masque d'écrêtage sur le texte
+    return l;
+  }
+
   function arc(it, conteneur) {
     var g = doc.layerSets.add(); g.name = it.nom; ranger(g, conteneur);
     for (var i = 0; i < it.car.length; i++) {
@@ -333,7 +369,12 @@
         var cont = groupeDe(it), l;
         if (it.type === "forme") { l = forme(it.chemins, it.couleur, it.nom, null, it.xor); ranger(l, cont); }
         else if (it.type === "degrade") { l = formeDegradee(it); ranger(l, cont); }
-        else if (it.type === "texte") { l = texte(it); ranger(l, cont); }
+        else if (it.type === "texte") {
+          l = texte(it); ranger(l, cont);
+          if (it.motif && SCENE.motifs && SCENE.motifs[it.motif]) {
+            try { poserMotif(l, it); } catch (e) { erreurs.push(it.nom + " (motif " + it.motif + ") : " + e.message); }
+          }
+        }
         else if (it.type === "arc") { arc(it, cont); }
         else if (it.type === "image") {
           l = forme(it.chemins, [128, 128, 128], "Forme – " + it.calqueNom); ranger(l, cont);

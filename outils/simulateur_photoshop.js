@@ -28,7 +28,13 @@ global.PathPointInfo = class {}; global.UnitValue = function (v, u) { this.v = v
 global.SolidColor = class { constructor() { this.rgb = {}; } };
 global.PhotoshopSaveOptions = class {};
 global.$ = { fileName: "/tmp/flyer_photoshop.jsx", global };
-global.File = function (p) { const o = { fsName: p, name: p.split("/").pop(), parent: { fsName: p.split("/").slice(0, -1).join("/") } }; return o; };
+global.File = function (p) { const o = { fsName: p, name: p.split("/").pop(), parent: { fsName: p.split("/").slice(0, -1).join("/") },
+  encoding: "", contenu: "", ouvert: false,
+  open(m) { this.ouvert = true; return true; }, write(t) { if (!this.ouvert) throw new Error("écriture sans open"); this.contenu += t; return true; },
+  close() { this.ouvert = false; ecrits[this.fsName] = this.contenu; return true; } }; return o; };
+const ecrits = {};
+global.Folder = { temp: { fsName: "/tmp" } };
+global.SaveOptions = { DONOTSAVECHANGES: 2 };
 global.confirm = () => true;
 global.alert = (m) => journal.push("ALERT\n" + m);
 function nouveauCalque(type, nom) {
@@ -61,8 +67,18 @@ const doc = { layerSets: { add() { const g = nouveauCalque("groupe"); return g; 
   selection: { deselect() {} },
   get activeLayer() { return actif; },
   suspendHistory(n, code) { eval(code); },
-  resizeImage() {}, saveAs() {} };
+  resizeImage() {}, saveAs() {},
+  paste() { if (!presse) throw new Error("coller sans copie"); const l = nouveauCalque("pixels", "collé"); l.bounds = [0, 0, presse.w, presse.h]; return l; },
+  set activeLayer(l) { actif = l; } };
+let presse = null;
 global.app = { fonts: Object.assign([{ postScriptName: "ArchivoBlack-Regular" }], {}), preferences: {}, displayDialogs: 0,
+  open(f) {
+    const b = ecrits[f.fsName]; if (!b) throw new Error("ouverture d'un fichier inexistant " + f.fsName);
+    if (b.charCodeAt(1) !== 0x50 || b.slice(1, 4) !== "PNG") throw new Error("PNG invalide après décodage base64");
+    const w = (b.charCodeAt(16) << 24 | b.charCodeAt(17) << 16 | b.charCodeAt(18) << 8 | b.charCodeAt(19)), h = (b.charCodeAt(20) << 24 | b.charCodeAt(21) << 16 | b.charCodeAt(22) << 8 | b.charCodeAt(23));
+    return { selection: { selectAll() {}, copy() { presse = { w, h }; } }, close(o) { if (o !== SaveOptions.DONOTSAVECHANGES) throw new Error("close"); } };
+  },
+  set activeDocument(d) {},
   documents: { add(w, h, r) { const n = (x) => (x && x.v !== undefined ? x.v : x); if (!(n(w) > 0 && n(h) > 0)) throw new Error("taille doc"); return doc; } } };
 eval(src);
 const par = {}; for (const l of calques) par[l.type] = (par[l.type] || 0) + 1;

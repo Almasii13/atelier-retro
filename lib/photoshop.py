@@ -257,6 +257,8 @@ def construire_scene_ps(scene, fiche):
                 d = it["degradeTexte"]
                 item["degradeTexte"] = {"angle": round(90 - d["angle"] - it["angle"], 2),
                                         "stops": [{"c": _couleur(st["c"]), "pos": st["pos"]} for st in d["stops"]]}
+            if it.get("motif"):
+                item["motif"] = it["motif"]  # texture incrustée (calque écrêté sur le texte)
             if contour:
                 seul = all((r["st"]["couleur"] or {}).get("a", 1) == 0 for r in it["runs"])
                 item["contour"] = {"taille": _doc(contour["contour"]) if seul else _doc(contour["contour"]) / 2,
@@ -271,6 +273,20 @@ def exporter_jsx(page, fiche, base):
     scene = page.evaluate((RACINE / "lib" / "extraction_ps.js").read_text(encoding="utf-8"))
     mesurer_textes(page, scene)
     donnees = construire_scene_ps(scene, fiche)
+    # Textures incrustées dans des textes (data-motif) : embarquées en base64 dans les scripts
+    import base64
+    from PIL import Image
+    motifs = {}
+    for it in donnees["items"]:
+        cle = it.get("motif")
+        if cle and cle not in motifs:
+            chemin = pathlib.Path(base).parent / fiche.get("images", {}).get(cle, "")
+            if chemin.is_file():
+                im = Image.open(chemin)
+                motifs[cle] = {"b64": base64.b64encode(chemin.read_bytes()).decode(), "l": im.width, "h": im.height}
+        if cle and cle not in motifs:
+            it.pop("motif")
+    donnees["motifs"] = motifs
     import re, unicodedata
     nom = unicodedata.normalize("NFKD", pathlib.Path(base).name).encode("ascii", "ignore").decode()
     donnees["fichier"] = re.sub(r"[^A-Za-z0-9_-]+", "_", nom).strip("_") or "atelier"
