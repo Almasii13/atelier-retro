@@ -29,14 +29,16 @@
            border-radius: {{ p(14) }} {{ p(14) }} 0 0;
            background: linear-gradient(180deg, {{ C.argent_haut }}, {{ C.argent_bas }}); }
   .bande-texte { left: {{ p(130) }}; top: {{ p(G.marge) }}; width: {{ p(880) }}; height: {{ p(G.bande_h) }};
-                 display: flex; align-items: center; color: {{ C.texte_noir }}; font: 900 {{ p(36) }}/1 var(--f-gothic); }
-  .bande-texte span { display: block; width: 100%; }
+                 display: flex; align-items: center; color: {{ C.texte_noir }}; font: 900 {{ p(34) }}/1 var(--f-gothic); }
+  .bande-texte span { display: block; width: 100%; text-align: center; white-space: nowrap; letter-spacing: {{ p(3) }}; }
 
   /* Titre */
   .kicker { left: {{ p(60) }}; top: {{ p(152) }}; width: {{ p(960) }}; height: {{ p(46) }}; text-align: center;
             font: 700 {{ p(38) }}/{{ p(46) }} var(--f-mincho); color: #fff; letter-spacing: {{ p(2) }}; }
   .titre { height: {{ p(138) }}; transform: skewX(-9deg); transform-origin: 0 100%; }
-  .titre span { font: {{ p(120) }}/{{ p(138) }} var(--f-latin); color: {{ C.rouge_titre }}; text-shadow: {{ p(7) }} {{ p(7) }} 0 {{ C.jaune_titre }}; letter-spacing: {{ p(-2) }}; }
+  .titre span { font: {{ p(120) }}/{{ p(138) }} var(--f-latin); color: {{ C.rouge_titre }}; letter-spacing: {{ p(-2) }}; }
+  .titre.ombre { transform: translate({{ p(7) }}, {{ p(7) }}) skewX(-9deg); }
+  .titre.ombre span { color: {{ C.jaune_titre }}; }
   .titre.l1 { left: {{ p(70) }}; top: {{ p(206) }}; width: {{ p(930) }}; }
   .titre.an { left: {{ p(808) }}; top: {{ p(366) }}; width: {{ p(200) }}; }
   .titre.an span { font-size: {{ p(130) }}; }
@@ -92,7 +94,8 @@
     <div class="abs fenetre"></div>
     <div class="abs bande"></div>
     <svg class="abs" style="left:0;top:0;width:100%;height:100%;overflow:visible" viewBox="0 0 1080 1920" preserveAspectRatio="none">
-      {% for r in rayures %}<line x1="{{ r[0] }}" y1="{{ r[1] }}" x2="{{ r[2] }}" y2="{{ r[3] }}" stroke="{{ r[4] }}" stroke-width="{{ r[5] }}"/>{% endfor %}
+      <path data-nom="Rayures de la fenêtre" d="{{ rayures_fenetre }}" fill="rgba(255,255,255,0.055)"/>
+      <path data-nom="Rayures de la bande" d="{{ rayures_bande }}" fill="rgba(255,255,255,0.22)"/>
     </svg>
     {# fanion de la bande #}
     <svg class="abs" style="left:0;top:0;width:100%;height:100%;overflow:visible" viewBox="0 0 1080 1920" preserveAspectRatio="none">
@@ -101,16 +104,18 @@
       {% set c = G.carte %}{% set m = G.cadre_marge %}
       <polygon points="{{ escalier(c[0]-m, c[1]-m, c[2]+2*m, c[3]+2*m, 14) }}" fill="{{ C.or }}"/>
       <polygon points="{{ escalier(c[0]-m+10, c[1]-m+10, c[2]+2*m-20, c[3]+2*m-20, 11) }}" fill="{{ C.noir }}"/>
-      <polygon points="{{ escalier(c[0]-m+16, c[1]-m+16, c[2]+2*m-32, c[3]+2*m-32, 9) }}" fill="none" stroke="{{ C.or_clair }}" stroke-width="2"/>
+      <path data-nom="Liseré du cadre" fill-rule="evenodd" fill="{{ C.or_clair }}" d="M {{ escalier(c[0]-m+16, c[1]-m+16, c[2]+2*m-32, c[3]+2*m-32, 9) }} Z M {{ escalier(c[0]-m+18, c[1]-m+18, c[2]+2*m-36, c[3]+2*m-36, 9) }} Z"/>
       {# traits de repère vers la carte #}
       {% for a in appels %}
         {% set yy = G.appel_y[a.rang] + 38 %}
         {% if a.cote == 'g' %}
-          <line x1="{{ G.appel_x_g + G.appel_w + 8 }}" y1="{{ yy }}" x2="{{ c[0] - m + 6 }}" y2="{{ yy }}" stroke="{{ C.or_clair }}" stroke-width="3"/>
-          <circle cx="{{ c[0] - m + 6 }}" cy="{{ yy }}" r="7" fill="{{ C.rouge_titre }}" stroke="#fff" stroke-width="2"/>
+          <rect data-nom="Trait de repère" x="{{ G.appel_x_g + G.appel_w + 8 }}" y="{{ yy - 1.5 }}" width="{{ c[0] - m + 6 - (G.appel_x_g + G.appel_w + 8) }}" height="3" fill="{{ C.or_clair }}"/>
+          <circle cx="{{ c[0] - m + 6 }}" cy="{{ yy }}" r="9" fill="#ffffff"/>
+          <circle cx="{{ c[0] - m + 6 }}" cy="{{ yy }}" r="6.5" fill="{{ C.rouge_titre }}"/>
         {% else %}
-          <line x1="{{ G.appel_x_d - 8 }}" y1="{{ yy }}" x2="{{ c[0] + c[2] + m - 6 }}" y2="{{ yy }}" stroke="{{ C.or_clair }}" stroke-width="3"/>
-          <circle cx="{{ c[0] + c[2] + m - 6 }}" cy="{{ yy }}" r="7" fill="{{ C.rouge_titre }}" stroke="#fff" stroke-width="2"/>
+          <rect data-nom="Trait de repère" x="{{ c[0] + c[2] + m - 6 }}" y="{{ yy - 1.5 }}" width="{{ G.appel_x_d - 8 - (c[0] + c[2] + m - 6) }}" height="3" fill="{{ C.or_clair }}"/>
+          <circle cx="{{ c[0] + c[2] + m - 6 }}" cy="{{ yy }}" r="9" fill="#ffffff"/>
+          <circle cx="{{ c[0] + c[2] + m - 6 }}" cy="{{ yy }}" r="6.5" fill="{{ C.rouge_titre }}"/>
         {% endif %}
       {% endfor %}
       {# plaque cuivre #}
@@ -121,7 +126,9 @@
       {# pastille 特 : anneau segmenté #}
       {% set s = G.pastille %}
       <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] }}" fill="{{ C.bord_pastille }}"/>
-      <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] - 9 }}" fill="none" stroke="{{ C.rouge }}" stroke-width="{{ 20 }}" stroke-dasharray="{{ '%.2f' % (3.14159 * 2 * (s[2] - 9) / 16 * 0.62) }} {{ '%.2f' % (3.14159 * 2 * (s[2] - 9) / 16 * 0.38) }}"/>
+      {% for i in range(16) %}{% set a0 = i * 22.5 %}
+      <polygon data-nom="Secteur de la pastille" fill="{{ C.rouge }}" points="{% for k in range(7) %}{{ '%.1f' % (s[0] + s[2] * cos(radians(a0 + 14 * k / 6))) }},{{ '%.1f' % (s[1] + s[2] * sin(radians(a0 + 14 * k / 6))) }} {% endfor %}{% for k in range(6, -1, -1) %}{{ '%.1f' % (s[0] + (s[2] - 19) * cos(radians(a0 + 14 * k / 6))) }},{{ '%.1f' % (s[1] + (s[2] - 19) * sin(radians(a0 + 14 * k / 6))) }} {% endfor %}"/>
+      {% endfor %}
       <circle cx="{{ s[0] }}" cy="{{ s[1] }}" r="{{ s[2] - 20 }}" fill="{{ C.or }}"/>
       {# panneau du tableau : encadrement noir #}
       <rect x="{{ G.tab[0] - 12 }}" y="{{ G.tab[1] - 12 }}" width="{{ G.tab[2] + 24 }}" height="{{ G.tab_h + 24 }}" fill="{{ C.noir }}"/>
@@ -137,10 +144,12 @@
 
   {# ============ CALQUE 3 : textes ============ #}
   <div class="abs" data-calque="texte" style="inset:0">
-    <div class="abs bande-texte" data-groupe="Bande"><span class="justifie-tout" data-fit data-fit-max="9.6" data-fit-min="6">{{ T.bande }}</span></div>
+    <div class="abs bande-texte" data-groupe="Bande"><span>{{ T.bande }}</span></div>
 
     <div class="abs kicker" data-groupe="Titre">{{ T.kicker }}</div>
+    <div class="abs titre l1 ombre" data-groupe="Titre – ombre"><span data-plein>{{ T.titre }}</span></div>
     <div class="abs titre l1" data-groupe="Titre"><span data-plein>{{ T.titre }}</span></div>
+    <div class="abs titre an ombre" data-groupe="Titre – ombre"><span data-plein>{{ T.annee }}</span></div>
     <div class="abs titre an" data-groupe="Titre"><span data-plein>{{ T.annee }}</span></div>
     <div class="abs plaque-texte" data-groupe="Plaque"><span data-plein>{{ T.invitation }}</span></div>
     <div class="abs pastille-texte" data-groupe="Plaque">{{ T.special }}</div>
