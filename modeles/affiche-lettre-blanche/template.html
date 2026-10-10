@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Repère 1080 × 1920 px : p(v) = v × L / 1080 mm #}
+{% set k = L / 1080 %}
+{% macro p(v) %}{{ '%.3f' % (v * k) }}mm{% endmacro %}
+<style>
+  /* Modèle « affiche lettre blanche » — 1080 × 1920 px.
+     D'après la lettre d'accompagnement d'une carte promo japonaise (feuille crème, texte en mincho,
+     carte logée dans une découpe à encoches). Ici : tout blanc, texte noir, logo rouge et jaune. */
+  body { width: {{ L }}mm; height: {{ H }}mm; background: #fff; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; color: {{ C.noir }}; font-family: var(--f-mincho); left: 0; top: 0; }
+  .fond { position: absolute; inset: 0; background: #fff; }
+  .svg { left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+  .carte { left: {{ p(G.carte[0]) }}; top: {{ p(G.carte[1]) }}; width: {{ p(G.carte[2]) }}; height: {{ p(G.carte[3]) }}; }
+
+  .centre { left: 0; width: {{ p(1080) }}; text-align: center; white-space: nowrap; }
+  .kicker { top: {{ p(G.kicker) }}; font: 700 {{ p(22) }}/1 var(--f-mincho); letter-spacing: {{ p(8) }}; }
+  .kicker-en { top: {{ p(G.kicker + 40) }}; font: 700 {{ p(14) }}/1 var(--f-latin); letter-spacing: {{ p(5) }}; }
+
+  /* logo rouge et jaune : texte vivant, ombre jaune décalée */
+  .logo { transform: skewX(-9deg); transform-origin: 0 100%; font-family: var(--f-latin); white-space: nowrap; line-height: 1; text-align: center; }
+  .logo.l1 { left: {{ p(G.logo1[0]) }}; top: {{ p(G.logo1[1]) }}; width: {{ p(G.logo1[2]) }}; height: {{ p(G.logo1[3]) }}; font-size: {{ p(G.logo1[4]) }}; color: {{ C.rouge }}; letter-spacing: {{ p(-2) }}; }
+  .logo.l2 { left: {{ p(G.logo2[0]) }}; top: {{ p(G.logo2[1]) }}; width: {{ p(G.logo2[2]) }}; height: {{ p(G.logo2[3]) }}; font-size: {{ p(G.logo2[4]) }}; color: {{ C.rouge }}; letter-spacing: {{ p(-3) }}; }
+  .logo.o { color: {{ C.jaune }}; transform: translate({{ p(8) }}, {{ p(8) }}) skewX(-9deg); }
+
+  .sous { top: {{ p(G.sous) }}; font: 900 {{ p(38) }}/1 var(--f-mincho); letter-spacing: {{ p(10) }}; }
+  .sous-en { top: {{ p(G.sous + 56) }}; font: 700 {{ p(15) }}/1 var(--f-latin); letter-spacing: {{ p(5) }}; }
+
+  /* lettre */
+  .lettre { left: {{ p(G.lettre[0]) }}; white-space: nowrap; font: 500 {{ p(26) }}/{{ p(48) }} var(--f-mincho); }
+  .signature { left: {{ p(G.lettre[0]) }}; width: {{ p(G.lettre[2]) }}; text-align: right; font: 500 {{ p(24) }}/{{ p(40) }} var(--f-mincho); white-space: nowrap; }
+
+  /* mentions « ※ » */
+  .note-titre { left: {{ p(100) }}; top: {{ p(G.notes - 62) }}; font: 900 {{ p(24) }}/1 var(--f-mincho); letter-spacing: {{ p(6) }}; white-space: nowrap; }
+  .note { left: {{ p(100) }}; width: {{ p(880) }}; font: 500 {{ p(25) }}/1 var(--f-mincho); white-space: nowrap; }
+  .pied { left: 0; width: {{ p(1080) }}; text-align: center; white-space: nowrap; }
+  .pied.a { font: 500 {{ p(17) }}/1 var(--f-mincho); }
+  .pied.b { font: 700 {{ p(14) }}/1 var(--f-latin); letter-spacing: {{ p(2.4) }}; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="fond" data-calque="fond">
+    <svg class="abs svg" viewBox="0 0 1080 1920" preserveAspectRatio="none">
+      <rect data-nom="Filet haut" x="100" y="{{ G.kicker + 76 }}" width="880" height="3" fill="{{ C.noir }}"/>
+      <rect data-nom="Filet sous-titre" x="100" y="{{ G.sous + 100 }}" width="880" height="3" fill="{{ C.noir }}"/>
+      <rect data-nom="Filet notes" x="100" y="{{ G.notes - 86 }}" width="880" height="3" fill="{{ C.noir }}"/>
+      <rect data-nom="Filet pied" x="100" y="{{ G.pied - 26 }}" width="880" height="3" fill="{{ C.noir }}"/>
+      {# découpe de la carte : contour noir (anneau) + encoches #}
+      <path data-nom="Découpe carte" fill-rule="evenodd" fill="{{ C.noir }}" d="{{ decoupe_ext }} Z {{ decoupe_int }} Z"/>
+    </svg>
+  </div>
+
+  {% set u = img('carte') %}
+  <div class="abs" data-calque="image:carte" style="inset:0">
+    <div class="slot carte {{ '' if u else 'vide' }}" data-label="TA CARTE&#10;6,5 × 9 cm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="abs centre kicker" data-groupe="En-tête">{{ T.kicker }}</div>
+    <div class="abs centre kicker-en" data-groupe="En-tête">{{ T.kicker_en }}</div>
+
+    <div class="abs logo l1 o" data-groupe="Logo – ombre"><span data-plein>{{ T.logo1 }}</span></div>
+    <div class="abs logo l2 o" data-groupe="Logo – ombre"><span data-plein>{{ T.logo2 }}</span></div>
+    <div class="abs logo l1" data-groupe="Logo"><span data-plein>{{ T.logo1 }}</span></div>
+    <div class="abs logo l2" data-groupe="Logo"><span data-plein>{{ T.logo2 }}</span></div>
+
+    <div class="abs centre sous" data-groupe="Sous-titre">{{ T.sous }}</div>
+    <div class="abs centre sous-en" data-groupe="Sous-titre">{{ T.sous_en }}</div>
+
+    {% set ns = namespace(y=G.lettre[1]) %}
+    {% for para in T.lettre %}{% for ligne in para %}
+      <div class="abs lettre" data-groupe="Lettre" style="top:{{ p(ns.y) }}">{{ ligne }}</div>
+      {% set ns.y = ns.y + 48 %}
+    {% endfor %}{% set ns.y = ns.y + 22 %}{% endfor %}
+    <div class="abs signature" data-groupe="Lettre" style="top:{{ p(G.signature) }}">{{ T.date }}<br>{{ T.signature }}</div>
+
+    <div class="abs note-titre" data-groupe="Notes">{{ T.notes_titre }}</div>
+    {% for n in T.notes %}
+      <div class="abs note" data-groupe="Notes" style="top:{{ p(G.notes + loop.index0 * 48) }}">{{ n }}</div>
+    {% endfor %}
+
+    <div class="abs pied a" data-groupe="Pied" style="top:{{ p(G.pied) }}">{{ T.copyright }}</div>
+    <div class="abs pied b" data-groupe="Pied" style="top:{{ p(G.pied + 34) }}">{{ T.en1 }}</div>
+    <div class="abs pied b" data-groupe="Pied" style="top:{{ p(G.pied + 60) }}">{{ T.en2 }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
