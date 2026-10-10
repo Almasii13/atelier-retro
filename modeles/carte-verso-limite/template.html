@@ -58,11 +58,11 @@
     </svg>
     {{ svg('Carré central') }}
       {% set q = G.carre_or %}<rect data-nom="Carré or" x="{{ q[0] }}" y="{{ q[1] }}" width="{{ '%.3f' % (q[2]-q[0]) }}" height="{{ '%.3f' % (q[3]-q[1]) }}" fill="{{ C.or }}"/>
+      <path data-nom="Caractère « 限 » (vectorisé)" fill="{{ C.encre }}" fill-rule="evenodd" d="{{ d(G.gen) }}"/>
     </svg>
   </div>
 
   <div class="abs" data-calque="texte" style="inset:0">
-    <div class="t gen" data-groupe="Carré central">{{ T.centre }}</div>
     <div class="t illust" data-groupe="Cadre – textes">{{ T.illust }}</div>
     <div class="t weekly" data-groupe="Cadre – textes">{{ T.weekly }}</div>
     <div class="t copy" data-groupe="Cadre – textes">{{ T.copyright }}</div>
