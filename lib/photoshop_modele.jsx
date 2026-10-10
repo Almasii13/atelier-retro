@@ -333,20 +333,35 @@
     fichiersMotifs[cle] = f;
     return f;
   }
+  // Texture placée (Fichier > Importer incorporé) dans le document lui-même : aucun changement de document,
+  // compatible avec l'historique suspendu ; repli : ouverture + copier-coller.
   function poserMotif(texteCalque, it) {
-    var tex = app.open(fichierMotif(it.motif));
-    tex.selection.selectAll(); tex.selection.copy();
-    tex.close(SaveOptions.DONOTSAVECHANGES);
-    app.activeDocument = doc;
+    var f = fichierMotif(it.motif), m = SCENE.motifs[it.motif], l = null;
     doc.activeLayer = texteCalque;
-    var l = doc.paste();
-    if (!l || l === texteCalque) l = doc.activeLayer;
+    try {
+      var d = new ActionDescriptor();
+      d.putPath(cTID("null"), f);
+      d.putEnumerated(cTID("FTcs"), cTID("QCSt"), cTID("Qcsa"));
+      executeAction(cTID("Plc "), d, DialogModes.NO);
+      l = doc.activeLayer;
+      if (l === texteCalque) throw new Error("import incorpor\u00e9 refus\u00e9");
+    } catch (e1) {
+      var tex = app.open(f);
+      tex.selection.selectAll(); tex.selection.copy();
+      tex.close(SaveOptions.DONOTSAVECHANGES);
+      app.activeDocument = doc; doc.activeLayer = texteCalque;
+      l = doc.paste(); if (!l || l === texteCalque) l = doc.activeLayer;
+    }
     l.name = "Motif " + it.motif + " (incrust\u00e9 dans \u00ab " + it.nom + " \u00bb)";
+    // taille exacte de la texture (l'import peut la redimensionner selon les préférences)
+    var b = l.bounds, w = px(b[2]) - px(b[0]), h = px(b[3]) - px(b[1]);
+    if (w > 0 && h > 0 && (Math.abs(w - m.l) > 1 || Math.abs(h - m.h) > 1)) l.resize(m.l / w * 100, m.h / h * 100, AnchorPosition.MIDDLECENTER);
     var c = centreEncre(l);
     l.translate(it.centre[0] - c[0], it.centre[1] - c[1]);
     l.grouped = true;  // masque d'écrêtage sur le texte
     return l;
   }
+  var motifsAPoser = [];
 
   // ---------- Images des emplacements (logos, photos) ----------
   var fichiersImages = {};
@@ -409,7 +424,7 @@
         else if (it.type === "texte") {
           l = texte(it); ranger(l, cont);
           if (it.motif && SCENE.motifs && SCENE.motifs[it.motif]) {
-            try { poserMotif(l, it); } catch (e) { erreurs.push(it.nom + " (motif " + it.motif + ") : " + e.message); }
+            motifsAPoser.push({ l: l, it: it });  // posés après la construction (hors historique suspendu)
           }
         }
         else if (it.type === "arc") { arc(it, cont); }
@@ -445,6 +460,10 @@
 
   try { doc.suspendHistory("Atelier Retro", "__atelierConstruire()"); }
   catch (e) { erreurs.push("Construction : " + e.message); }
+  for (var mo = 0; mo < motifsAPoser.length; mo++) {
+    try { poserMotif(motifsAPoser[mo].l, motifsAPoser[mo].it); }
+    catch (e) { erreurs.push(motifsAPoser[mo].it.nom + " (motif " + motifsAPoser[mo].it.motif + ") : " + e.message); }
+  }
 
   doc.resizeImage(undefined, undefined, 300, ResampleMethod.NONE);
   app.preferences.rulerUnits = prefsRU; app.preferences.typeUnits = prefsTU; app.displayDialogs = dlg;

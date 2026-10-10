@@ -14,7 +14,7 @@ class Desc { constructor() { this.v = {}; }
   putInteger(k, v) { if (!Number.isInteger(v)) throw new Error("putInteger non entier " + k + "=" + v); this.put(k, v); }
   putDouble(k, v) { this.put(k, +v); } putBoolean(k, v) { this.put(k, !!v); }
   putUnitDouble(k, u, v) { this.put(k, +v); } putEnumerated(k, t, v) { this.put(k, v); }
-  putObject(k, c, v) { this.put(k, v); } putList(k, v) { this.put(k, v); } putReference(k, v) { this.put(k, v); } }
+  putObject(k, c, v) { this.put(k, v); } putPath(k, v) { this.put(k, v); } putList(k, v) { this.put(k, v); } putReference(k, v) { this.put(k, v); } }
 global.ActionDescriptor = Desc;
 global.ActionList = class { constructor() { this.l = []; } putObject(c, v) { this.l.push(v); } };
 global.ActionReference = class { putClass() {} putProperty() {} putEnumerated() {} };
@@ -58,6 +58,10 @@ global.executeAction = (id, d) => {
       for (const p of paras) if (p.v["s:to"] > t.length + 1) throw new Error("paragraphe hors texte");
       nouveauCalque("texte", t.slice(0, 20));
     } else nouveauCalque("forme");
+  } else if (id === "c:Plc ") {
+    const f = d.v["c:null"]; if (!f || !ecrits[f.fsName]) throw new Error("import d'un fichier inexistant");
+    const b = ecrits[f.fsName]; if (b.slice(1, 4) !== "PNG") throw new Error("PNG invalide après décodage base64");
+    const l = nouveauCalque("objet", "importé"); l.bounds = [0, 0, 500, 200]; l.resize = function (sx, sy) { if (!(sx > 0 && sy > 0)) throw new Error("resize"); };
   } else if (id === "c:setd") { if (!actif) throw new Error("setd sans calque"); actif.effet = true; }
 };
 const doc = { layerSets: { add() { const g = nouveauCalque("groupe"); return g; } },
