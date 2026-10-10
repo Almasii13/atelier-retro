@@ -31,6 +31,9 @@
 @font-face { font-family: "MP1 Medium"; src: url("fonts/MPLUS1p-Medium.ttf"); }
 @font-face { font-family: "Potta One"; src: url("fonts/PottaOne-Regular.ttf"); }
 @font-face { font-family: "OS Cond BI"; font-style: italic; src: url("fonts/OpenSans-CondensedBoldItalic.ttf"); }
+@font-face { font-family: "Arimo B"; src: url("fonts/Arimo-Bold.ttf"); }
+@font-face { font-family: "Zen Maru Black"; src: url("fonts/ZenMaruGothic-Black.ttf"); }
+@font-face { font-family: "MR Medium"; src: url("fonts/MPLUSRounded1c-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }

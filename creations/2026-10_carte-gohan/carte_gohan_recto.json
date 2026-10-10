@@ -1,0 +1,315 @@
+{
+ "modele": "carte-special-recto",
+ "titre_fichier": "Carte Carddass SPECIAL ② Son Gohan — recto 65x90",
+ "format": {
+  "largeur": 65,
+  "hauteur": 90
+ },
+ "fond_perdu": 3,
+ "securite": 2.5,
+ "rayon": 2.5,
+ "geo": {
+  "fenetre": [
+   4.2,
+   4.0,
+   54.2,
+   85.0
+  ],
+  "bande_x": 57.1,
+  "liseret_fenetre": null,
+  "fanion": [
+   [
+    58.3,
+    4.5
+   ],
+   [
+    61.0,
+    4.5
+   ],
+   [
+    61.0,
+    6.3
+   ],
+   [
+    59.6,
+    8.9
+   ],
+   [
+    58.3,
+    8.9
+   ]
+  ],
+  "pastille": {
+   "c": [
+    10.2,
+    81.2
+   ],
+   "r_bord": 7.45,
+   "r_anneau": 7.2,
+   "r_int": 5.6,
+   "r_or": 5.3,
+   "segments": 16
+  },
+  "plaque": {
+   "boite": [
+    9.7,
+    73.95,
+    53.05,
+    87.95
+   ],
+   "rayon": 2.2,
+   "liseret": 1.45,
+   "rayon_int": 1.1,
+   "liseret_clair": 0.25
+  },
+  "liseret_blanc": 0.22,
+  "ruby_ecart": 0.5,
+  "ruby_ecart_nom": 0.9,
+  "special_opacite": 0.7,
+  "bois": [
+   31,
+   11
+  ],
+  "logo": [
+   5.8,
+   4.6,
+   26.6,
+   10.7
+  ],
+  "logo2": [
+   37.4,
+   69.0,
+   53.0,
+   74.0
+  ],
+  "ruby_ecart_bande": 0.85
+ },
+ "couleurs": {
+  "noir": "#16171b",
+  "fenetre": [
+   [
+    0,
+    "#b2332b"
+   ],
+   [
+    55,
+    "#bb4136"
+   ],
+   [
+    100,
+    "#c65a4c"
+   ]
+  ],
+  "bande": [
+   [
+    0,
+    "#c4c6dc"
+   ],
+   [
+    100,
+    "#b8b9d2"
+   ]
+  ],
+  "texte_noir": "#141216",
+  "blanc": "#ffffff",
+  "orange": "#dc6d33",
+  "rouge": "#c0281b",
+  "bord_pastille": "#d4783a",
+  "or": "#c8962e",
+  "cuivre": "#9a5634",
+  "plaque": "#e6e4e6",
+  "liseret_clair": "#eea457",
+  "liseret_gris": "#a9a8bb",
+  "special": [
+   [
+    0,
+    "#f6a066"
+   ],
+   [
+    50,
+    "#ec7a46"
+   ],
+   [
+    100,
+    "#d9643c"
+   ]
+  ]
+ },
+ "images": {
+  "personnage": "images/personnage.png",
+  "logo": "images/logo.png",
+  "logo_carddass": "images/logo_carddass.png",
+  "bois": "images/bois.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond (carte, fenêtre, bande argent)",
+  "image:personnage": "Personnage",
+  "texte": "Textes & formes",
+  "image:logo": "Logo DRAGON BALL",
+  "image:logo_carddass": "Logo Carddass"
+ },
+ "textes": {
+  "pastille": "億",
+  "special": "SPECIAL",
+  "nom": [
+   "②",
+   [
+    "孫",
+    "そん"
+   ],
+   [
+    "悟",
+    "ご"
+   ],
+   [
+    "飯",
+    "はん"
+   ]
+  ],
+  "lignes": [
+   [
+    [
+     "凶敵",
+     "きょうてき"
+    ],
+    "セルを",
+    [
+     "倒",
+     "たお"
+    ],
+    "した",
+    [
+     "超戦士",
+     "スーパーせんし"
+    ],
+    "！"
+   ],
+   [
+    [
+     "成長",
+     "せいちょう"
+    ],
+    "し、さらなるパワー",
+    [
+     "UP",
+     "アップ"
+    ],
+    "!!"
+   ]
+  ],
+  "bande": [
+   [
+    "「か・め・は・め・",
+    [
+     "波",
+     "は"
+    ]
+   ],
+   [
+    "!!」"
+   ]
+  ]
+ },
+ "cibles": {
+  ".toku": [
+   7.17,
+   78.25,
+   13.23,
+   84.15
+  ],
+  ".special": [
+   21.7,
+   76.35,
+   47.5,
+   85.85
+  ],
+  ".l1": [
+   20.5,
+   78.5,
+   48.4,
+   80.75
+  ],
+  ".l2": [
+   20.4,
+   82.45,
+   49.15,
+   84.7
+  ],
+  ".nom": [
+   5.1,
+   70.4,
+   16.2,
+   73.0
+  ],
+  ".lv1": {
+   "bbox": [
+    9.6,
+    -61.15,
+    36.9,
+    -58.5
+   ],
+   "repere": [
+    0,
+    0,
+    90
+   ]
+  },
+  ".lv2": {
+   "bbox": [
+    37.3,
+    -61.15,
+    43.5,
+    -58.6
+   ],
+   "repere": [
+    0,
+    0,
+    90
+   ]
+  }
+ },
+ "calage": {
+  ".toku": {
+   "fs": 0.9146,
+   "sx": 1.0309,
+   "dx": 6.994,
+   "dy": 78.17
+  },
+  ".special": {
+   "fs": 1.0954,
+   "sx": 0.8152,
+   "dx": 21.581,
+   "dy": 75.324
+  },
+  ".l1": {
+   "fs": 0.9483,
+   "sx": 0.9867,
+   "dx": 20.385,
+   "dy": 78.816
+  },
+  ".l2": {
+   "fs": 0.9734,
+   "sx": 0.8967,
+   "dx": 20.33,
+   "dy": 82.775
+  },
+  ".nom": {
+   "fs": 1.0061,
+   "sx": 0.9665,
+   "dx": 5.09,
+   "dy": 70.497
+  },
+  ".lv1": {
+   "fs": 1.1183,
+   "sx": 0.9617,
+   "dx": 8.096,
+   "dy": -61.396
+  },
+  ".lv2": {
+   "fs": 1.1581,
+   "sx": 2.1021,
+   "dx": 36.644,
+   "dy": -61.859
+  }
+ }
+}

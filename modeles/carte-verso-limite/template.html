@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Verso de carte 65 × 90 mm d'après un dos Carddass « 限 » (WEEKLY JUMP).
+   Cadre or à crans et languettes, panneaux crème tramés, bandes à damier rouge / orange, filets blancs,
+   carré or « 限 », boule à deux étoiles et disque « 二 ». Géométrie : outils/verso_limite.py
+   (symétrie par demi-tour autour du centre de la carte). #}
+{% macro d(rings) %}{% for r in rings %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}{% endmacro %}
+{% macro dots(pts, r) %}{% for x, y in pts %}M {% for k in range(8) %}{{ '%.3f' % (x + r * cos(radians(22.5 + 45 * k))) }},{{ '%.3f' % (y + r * sin(radians(22.5 + 45 * k))) }} {% endfor %}Z {% endfor %}{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; color: {{ C.encre }}; }
+  .illust { font: 400 1.6mm/1 "MP1 Bold", sans-serif; }
+  .weekly { font: 400 1.6mm/1 "Arimo B", sans-serif; letter-spacing: .05mm; }
+  .copy { font: 400 1.5mm/1 "MP1 Medium", sans-serif; }
+  .gen { font: 400 22mm/1 "Zen Maru Black", sans-serif; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond noir" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.noir }}"/>
+      <path data-nom="Cadre or" fill="{{ C.or }}" fill-rule="evenodd" d="{{ d(G.or) }}"/>
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="motif" style="inset:0">
+    {{ svg('Panneaux crème') }}
+      <path data-nom="Panneaux crème" fill="{{ C.creme }}" d="{{ d(G.creme) }}"/>
+      <path data-nom="Trame de points" fill="{{ C.trame }}" d="{{ dots(G.trame, G.rayon_point) }}"/>
+    </svg>
+    {{ svg('Bandes') }}
+      <path data-nom="Coins – orange" fill="{{ C.orange }}" d="{{ d(G.coin_orange) }}"/>
+      <path data-nom="Coins – rouge" fill="{{ C.rouge }}" d="{{ d(G.coin_rouge) }}"/>
+      <path data-nom="Bandes – rouge" fill="{{ C.rouge }}" d="{{ d(G.bandes_rouge) }}"/>
+      <path data-nom="Bandes – orange" fill="{{ C.orange }}" d="{{ d(G.bandes_orange) }}"/>
+    </svg>
+    {{ svg('Filets blancs') }}
+      <path data-nom="Filets blancs" fill="{{ C.blanc }}" fill-rule="evenodd" d="{{ d(G.blanc) }}"/>
+    </svg>
+    {{ svg('Boule et disque') }}
+      <circle data-nom="Boule à deux étoiles" cx="{{ G.boule.c[0] }}" cy="{{ G.boule.c[1] }}" r="{{ G.boule.r }}" fill="{{ C.jaune }}"/>
+      <path data-nom="Étoiles" fill="{{ C.etoile }}" d="{{ d(G.etoiles) }}"/>
+      <circle data-nom="Disque « 二 »" cx="{{ G.disque.c[0] }}" cy="{{ G.disque.c[1] }}" r="{{ G.disque.r }}" fill="{{ C.jaune }}"/>
+      <path data-nom="Caractère « 二 » (pinceau)" fill="{{ C.encre }}" d="{% for r in G.ni %}M {% for x, y in r %}{{ '%.3f' % (G.disque.c[0] + x) }},{{ '%.3f' % (G.disque.c[1] + y) }} {% endfor %}Z {% endfor %}"/>
+    </svg>
+    {{ svg('Carré central') }}
+      {% set q = G.carre_or %}<rect data-nom="Carré or" x="{{ q[0] }}" y="{{ q[1] }}" width="{{ '%.3f' % (q[2]-q[0]) }}" height="{{ '%.3f' % (q[3]-q[1]) }}" fill="{{ C.or }}"/>
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="t gen" data-groupe="Carré central">{{ T.centre }}</div>
+    <div class="t illust" data-groupe="Cadre – textes">{{ T.illust }}</div>
+    <div class="t weekly" data-groupe="Cadre – textes">{{ T.weekly }}</div>
+    <div class="t copy" data-groupe="Cadre – textes">{{ T.copyright }}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

@@ -307,6 +307,7 @@
     if (it.contour) contour(it.contour.taille, it.contour.couleur, it.contour.centre);
     if (it.contourSeul) { try { l.fillOpacity = 0; } catch (e) {} }
     if (it.masque) { try { masqueVectoriel(it.masque); } catch (e) { erreurs.push(it.nom + " (masque) : " + e.message); } }
+    if (it.opacite) { try { l.opacity = it.opacite; } catch (e) {} }
     if (it.degradeTexte) { try { incrustationDegrade(it.degradeTexte); } catch (e) { erreurs.push(it.nom + " (dégradé du texte) : " + e.message); } }
     return l;
   }

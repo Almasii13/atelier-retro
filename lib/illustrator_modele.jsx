@@ -220,6 +220,7 @@
       }
     }
     placer(objet, it.centre, it.angle, tf);
+    if (it.opacite) { try { objet.opacity = it.opacite; } catch (e) {} }
     if (it.masque) {
       try {
         var gm = conteneur.groupItems.add(); gm.name = it.nom + " (masque)";

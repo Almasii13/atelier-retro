@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après une Carddass « SPECIAL » (② 孫悟飯).
+   Fond noir, fenêtre (dégradé rouge sous le prisme), bande argent à droite avec fanion noir et texte vertical
+   (furigana), nom à furigana, pastille « 億 » à anneau segmenté, plaque à liseré cuivre : deux lignes de texte
+   à furigana devant « SPECIAL » en lettres bois. Toutes les cotes en mm (page finie). #}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% macro rect(r) %}x="{{ r[0] }}" y="{{ r[1] }}" width="{{ '%.3f' % (r[2]-r[0]) }}" height="{{ '%.3f' % (r[3]-r[1]) }}"{% endmacro %}
+{% macro secteur(cx, cy, r0, r1, a0, a1, n=10) %}{% set pts = [] %}{% for k in range(n + 1) %}{% set a = radians(a0 + (a1 - a0) * k / n) %}{% set _ = pts.append((cx + r1 * cos(a), cy + r1 * sin(a))) %}{% endfor %}{% for k in range(n + 1) %}{% set a = radians(a1 - (a1 - a0) * k / n) %}{% set _ = pts.append((cx + r0 * cos(a), cy + r0 * sin(a))) %}{% endfor %}{{ poly(pts) }}{% endmacro %}
+{% macro ruby(l) %}{% for sg in l %}{% if sg is string %}{{ sg }}{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}{% endmacro %}
+{% set B = G.pastille %}{% set P = G.plaque %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; font-family: var(--f-gothic); }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .plein { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; background: {{ C.noir }}; }
+  .fenetre { position: absolute; left: {{ G.fenetre[0] }}mm; top: {{ G.fenetre[1] }}mm; width: {{ G.fenetre[2] - G.fenetre[0] }}mm; height: {{ G.fenetre[3] - G.fenetre[1] }}mm;
+    background: linear-gradient(180deg{% for p, c in C.fenetre %}, {{ c }} {{ p }}%{% endfor %}); }
+  .bande { position: absolute; left: {{ G.bande_x }}mm; top: -{{ FP }}mm; width: {{ L + FP - G.bande_x }}mm; height: {{ H + 2*FP }}mm;
+    background: linear-gradient(180deg{% for p, c in C.bande %}, {{ c }} {{ p }}%{% endfor %}); }
+
+  /* Texte vertical de la bande argent : gothique, liseré blanc */
+  .vert { writing-mode: vertical-rl; text-orientation: mixed; color: {{ C.texte_noir }};
+          -webkit-text-stroke: {{ G.liseret_blanc * 2 }}mm {{ C.blanc }}; paint-order: stroke fill; }
+  .axe-v { left: 0; top: 0; width: 0; height: 0; transform: rotate(90deg); transform-origin: 0 0; }
+  .ligne-v { font: 400 2.7mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; --ruby-ecart: {{ G.ruby_ecart_bande }}mm; }
+  .ligne-v .rt { font: 400 1.0mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; }
+  .x-v-main { font: 400 2.7mm/1 "MR Medium", sans-serif; }
+  .v-rt { font: 400 1.1mm/1 "MR Medium", sans-serif; }
+  .nom { font: 400 2.9mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; }
+  .nom { --ruby-ecart: {{ G.ruby_ecart_nom }}mm; }
+  .nom .rt { font: 400 1.0mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; letter-spacing: .05mm; }
+  .ligne { font: 400 2.6mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; }
+  .ligne { --ruby-ecart: {{ G.ruby_ecart }}mm; }
+  .ligne .rt { font: 400 1.0mm/1 "MR Medium", sans-serif; color: {{ C.texte_noir }}; }
+  .special { font: 400 10mm/1 "Anton", sans-serif; opacity: {{ G.special_opacite }};
+             background: {% if img('bois') %}url("{{ img('bois') }}") center / {{ '%.3f' % (G.bois[0] / ((calage or {}).get('.special', {}).get('sx', 1))) }}mm {{ G.bois[1] }}mm no-repeat, {% endif %}linear-gradient(180deg{% for p, c in C.special %}, {{ c }} {{ p }}%{% endfor %});
+             -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .toku { font: 400 7mm/1 "Potta One", sans-serif; color: {{ C.texte_noir }}; }
+  .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ G.logo[2] - G.logo[0] }}mm; height: {{ G.logo[3] - G.logo[1] }}mm; }
+  .zone-logo2 { left: {{ G.logo2[0] }}mm; top: {{ G.logo2[1] }}mm; width: {{ G.logo2[2] - G.logo2[0] }}mm; height: {{ G.logo2[3] - G.logo2[1] }}mm; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ===== FOND : carte noire, fenêtre, bande argent, fanion ===== #}
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="plein" data-groupe="Fond"></div>
+    <div class="fenetre" data-groupe="Fond"></div>
+    <div class="bande" data-groupe="Fond"></div>
+    <svg class="abs" data-groupe="Fond" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set F = G.fenetre %}{% set a = G.liseret_fenetre %}{% if a %}
+      <path data-nom="Liseré gris de la fenêtre" fill="{{ C.liseret_gris }}" fill-rule="evenodd" d="{{ chemin_svg([[(F[0]-a[0], F[1]-a[0]), (F[2]+a[0], F[1]-a[0]), (F[2]+a[0], F[3]+a[0]), (F[0]-a[0], F[3]+a[0])], [(F[0]+a[1], F[1]+a[1]), (F[2]-a[1], F[1]+a[1]), (F[2]-a[1], F[3]-a[1]), (F[0]+a[1], F[3]-a[1])]]) }}"/>{% endif %}
+      <polygon data-nom="Fanion noir" fill="{{ C.noir }}" points="{{ poly(G.fanion) }}"/>
+    </svg>
+  </div>
+
+  {% set u2 = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u2 else 'vide' }}" data-label="PERSONNAGES DÉTOURÉS">{% if u2 %}<img src="{{ u2 }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Texte vertical + furigana ----- #}
+    <div class="abs axe-v" data-groupe="Texte de la bande">
+      {% for part in T.bande %}<div class="t ligne-v lv{{ loop.index }}" data-groupe="Texte de la bande">{{ ruby(part) }}</div>
+      {% endfor %}
+    </div>
+
+    {# ----- Plaque ご招待券 ----- #}
+    <svg class="abs" data-groupe="Plaque" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set b = P.boite %}{% set l = P.liseret_clair %}
+      <rect data-nom="Plaque – liseré clair" {{ rect(b) }} rx="{{ P.rayon }}" fill="{{ C.liseret_clair }}"/>
+      <rect data-nom="Plaque – bande cuivre" {{ rect([b[0]+l, b[1]+l, b[2]-l, b[3]-l]) }} rx="{{ P.rayon - l }}" fill="{{ C.cuivre }}"/>
+      {% set e = P.liseret %}
+      <rect data-nom="Plaque – fond" {{ rect([P.boite[0]+e, P.boite[1]+e, P.boite[2]-e, P.boite[3]-e]) }} rx="{{ P.rayon_int }}" fill="{{ C.plaque }}"/>
+    </svg>
+    <div class="t special" data-groupe="Plaque" data-motif="bois">{{ T.special }}</div>
+    {% for l in T.lignes %}<div class="t ligne l{{ loop.index }}" data-groupe="Plaque – texte">{{ ruby(l) }}</div>
+    {% endfor %}
+    <div class="t nom" data-groupe="Nom">{{ ruby(T.nom) }}</div>
+
+    {# ----- Pastille 特 ----- #}
+    <svg class="abs" data-groupe="Pastille" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <circle data-nom="Pastille – liseré clair" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_bord }}" fill="{{ C.liseret_clair }}"/>
+      <circle data-nom="Pastille – anneau orange" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_anneau }}" fill="{{ C.orange }}"/>
+      {% for k in range(B.segments // 2) %}{% set a0 = -90 + 360 / B.segments * (2 * k + 0.5) %}
+      <polygon data-nom="Pastille – segment rouge {{ k + 1 }}" fill="{{ C.rouge }}" points="{{ secteur(B.c[0], B.c[1], B.r_int, B.r_anneau, a0, a0 + 360 / B.segments) }}"/>
+      {% endfor %}
+      <circle data-nom="Pastille – filet intérieur" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_int }}" fill="{{ C.bord_pastille }}"/>
+      <circle data-nom="Pastille – disque or" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r_or }}" fill="{{ C.or }}"/>
+    </svg>
+    <div class="t toku" data-groupe="Pastille">{{ T.pastille }}</div>
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% set u3 = img('logo_carddass') %}
+  <div class="abs" data-calque="image:logo_carddass" style="inset:0">
+    <div class="slot detoure zone-logo2 {{ '' if u3 else 'vide' }}" data-label="LOGO CARDDASS">{% if u3 %}<img src="{{ u3 }}">{% endif %}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
