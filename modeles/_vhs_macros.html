@@ -1,0 +1,24 @@
+{# Macros communes aux jaquettes VHS.
+   Une ligne de générique = liste de segments :
+     - liste de runs : "TEXTE" (corps normal) | {"p": "and"} (petit mot, même ligne de base)  → un calque texte
+     - {"l": ["LIGNE 1", "LIGNE 2"]} : intitulé empilé (deux lignes, petit corps)            → un calque texte
+   La ligne est un bloc flex centré sur son axe (left = x, translateX(-50%)), alignement sur la dernière
+   ligne de base : les intitulés empilés posent leur 2e ligne sur la ligne de base des noms. #}
+{% macro ligne(cle, segs, x, y, cls='', groupe='Générique', style='') -%}
+<div class="ln {{ cls }} ln-{{ cle }}" data-groupe="{{ groupe }}" style="left:{{ x }}mm;top:{{ y }}mm;{{ style }}">
+{%- for sg in segs -%}
+{%- if sg is mapping and sg.l -%}<span class="l{{ ' haut' if sg.haut else '' }}">{{ sg.l | join('<br>') }}</span>
+{%- else -%}<span class="w">{% for r in sg %}{% if r is mapping %}<span class="p">{{ r.p }}</span>{% else %}{{ r }}{% endif %}{% endfor %}</span>
+{%- endif -%}
+{%- endfor -%}
+</div>
+{%- endmacro %}
+{% macro css_lignes() %}
+  .ln { position: absolute; display: flex; align-items: last baseline; white-space: pre; line-height: 1;
+        transform: translateX(-50%); }
+  .ln .w { white-space: pre; }
+  .ln .w + .l, .ln .l + .w, .ln .l + .l { margin-left: .3em; }
+  .ln .w + .w { margin-left: .5em; }
+  .ln .l { font-size: .34em; line-height: 1.33; text-align: left; letter-spacing: .02em; }
+  .ln .l.haut { align-self: flex-start; margin-top: .1em; }
+{% endmacro %}

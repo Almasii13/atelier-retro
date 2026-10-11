@@ -142,11 +142,13 @@
       cl.putObject(cTID("Clrt"), st);
     }
     g.putList(cTID("Clrs"), cl);
-    var tl = new ActionList();
-    for (var k = 0; k < 2; k++) {
+    var tl = new ActionList(), avecAlpha = false;
+    for (var q = 0; q < stops.length; q++) if (stops[q].a !== undefined) avecAlpha = true;
+    var nT = avecAlpha ? stops.length : 2;
+    for (var k = 0; k < nT; k++) {
       var t = new ActionDescriptor();
-      t.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
-      t.putInteger(cTID("Lctn"), k * 4096);
+      t.putUnitDouble(cTID("Opct"), cTID("#Prc"), avecAlpha ? Math.round((stops[k].a === undefined ? 1 : stops[k].a) * 100) : 100);
+      t.putInteger(cTID("Lctn"), avecAlpha ? Math.round(Math.max(0, Math.min(1, stops[k].pos)) * 4096) : k * 4096);
       t.putInteger(cTID("Mdpn"), 50);
       tl.putObject(cTID("TrnS"), t);
     }

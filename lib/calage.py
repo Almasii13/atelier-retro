@@ -74,6 +74,21 @@ def caler(chemin, tours=4, tol=0.08):
                 pire = max(pire, ex)
                 kh = (ty1 - ty0) / max(my1 - my0, 1e-3)
                 kw = (tx1 - tx0) / max(mx1 - mx0, 1e-3)
+                fixe = isinstance(cib, dict) and cib.get("fixe")
+                if fixe:
+                    # corps et étirement imposés (repris d'une fiche de référence) : on ne cale que le centre ;
+                    # « lmax » : largeur d'encre maximale (condensation horizontale seulement si nécessaire)
+                    ex = max(abs((mx0 + mx1 - tx0 - tx1) / 2), abs((my0 + my1 - ty0 - ty1) / 2))
+                    pire = max(pire, ex)
+                    lmax = cib.get("lmax")
+                    if lmax and mx1 - mx0 > lmax + 0.02:
+                        c["sx"] = round(c["sx"] * lmax / (mx1 - mx0), 4)
+                    bord = cib.get("bord")   # "g" / "d" : aligné sur le bord gauche / droit de la cible au lieu du centre
+                    ddx = (tx0 - mx0) if bord == "g" else (tx1 - mx1) if bord == "d" else ((tx0 + tx1) - (mx0 + mx1)) / 2
+                    if bord: ex = max(abs(ddx), abs((my0 + my1 - ty0 - ty1) / 2)); pire = max(pire, ex)
+                    c["dx"] = round(c["dx"] + ddx, 3)
+                    c["dy"] = round(c["dy"] + ((ty0 + ty1) - (my0 + my1)) / 2, 3)
+                    continue
                 if tour < tours - 1 or ex > tol:
                     if tour % 2 == 0:   # échelle
                         c["fs"] = round(c["fs"] * kh, 4)
@@ -86,11 +101,18 @@ def caler(chemin, tours=4, tol=0.08):
         m = mesurer(nav, fiche, chemin.parent, cibles)
         nav.close()
     pire = 0
-    for sel, cib in cibles.items():
-        cib = cib["bbox"] if isinstance(cib, dict) else cib
+    for sel, cib0 in cibles.items():
+        cib = cib0["bbox"] if isinstance(cib0, dict) else cib0
         bb = m[sel]
         if bb:
-            e = max(abs(bb[i] - cib[i]) for i in range(4)); pire = max(pire, e)
+            if isinstance(cib0, dict) and cib0.get("fixe"):
+                bd = cib0.get("bord")
+                ex_x = (bb[0] - cib[0]) if bd == "g" else (bb[2] - cib[2]) if bd == "d" else (bb[0] + bb[2] - cib[0] - cib[2]) / 2
+                e = max(abs(ex_x), abs((bb[1] + bb[3] - cib[1] - cib[3]) / 2))
+                if cib0.get("lmax") and bb[2] - bb[0] > cib0["lmax"] + 0.05: e = max(e, bb[2] - bb[0] - cib0["lmax"])
+            else:
+                e = max(abs(bb[i] - cib[i]) for i in range(4))
+            pire = max(pire, e)
             if e > 0.25:
                 print(f"  {sel:40s} écart {e:.2f} mm  mesuré {[round(v, 2) for v in bb]}  cible {cib}")
     print(f"écart max final : {pire:.2f} mm")

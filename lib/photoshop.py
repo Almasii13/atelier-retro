@@ -25,6 +25,9 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Tinos": [(0, "Tinos-Bold")],
     "Arvo": [(0, "Arvo-Bold")],
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
+    "Heros": [(600, "TeXGyreHeros-Bold"), (0, "TeXGyreHeros-Regular")],
+    "Antonio R": [(0, "Antonio-Regular")],
+    "Mona SB": [(0, "MonaSans-SemiBold")],
     "Work Sans BI": [(0, "WorkSans-BlackItalic")],
     "Noto JP Black": [(0, "NotoSansJP-Black")],
     "Oswald M": [(0, "Oswald-Medium")],
@@ -43,9 +46,9 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
-CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72}
+CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72, "Antonio R": 0.86, "Heros": 0.73, "Mona SB": 0.73}
 NATIF_ITALIQUE = {"Work Sans BI", "OS Cond BI"}  # polices déjà italiques : pas d'italique synthétique en plus
-UNE_GRAISSE = {"Arimo B", "Zen Maru Black", "MR Medium", "MP1 Black", "MP1 Bold", "MP1 Medium", "Potta One", "OS Cond BI", "Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra"}  # le navigateur synthétise le gras au-delà de 600
+UNE_GRAISSE = {"Arimo B", "Zen Maru Black", "MR Medium", "MP1 Black", "MP1 Bold", "MP1 Medium", "Potta One", "OS Cond BI", "Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra", "Antonio R", "Mona SB"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
@@ -195,7 +198,7 @@ def construire_scene_ps(scene, fiche):
         elif t == "degrade":
             sortie["items"].append({**base, "type": "degrade", "chemins": chemin(it["chemins"]),
                                     "angle": 90 - it["degrade"]["angle"],
-                                    "stops": [{"c": _couleur(st["c"]), "pos": st["pos"]} for st in it["degrade"]["stops"]]})
+                                    "stops": [{"c": _couleur(st["c"]), "pos": st["pos"], **({"a": round(st["c"].get("a", 1), 3)} if st["c"].get("a", 1) < 1 else {})} for st in it["degrade"]["stops"]]})
         elif t == "rayures":
             (ax, ay), (bx, by), (cx, cy), (dx, dy) = it["coins"]
             bandes = []

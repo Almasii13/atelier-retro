@@ -1,0 +1,446 @@
+{
+ "modele": "vhs-classique",
+ "titre_fichier": "Référence ALIEN 1979",
+ "format": {
+  "largeur": 104.5,
+  "hauteur": 189.0
+ },
+ "fond_perdu": 3,
+ "securite": 3,
+ "couleurs": {
+  "noir": "#121718",
+  "creme": "#efe4cb",
+  "encre": "#262321",
+  "blanc": "#f3ede2",
+  "titre": "#efe7d4"
+ },
+ "images": {
+  "visuel": "images/visuel.png",
+  "classification": "images/classification.png",
+  "logo": "images/logo_studio.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond (noir, panneau crème)",
+  "image:visuel": "Visuel",
+  "texte": "Textes & filets",
+  "image:classification": "Classification",
+  "image:logo": "Logo studio"
+ },
+ "geo": {
+  "noir_bas": 152.9,
+  "visuel": [
+   -3,
+   -3,
+   107.5,
+   152.9
+  ],
+  "filet": 0.22,
+  "encadres": [
+   [
+    32.55,
+    176.15,
+    79.45,
+    179.2
+   ],
+   [
+    80.6,
+    176.15,
+    96.7,
+    179.2
+   ]
+  ],
+  "classification": [
+   38.0,
+   180.2,
+   57.3,
+   184.2
+  ],
+  "logo": [
+   58.6,
+   180.2,
+   64.7,
+   184.0
+  ],
+  "titre": {
+   "x": 52.25,
+   "y": 6.928,
+   "fs": 5.7413,
+   "ls": 16.8053,
+   "sx": 0.87,
+   "cap": 3.95,
+   "largeur": 74.991,
+   "top": 8.65
+  },
+  "titre_petit": {
+   "x": 52.7,
+   "y": 155.321,
+   "fs": 3.1977,
+   "ls": 3.1554,
+   "sx": 0.95,
+   "cap": 2.2,
+   "largeur": 22.03,
+   "top": 156.28
+  },
+  "lignes": {
+   "accroche": {
+    "x": 53.65,
+    "y": 102.2,
+    "fs": 4.0,
+    "cls": "clair gras",
+    "ls": 0,
+    "groupe": "Accroche"
+   },
+   "copyright": {
+    "x": 96.2,
+    "y": 152.962,
+    "fs": 0.95,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "presente": {
+    "x": 30.2,
+    "y": 155.95,
+    "fs": 1.0,
+    "cls": "",
+    "ls": 0.06,
+    "groupe": "Générique"
+   },
+   "cast1": {
+    "x": 52.25,
+    "y": 160.25,
+    "fs": 2.6,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "cast2": {
+    "x": 51.55,
+    "y": 162.85,
+    "fs": 2.6,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "g3": {
+    "x": 53.25,
+    "y": 166.575,
+    "fs": 1.5,
+    "cls": "",
+    "ls": 0.12,
+    "groupe": "Générique"
+   },
+   "g4": {
+    "x": 52.8,
+    "y": 168.825,
+    "fs": 1.5,
+    "cls": "",
+    "ls": 0.12,
+    "groupe": "Générique"
+   },
+   "g5": {
+    "x": 53.15,
+    "y": 170.925,
+    "fs": 1.5,
+    "cls": "",
+    "ls": 0.12,
+    "groupe": "Générique"
+   },
+   "g6": {
+    "x": 53.25,
+    "y": 173.425,
+    "fs": 1.5,
+    "cls": "",
+    "ls": 0.12,
+    "groupe": "Générique"
+   },
+   "encadre1": {
+    "x": 56.0,
+    "y": 177.237,
+    "fs": 0.85,
+    "cls": "gras",
+    "ls": 0.08,
+    "groupe": "Encadrés"
+   },
+   "encadre2": {
+    "x": 88.65,
+    "y": 177.237,
+    "fs": 0.85,
+    "cls": "gras",
+    "ls": 0.08,
+    "groupe": "Encadrés"
+   },
+   "duree": {
+    "x": 51.1,
+    "y": 184.875,
+    "fs": 2.9,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   }
+  }
+ },
+ "textes": {
+  "titre": "ALIEN",
+  "titre_petit": "ALIEN",
+  "lignes": {
+   "accroche": [
+    [
+     "In space no one can hear you scream."
+    ]
+   ],
+   "copyright": [
+    [
+     "© 1979 TWENTIETH CENTURY-FOX"
+    ]
+   ],
+   "presente": [
+    [
+     "TWENTIETH CENTURY-FOX PRESENTS"
+    ]
+   ],
+   "cast1": [
+    [
+     "TOM SKERRITT  SIGOURNEY WEAVER  VERONICA CARTWRIGHT"
+    ]
+   ],
+   "cast2": [
+    [
+     "HARRY DEAN STANTON  JOHN HURT  IAN HOLM ",
+     {
+      "p": "and"
+     },
+     " YAPHET KOTTO"
+    ],
+    {
+     "l": [
+      "AS",
+      "PARKER"
+     ],
+     "haut": true
+    }
+   ],
+   "g3": [
+    [
+     "EXECUTIVE PRODUCER RONALD SHUSETT   PRODUCED BY GORDON CARROLL, DAVID GILER ",
+     {
+      "p": "and"
+     },
+     " WALTER HILL"
+    ]
+   ],
+   "g4": [
+    [
+     "DIRECTED BY RIDLEY SCOTT   STORY BY DAN O’BANNON ",
+     {
+      "p": "and"
+     },
+     " RONALD SHUSETT"
+    ]
+   ],
+   "g5": [
+    [
+     "SCREENPLAY BY DAN O’BANNON MUSIC JERRY GOLDSMITH  PANAVISION®"
+    ]
+   ],
+   "g6": [
+    [
+     "EASTMAN KODAK COLOR®    PRINTS BY DELUXE®"
+    ]
+   ],
+   "encadre1": [
+    [
+     "MOTION PICTURE SOUNDTRACK AVAILABLE ON 20TH CENTURY-FOX RECORDS & TAPES"
+    ]
+   ],
+   "encadre2": [
+    [
+     "READ THE WARNER BOOK"
+    ]
+   ],
+   "duree": [
+    [
+     "Running Time: 116 Min."
+    ]
+   ]
+  }
+ },
+ "cibles": {
+  ".ln-accroche": [
+   18.4,
+   103.2,
+   88.9,
+   106.85
+  ],
+  ".ln-copyright": [
+   88.5,
+   153.2,
+   103.9,
+   154.2
+  ],
+  ".ln-presente": [
+   20.2,
+   156.2,
+   40.2,
+   156.95
+  ],
+  ".ln-cast1": [
+   8.6,
+   160.9,
+   95.9,
+   162.8
+  ],
+  ".ln-cast2": [
+   5.1,
+   163.5,
+   98.0,
+   165.5
+  ],
+  ".ln-g3": [
+   3.0,
+   166.95,
+   103.5,
+   168.05
+  ],
+  ".ln-g4": [
+   15.9,
+   169.2,
+   89.7,
+   170.4
+  ],
+  ".ln-g5": [
+   18.7,
+   171.3,
+   87.6,
+   172.5
+  ],
+  ".ln-g6": [
+   30.25,
+   173.8,
+   76.25,
+   175.0
+  ],
+  ".ln-encadre1": [
+   33.35,
+   177.45,
+   78.65,
+   178.1
+  ],
+  ".ln-encadre2": [
+   81.6,
+   177.45,
+   95.7,
+   178.1
+  ],
+  ".ln-duree": [
+   36.4,
+   185.6,
+   65.8,
+   188.3
+  ],
+  ".tt-titre": {
+   "bbox": [
+    14.7545,
+    8.65,
+    89.74549999999999,
+    12.6
+   ],
+   "fixe": true
+  },
+  ".tt-titre_petit": {
+   "bbox": [
+    41.685,
+    156.28,
+    63.715,
+    158.48
+   ],
+   "fixe": true
+  }
+ },
+ "calage": {
+  ".tt-titre": {
+   "fs": 1,
+   "sx": 0.87,
+   "dx": 0.108,
+   "dy": 1.052
+  },
+  ".tt-titre_petit": {
+   "fs": 1,
+   "sx": 0.95,
+   "dx": -0.036,
+   "dy": 0.584
+  },
+  ".ln-accroche": {
+   "fs": 0.9742,
+   "sx": 1.0119,
+   "dx": 0.058,
+   "dy": 0.25
+  },
+  ".ln-copyright": {
+   "fs": 1.4397,
+   "sx": 0.6813,
+   "dx": -0.038,
+   "dy": -0.032
+  },
+  ".ln-presente": {
+   "fs": 1.1044,
+   "sx": 0.891,
+   "dx": 0.15,
+   "dy": 0.226
+  },
+  ".ln-cast1": {
+   "fs": 0.9718,
+   "sx": 1.1093,
+   "dx": -0.063,
+   "dy": 0.426
+  },
+  ".ln-cast2": {
+   "fs": 0.9345,
+   "sx": 1.1499,
+   "dx": -0.027,
+   "dy": 0.42
+  },
+  ".ln-g3": {
+   "fs": 0.8376,
+   "sx": 1.3268,
+   "dx": -0.113,
+   "dy": 0.481
+  },
+  ".ln-g4": {
+   "fs": 1.0841,
+   "sx": 1.0497,
+   "dx": -0.021,
+   "dy": 0.319
+  },
+  ".ln-g5": {
+   "fs": 1.0841,
+   "sx": 1.0301,
+   "dx": 0.116,
+   "dy": 0.285
+  },
+  ".ln-g6": {
+   "fs": 1.0841,
+   "sx": 1.0362,
+   "dx": -0.113,
+   "dy": 0.192
+  },
+  ".ln-encadre1": {
+   "fs": 1.1715,
+   "sx": 0.9104,
+   "dx": 0.029,
+   "dy": 0.427
+  },
+  ".ln-encadre2": {
+   "fs": 1.1715,
+   "sx": 0.9642,
+   "dx": 0.142,
+   "dy": 0.427
+  },
+  ".ln-duree": {
+   "fs": 0.9868,
+   "sx": 0.9877,
+   "dx": 0.118,
+   "dy": 0.686
+  }
+ }
+}

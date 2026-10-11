@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% import '_vhs_macros.html' as M %}
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Face de jaquette VHS 104,5 × 189 mm d'après la VHS « ALIEN » 1979 (CBS/Fox / Magnetic Video).
+   Grand aplat noir (visuel), titre à lettres très espacées, accroche centrée, panneau crème en pied :
+   générique centré (Helvetica), deux encadrés, pictogramme de classification, logo studio, durée.
+   Cotes en mm (page finie), relevées sur la photo redressée. #}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  {{ M.css_lignes() }}
+  .ln { color: {{ C.encre }}; font-family: "Heros"; font-weight: 400; }
+  .ln .p { font-size: .45em; }
+  .ln.gras { font-weight: 700; }
+  .ln.clair { color: {{ C.blanc }}; }
+  .tt { position: absolute; white-space: pre; line-height: 1; font-family: "Archivo Black"; color: {{ C.titre }};
+           transform: translateX(-50%); }
+  .tt.tt-titre_petit { color: {{ C.encre }}; }
+  .slot.vide::after { font: 700 4mm/1 "Heros", sans-serif; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond noir" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ G.noir_bas + FP }}" fill="{{ C.noir }}"/>
+      <rect data-nom="Panneau crème" x="{{ -FP }}" y="{{ G.noir_bas }}" width="{{ L + 2*FP }}" height="{{ H - G.noir_bas + FP }}" fill="{{ C.creme }}"/>
+    </svg>
+  </div>
+
+  {% set u = img('visuel') %}{% set v = G.visuel %}
+  <div class="abs" data-calque="image:visuel" style="inset:0">
+    <div class="slot {{ '' if u else 'vide' }}" data-label="VISUEL" style="left:{{ v[0] }}mm;top:{{ v[1] }}mm;width:{{ v[2]-v[0] }}mm;height:{{ v[3]-v[1] }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Titre et accroche (sur le noir) ----- #}
+    {% for cle in ['titre', 'titre_petit'] %}{% set t = G[cle] %}
+    <div class="tt tt-{{ cle }}" data-groupe="{{ 'Titre' if cle == 'titre' else 'Générique' }}" style="left:{{ t.x }}mm;top:{{ t.y }}mm;font-size:{{ t.fs }}mm;letter-spacing:{{ t.ls }}mm;padding-left:{{ t.ls }}mm">{{ T[cle] }}</div>
+    {% endfor %}
+    {% for cle, P in G.lignes.items() %}
+    {{ M.ligne(cle, T.lignes[cle], P.x, P.y, P.cls or '', P.groupe or 'Générique', 'font-size:%smm;letter-spacing:%smm' % (P.fs, P.ls or 0)) }}
+    {% endfor %}
+
+    {# ----- Encadrés (filets) ----- #}
+    <svg class="abs" data-groupe="Encadrés" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% for b in G.encadres %}{% set e = G.filet %}
+      <path data-nom="Encadré {{ loop.index }}" fill="{{ C.encre }}" fill-rule="evenodd" d="M {{ b[0] }},{{ b[1] }} L {{ b[2] }},{{ b[1] }} L {{ b[2] }},{{ b[3] }} L {{ b[0] }},{{ b[3] }} Z M {{ '%.3f' % (b[0]+e) }},{{ '%.3f' % (b[1]+e) }} L {{ '%.3f' % (b[0]+e) }},{{ '%.3f' % (b[3]-e) }} L {{ '%.3f' % (b[2]-e) }},{{ '%.3f' % (b[3]-e) }} L {{ '%.3f' % (b[2]-e) }},{{ '%.3f' % (b[1]+e) }} Z"/>
+      {% endfor %}
+    </svg>
+  </div>
+
+  {% for cle, lab in [('classification', 'CLASSIFICATION'), ('logo', 'LOGO STUDIO')] %}{% set u = img(cle) %}{% set b = G[cle] %}
+  <div class="abs" data-calque="image:{{ cle }}" style="inset:0">
+    <div class="slot detoure {{ '' if u else 'vide' }}" data-label="{{ lab }}" style="left:{{ b[0] }}mm;top:{{ b[1] }}mm;width:{{ '%.2f' % (b[2]-b[0]) }}mm;height:{{ '%.2f' % (b[3]-b[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% endfor %}
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

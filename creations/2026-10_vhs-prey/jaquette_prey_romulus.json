@@ -1,0 +1,500 @@
+{
+ "modele": "vhs-reedition",
+ "titre_fichier": "Jaquette VHS PREY — style réédition ROMULUS (104,5 × 189)",
+ "format": {
+  "largeur": 104.5,
+  "hauteur": 189.0
+ },
+ "fond_perdu": 3,
+ "securite": 3,
+ "couleurs": {
+  "creme": "#e6e2d9",
+  "encre": "#2b2a29",
+  "titre": "#f6f5f1",
+  "fond_visuel": "#0e1820",
+  "fondu": [
+   "rgba(14,24,32,0)",
+   "rgba(14,24,32,1)"
+  ],
+  "pastille": "#e2d82a",
+  "encre_pastille": "#24231f",
+  "cartouche": "#77736d"
+ },
+ "images": {
+  "visuel": "images/visuel.png",
+  "logo_vhs": "images/logo_vhs.png",
+  "logo": "images/logo_studio.png",
+  "mini_logo_1": "images/mini_logo_1.png",
+  "mini_logo_2": "images/mini_logo_2.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond (crème, cadre visuel)",
+  "image:visuel": "Visuel",
+  "fondu": "Fondu sombre (bas du visuel)",
+  "texte": "Textes & pastille",
+  "cartouche": "Cartouche mention",
+  "image:logo_vhs": "Logo VHS",
+  "image:logo": "Logo studio",
+  "image:mini_logo_1": "Mini-logo gauche",
+  "image:mini_logo_2": "Mini-logo droite"
+ },
+ "geo": {
+  "visuel": [
+   7.875,
+   7.25,
+   96.625,
+   158.1
+  ],
+  "fondu": [
+   116.0,
+   158.1
+  ],
+  "pastille": {
+   "c": [
+    82.6,
+    14.4
+   ],
+   "r": 11.1,
+   "angle": 10,
+   "lim": [
+    -6.6,
+    -4.6,
+    4.3
+   ],
+   "edi": [
+    -9.0,
+    -0.8,
+    4.4
+   ]
+  },
+  "cartouche": [
+   45.35,
+   173.55,
+   52.4,
+   174.45
+  ],
+  "logo_vhs": [
+   3.95,
+   178.3,
+   16.65,
+   184.7
+  ],
+  "logo": [
+   89.6,
+   174.9,
+   101.15,
+   184.5
+  ],
+  "mini_logo_1": [
+   40.55,
+   173.0,
+   44.4,
+   174.5
+  ],
+  "mini_logo_2": [
+   60.05,
+   173.35,
+   61.4,
+   174.5
+  ],
+  "titre": {
+   "x": 52.25,
+   "y": 136.197,
+   "fs": 9.0116,
+   "ls": 12.8182,
+   "sx": 0.92,
+   "cap": 6.2,
+   "largeur": 59.571,
+   "top": 138.9
+  },
+  "sous_titre": {
+   "x": 52.25,
+   "y": 146.851,
+   "fs": 5.8299,
+   "ls": 4.4845,
+   "sx": 1.0,
+   "cap": 4.25,
+   "largeur": 63.59,
+   "top": 148.6
+  },
+  "lignes": {
+   "b1": {
+    "x": 51.45,
+    "y": 161.728,
+    "fs": 1.86
+   },
+   "b2": {
+    "x": 51.6,
+    "y": 163.778,
+    "fs": 1.86
+   },
+   "b3": {
+    "x": 51.35,
+    "y": 165.778,
+    "fs": 1.86
+   },
+   "b4": {
+    "x": 52.1,
+    "y": 167.778,
+    "fs": 1.86
+   },
+   "b5": {
+    "x": 52.075,
+    "y": 169.778,
+    "fs": 1.86
+   }
+  },
+  "lignes_dessus": {
+   "cartouche_txt": {
+    "x": 48.875,
+    "y": 173.77,
+    "fs": 0.4,
+    "cls": "sur-cartouche"
+   },
+   "copyright": {
+    "x": 56.425,
+    "y": 173.94,
+    "fs": 0.55,
+    "cls": "mini"
+   }
+  }
+ },
+ "textes": {
+  "titre": "PREY",
+  "sous_titre": "PREDATOR",
+  "pastille": [
+   "LIMITED",
+   "EDITION"
+  ],
+  "lignes": {
+   "b1": [
+    [
+     "20TH CENTURY STUDIOS ",
+     {
+      "p": "PRESENTS"
+     },
+     " ",
+     {
+      "p": "A"
+     },
+     " DAVIS ENTERTAINMENT/LAWRENCE GORDON ",
+     {
+      "p": "PRODUCTION"
+     },
+     " ",
+     {
+      "p": "A"
+     },
+     " DAN TRACHTENBERG ",
+     {
+      "p": "FILM"
+     },
+     " “PREY”"
+    ]
+   ],
+   "b2": [
+    [
+     "AMBER MIDTHUNDER  DAKOTA BEAVERS  DANE DILIEGRO  STORMEE KIPP  MICHELLE THRUSH  JULIAN BLACK ANTELOPE"
+    ]
+   ],
+   "b3": [
+    {
+     "l": [
+      "COSTUME",
+      "DESIGNER"
+     ]
+    },
+    [
+     "STEPHANIE PORTER"
+    ],
+    {
+     "l": [
+      "MUSIC",
+      "BY"
+     ]
+    },
+    [
+     "SARAH SCHACHNER"
+    ],
+    {
+     "l": [
+      "EDITED",
+      "BY"
+     ]
+    },
+    [
+     "ANGELA M. CATANZARO  CLAUDIA CASTELLO"
+    ],
+    {
+     "l": [
+      "DIRECTOR OF",
+      "PHOTOGRAPHY"
+     ]
+    },
+    [
+     "JEFF CUTTER"
+    ]
+   ],
+   "b4": [
+    {
+     "l": [
+      "EXECUTIVE",
+      "PRODUCERS"
+     ]
+    },
+    [
+     "LAWRENCE GORDON  BEN ROSENBLATT  MARC TOBEROFF"
+    ],
+    {
+     "l": [
+      "PRODUCED",
+      "BY"
+     ]
+    },
+    [
+     "JOHN DAVIS  JHANE MYERS  MARTY EWING"
+    ]
+   ],
+   "b5": [
+    {
+     "l": [
+      "BASED ON CHARACTERS",
+      "CREATED BY"
+     ]
+    },
+    [
+     "JIM THOMAS ",
+     {
+      "p": "AND"
+     },
+     " JOHN THOMAS"
+    ],
+    {
+     "l": [
+      "STORY",
+      "BY"
+     ]
+    },
+    [
+     "PATRICK AISON ",
+     {
+      "p": "&"
+     },
+     " DAN TRACHTENBERG"
+    ],
+    {
+     "l": [
+      "SCREENPLAY",
+      "BY"
+     ]
+    },
+    [
+     "PATRICK AISON"
+    ],
+    {
+     "l": [
+      "DIRECTED",
+      "BY"
+     ]
+    },
+    [
+     "DAN TRACHTENBERG"
+    ]
+   ],
+   "cartouche_txt": [
+    [
+     "SOUNDTRACK ON HOLLYWOOD RECORDS"
+    ]
+   ],
+   "copyright": [
+    [
+     "© 2022 20th Century Studios"
+    ]
+   ]
+  }
+ },
+ "cibles": {
+  ".ln-b1": {
+   "bbox": [
+    51.25,
+    162.425,
+    53.25,
+    163.425
+   ],
+   "fixe": true,
+   "lmax": 88
+  },
+  ".ln-b2": {
+   "bbox": [
+    51.25,
+    164.47500000000002,
+    53.25,
+    165.47500000000002
+   ],
+   "fixe": true,
+   "lmax": 88
+  },
+  ".ln-b3": {
+   "bbox": [
+    51.25,
+    166.47500000000002,
+    53.25,
+    167.47500000000002
+   ],
+   "fixe": true,
+   "lmax": 88
+  },
+  ".ln-b4": {
+   "bbox": [
+    51.25,
+    168.5,
+    53.25,
+    169.5
+   ],
+   "fixe": true,
+   "lmax": 88
+  },
+  ".ln-b5": {
+   "bbox": [
+    51.25,
+    170.47500000000002,
+    53.25,
+    171.47500000000002
+   ],
+   "fixe": true,
+   "lmax": 88
+  },
+  ".ln-cartouche_txt": {
+   "bbox": [
+    47.875,
+    173.5,
+    49.875,
+    174.5
+   ],
+   "fixe": true,
+   "lmax": 6.4
+  },
+  ".ln-copyright": {
+   "bbox": [
+    55.425,
+    173.75,
+    57.425,
+    174.75
+   ],
+   "fixe": true,
+   "lmax": 6.6
+  },
+  ".lim": {
+   "bbox": [
+    -6.3,
+    -3.7,
+    6.65,
+    -0.55
+   ],
+   "repere": [
+    82.6,
+    14.4,
+    10
+   ]
+  },
+  ".edi": {
+   "bbox": [
+    -8.7,
+    0.15,
+    9.0,
+    3.35
+   ],
+   "repere": [
+    82.6,
+    14.4,
+    10
+   ]
+  },
+  ".tt-titre": {
+   "bbox": [
+    22.4645,
+    138.9,
+    82.0355,
+    145.1
+   ],
+   "fixe": true
+  },
+  ".tt-sous_titre": {
+   "bbox": [
+    20.455,
+    148.6,
+    84.045,
+    152.85
+   ],
+   "fixe": true
+  }
+ },
+ "calage": {
+  ".ln-b1": {
+   "fs": 1.0428,
+   "sx": 1.0755,
+   "dx": 0.77,
+   "dy": 0.385
+  },
+  ".ln-b2": {
+   "fs": 1.0428,
+   "sx": 1.0755,
+   "dx": 0.77,
+   "dy": 0.583
+  },
+  ".ln-b3": {
+   "fs": 1.0428,
+   "sx": 1.0755,
+   "dx": 1.034,
+   "dy": 0.475
+  },
+  ".ln-b4": {
+   "fs": 1.0428,
+   "sx": 1.0755,
+   "dx": 0.274,
+   "dy": 0.589
+  },
+  ".ln-b5": {
+   "fs": 1.0428,
+   "sx": 1.0755,
+   "dx": 0.241,
+   "dy": 0.463
+  },
+  ".ln-cartouche_txt": {
+   "fs": 1.1662,
+   "sx": 0.5041,
+   "dx": 0.003,
+   "dy": 0.162
+  },
+  ".ln-copyright": {
+   "fs": 0.7898,
+   "sx": 1.1328,
+   "dx": -0.108,
+   "dy": 0.403
+  },
+  ".lim": {
+   "fs": 0.998,
+   "sx": 0.7916,
+   "dx": -0.074,
+   "dy": -0.072
+  },
+  ".edi": {
+   "fs": 0.9651,
+   "sx": 1.0635,
+   "dx": -0.186,
+   "dy": 0.347
+  },
+  ".tt-titre": {
+   "fs": 1,
+   "sx": 0.92,
+   "dx": -0.321,
+   "dy": 1.768
+  },
+  ".tt-sous_titre": {
+   "fs": 1,
+   "sx": 1.0,
+   "dx": -0.057,
+   "dy": 1.335
+  }
+ }
+}

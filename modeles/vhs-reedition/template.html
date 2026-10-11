@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% import '_vhs_macros.html' as M %}
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Face de jaquette VHS 104,5 × 189 mm d'après la réédition « ALIEN: ROMULUS » (VHS collector).
+   Bordure crème, visuel rectangulaire à fond sombre en pied, titre à lettres très espacées + sous-titre,
+   pastille jaune « LIMITED EDITION » inclinée, bloc générique condensé, rangée de mentions, logos VHS / studio.
+   Cotes en mm (page finie), relevées sur le scan. #}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  {{ M.css_lignes() }}
+  .ln { color: {{ C.encre }}; font-family: "Antonio R"; }
+  .ln .p { font-size: .6em; }
+  .ln.mini { font-family: "Heros"; font-weight: 400; }
+  .ln.sur-cartouche { color: {{ C.creme }}; font-family: "Heros"; font-weight: 700; }
+  .tt { position: absolute; white-space: pre; line-height: 1; color: {{ C.titre }}; transform: translateX(-50%); }
+  .tt.grand { font-family: "Archivo Black"; }
+  .tt.sous { font-family: "Mona SB"; }
+  .pastille-txt { position: absolute; white-space: pre; line-height: 1; color: {{ C.encre_pastille }}; font-family: "Heros"; }
+  .lim { font-weight: 400; } .edi { font-weight: 700; }
+  .fondu { position: absolute; background: linear-gradient(180deg, {{ C.fondu[0] }} 0%, {{ C.fondu[1] }} 100%); }
+  .slot.vide::after { font: 700 4mm/1 "Heros", sans-serif; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond crème" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.creme }}"/>
+      {% set v = G.visuel %}<rect data-nom="Cadre visuel (fond sombre)" x="{{ v[0] }}" y="{{ v[1] }}" width="{{ '%.3f' % (v[2]-v[0]) }}" height="{{ '%.3f' % (v[3]-v[1]) }}" fill="{{ C.fond_visuel }}"/>
+    </svg>
+  </div>
+
+  {% set u = img('visuel') %}{% set v = G.visuel %}
+  <div class="abs" data-calque="image:visuel" style="inset:0">
+    <div class="slot {{ '' if u else 'vide' }}" data-label="VISUEL" style="left:{{ v[0] }}mm;top:{{ v[1] }}mm;width:{{ '%.3f' % (v[2]-v[0]) }}mm;height:{{ '%.3f' % (v[3]-v[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="fondu" style="inset:0">
+    {% set f = G.fondu %}<div class="fondu" data-groupe="Visuel" style="left:{{ v[0] }}mm;top:{{ f[0] }}mm;width:{{ '%.3f' % (v[2]-v[0]) }}mm;height:{{ '%.3f' % (f[1]-f[0]) }}mm"></div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% for cle, cls in [('titre', 'grand'), ('sous_titre', 'sous')] %}{% set t = G[cle] %}
+    <div class="tt {{ cls }} tt-{{ cle }}" data-groupe="Titre" style="left:{{ t.x }}mm;top:{{ t.y }}mm;font-size:{{ t.fs }}mm;letter-spacing:{{ t.ls }}mm;padding-left:{{ t.ls }}mm">{{ T[cle] }}</div>
+    {% endfor %}
+
+    {# ----- Pastille LIMITED EDITION (inclinée) ----- #}
+    {% set P = G.pastille %}
+    <svg class="abs" data-groupe="Pastille" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <circle data-nom="Pastille jaune" cx="{{ P.c[0] }}" cy="{{ P.c[1] }}" r="{{ P.r }}" fill="{{ C.pastille }}"/>
+    </svg>
+    <div class="abs" data-groupe="Pastille" style="left:{{ P.c[0] }}mm;top:{{ P.c[1] }}mm;width:0;height:0;transform:rotate({{ P.angle }}deg);transform-origin:0 0">
+      <div class="pastille-txt lim" style="left:{{ P.lim[0] }}mm;top:{{ P.lim[1] }}mm;font-size:{{ P.lim[2] }}mm">{{ T.pastille[0] }}</div>
+      <div class="pastille-txt edi" style="left:{{ P.edi[0] }}mm;top:{{ P.edi[1] }}mm;font-size:{{ P.edi[2] }}mm">{{ T.pastille[1] }}</div>
+    </div>
+
+    {# ----- Bloc générique ----- #}
+    {% for cle, Q in G.lignes.items() %}
+    {{ M.ligne(cle, T.lignes[cle], Q.x, Q.y, Q.cls or '', Q.groupe or 'Générique', 'font-size:%smm;letter-spacing:%smm' % (Q.fs, Q.ls or 0)) }}
+    {% endfor %}
+  </div>
+
+  {# cartouche gris de la rangée de mentions : sous son texte #}
+  <div class="abs" data-calque="cartouche" style="inset:0">
+    <svg class="abs" data-groupe="Mentions" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set b = G.cartouche %}<rect data-nom="Cartouche mention" x="{{ b[0] }}" y="{{ b[1] }}" width="{{ '%.3f' % (b[2]-b[0]) }}" height="{{ '%.3f' % (b[3]-b[1]) }}" fill="{{ C.cartouche }}"/>
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% for cle, Q in G.lignes_dessus.items() %}
+    {{ M.ligne(cle, T.lignes[cle], Q.x, Q.y, Q.cls or '', Q.groupe or 'Mentions', 'font-size:%smm;letter-spacing:%smm' % (Q.fs, Q.ls or 0)) }}
+    {% endfor %}
+  </div>
+
+  {% for cle, lab in [('logo_vhs', 'LOGO VHS'), ('logo', 'LOGO STUDIO'), ('mini_logo_1', ''), ('mini_logo_2', '')] %}{% set u = img(cle) %}{% set b = G[cle] %}
+  <div class="abs" data-calque="image:{{ cle }}" style="inset:0">
+    <div class="slot detoure {{ '' if u else 'vide' }}" data-label="{{ lab }}" style="left:{{ b[0] }}mm;top:{{ b[1] }}mm;width:{{ '%.2f' % (b[2]-b[0]) }}mm;height:{{ '%.2f' % (b[3]-b[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% endfor %}
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

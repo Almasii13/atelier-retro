@@ -1,0 +1,470 @@
+{
+ "modele": "vhs-reedition",
+ "titre_fichier": "Référence ALIEN: ROMULUS",
+ "format": {
+  "largeur": 104.5,
+  "hauteur": 189.0
+ },
+ "fond_perdu": 3,
+ "securite": 3,
+ "couleurs": {
+  "creme": "#e6e2d9",
+  "encre": "#2b2a29",
+  "titre": "#f6f5f1",
+  "fond_visuel": "#0e1820",
+  "fondu": [
+   "rgba(14,24,32,0)",
+   "rgba(14,24,32,1)"
+  ],
+  "pastille": "#e2d82a",
+  "encre_pastille": "#24231f",
+  "cartouche": "#77736d"
+ },
+ "images": {
+  "visuel": "images/visuel.png",
+  "logo_vhs": "images/logo_vhs.png",
+  "logo": "images/logo_studio.png",
+  "mini_logo_1": "images/mini_logo_1.png",
+  "mini_logo_2": "images/mini_logo_2.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond (crème, cadre visuel)",
+  "image:visuel": "Visuel",
+  "fondu": "Fondu sombre (bas du visuel)",
+  "texte": "Textes & pastille",
+  "cartouche": "Cartouche mention",
+  "image:logo_vhs": "Logo VHS",
+  "image:logo": "Logo studio",
+  "image:mini_logo_1": "Mini-logo gauche",
+  "image:mini_logo_2": "Mini-logo droite"
+ },
+ "geo": {
+  "visuel": [
+   7.875,
+   7.25,
+   96.625,
+   158.1
+  ],
+  "fondu": [
+   116.0,
+   158.1
+  ],
+  "pastille": {
+   "c": [
+    82.6,
+    14.4
+   ],
+   "r": 11.1,
+   "angle": 10,
+   "lim": [
+    -6.6,
+    -4.6,
+    4.3
+   ],
+   "edi": [
+    -9.0,
+    -0.8,
+    4.4
+   ]
+  },
+  "cartouche": [
+   45.35,
+   173.55,
+   52.4,
+   174.45
+  ],
+  "logo_vhs": [
+   3.95,
+   178.3,
+   16.65,
+   184.7
+  ],
+  "logo": [
+   89.6,
+   174.9,
+   101.15,
+   184.5
+  ],
+  "mini_logo_1": [
+   40.55,
+   173.0,
+   44.4,
+   174.5
+  ],
+  "mini_logo_2": [
+   60.05,
+   173.35,
+   61.4,
+   174.5
+  ],
+  "titre": {
+   "x": 52.25,
+   "y": 136.197,
+   "fs": 9.0116,
+   "ls": 12.596,
+   "sx": 0.92,
+   "cap": 6.2,
+   "largeur": 73.754,
+   "top": 138.9
+  },
+  "sous_titre": {
+   "x": 52.25,
+   "y": 146.851,
+   "fs": 5.8299,
+   "ls": 4.3616,
+   "sx": 1.0,
+   "cap": 4.25,
+   "largeur": 55.395,
+   "top": 148.6
+  },
+  "lignes": {
+   "b1": {
+    "x": 51.45,
+    "y": 161.728,
+    "fs": 1.86
+   },
+   "b2": {
+    "x": 51.6,
+    "y": 163.778,
+    "fs": 1.86
+   },
+   "b3": {
+    "x": 51.35,
+    "y": 165.778,
+    "fs": 1.86
+   },
+   "b4": {
+    "x": 52.1,
+    "y": 167.778,
+    "fs": 1.86
+   },
+   "b5": {
+    "x": 52.075,
+    "y": 169.778,
+    "fs": 1.86
+   }
+  },
+  "lignes_dessus": {
+   "cartouche_txt": {
+    "x": 48.875,
+    "y": 173.77,
+    "fs": 0.4,
+    "cls": "sur-cartouche"
+   },
+   "copyright": {
+    "x": 56.425,
+    "y": 173.94,
+    "fs": 0.55,
+    "cls": "mini"
+   }
+  }
+ },
+ "textes": {
+  "titre": "ALIEN",
+  "sous_titre": "ROMULUS",
+  "pastille": [
+   "LIMITED",
+   "EDITION"
+  ],
+  "lignes": {
+   "b1": [
+    [
+     "20TH CENTURY STUDIOS ",
+     {
+      "p": "PRESENTS"
+     },
+     " ",
+     {
+      "p": "A"
+     },
+     " SCOTT FREE/BRANDYWINE ",
+     {
+      "p": "PRODUCTION"
+     },
+     " ",
+     {
+      "p": "A"
+     },
+     " FEDE ALVAREZ ",
+     {
+      "p": "FILM"
+     },
+     " “ALIEN: ROMULUS”"
+    ]
+   ],
+   "b2": [
+    [
+     "CAILEE SPAENY  DAVID JONSSON  ARCHIE RENAUX  ISABELA MERCED  SPIKE FEARN  AILEEN WU"
+    ]
+   ],
+   "b3": [
+    {
+     "l": [
+      "VISUAL EFFECTS",
+      "SUPERVISOR"
+     ]
+    },
+    [
+     "ERIC BARBA"
+    ],
+    {
+     "l": [
+      "MUSIC",
+      "BY"
+     ]
+    },
+    [
+     "BENJAMIN WALLFISCH ",
+     {
+      "p": "EDITOR"
+     },
+     " JAKE ROBERTS, ",
+     {
+      "p": "ACE"
+     }
+    ],
+    {
+     "l": [
+      "PRODUCTION",
+      "DESIGNER"
+     ]
+    },
+    [
+     "NAAMAN MARSHALL"
+    ],
+    {
+     "l": [
+      "DIRECTOR OF",
+      "PHOTOGRAPHY"
+     ]
+    },
+    [
+     "GALO OLIVARES"
+    ]
+   ],
+   "b4": [
+    {
+     "l": [
+      "EXECUTIVE",
+      "PRODUCERS"
+     ]
+    },
+    [
+     "FEDE ALVAREZ  ELIZABETH CANTILLON  BRENT O’CONNOR  TOM MORAN"
+    ],
+    {
+     "l": [
+      "PRODUCED",
+      "BY"
+     ]
+    },
+    [
+     "RIDLEY SCOTT  MICHAEL PRUSS  WALTER HILL"
+    ]
+   ],
+   "b5": [
+    {
+     "l": [
+      "BASED ON CHARACTERS",
+      "CREATED BY"
+     ]
+    },
+    [
+     "DAN O’BANNON ",
+     {
+      "p": "AND"
+     },
+     " RONALD SHUSETT"
+    ],
+    {
+     "l": [
+      "WRITTEN",
+      "BY"
+     ]
+    },
+    [
+     "FEDE ALVAREZ ",
+     {
+      "p": "&"
+     },
+     " RODO SAYAGUES"
+    ],
+    {
+     "l": [
+      "DIRECTED",
+      "BY"
+     ]
+    },
+    [
+     "FEDE ALVAREZ"
+    ]
+   ],
+   "cartouche_txt": [
+    [
+     "SOUNDTRACK AVAILABLE ON HOLLYWOOD RECORDS"
+    ]
+   ],
+   "copyright": [
+    [
+     "© 2024 20th Century Studios"
+    ]
+   ]
+  }
+ },
+ "cibles": {
+  ".ln-b1": [
+   14.95,
+   162.1,
+   87.95,
+   163.75
+  ],
+  ".ln-b2": [
+   20.25,
+   164.15,
+   82.95,
+   165.8
+  ],
+  ".ln-b3": [
+   10.6,
+   166.15,
+   92.1,
+   167.8
+  ],
+  ".ln-b4": [
+   9.6,
+   168.15,
+   94.6,
+   169.85
+  ],
+  ".ln-b5": [
+   16.75,
+   170.15,
+   87.4,
+   171.8
+  ],
+  ".ln-cartouche_txt": [
+   45.75,
+   173.85,
+   52.0,
+   174.15
+  ],
+  ".ln-copyright": [
+   53.35,
+   174.05,
+   59.5,
+   174.45
+  ],
+  ".lim": {
+   "bbox": [
+    -6.3,
+    -3.7,
+    6.65,
+    -0.55
+   ],
+   "repere": [
+    82.6,
+    14.4,
+    10
+   ]
+  },
+  ".edi": {
+   "bbox": [
+    -8.7,
+    0.15,
+    9.0,
+    3.35
+   ],
+   "repere": [
+    82.6,
+    14.4,
+    10
+   ]
+  },
+  ".tt-titre": {
+   "bbox": [
+    15.372999999999998,
+    138.9,
+    89.12700000000001,
+    145.1
+   ],
+   "fixe": true
+  },
+  ".tt-sous_titre": {
+   "bbox": [
+    24.5525,
+    148.6,
+    79.9475,
+    152.85
+   ],
+   "fixe": true
+  }
+ },
+ "calage": {
+  ".tt-titre": {
+   "fs": 1,
+   "sx": 0.92,
+   "dx": 0.208,
+   "dy": 1.768
+  },
+  ".tt-sous_titre": {
+   "fs": 1,
+   "sx": 1.0,
+   "dx": -0.123,
+   "dy": 1.335
+  },
+  ".ln-b1": {
+   "fs": 1.0779,
+   "sx": 1.0344,
+   "dx": -0.063,
+   "dy": 0.127
+  },
+  ".ln-b2": {
+   "fs": 1.0779,
+   "sx": 0.9936,
+   "dx": 0.123,
+   "dy": 0.324
+  },
+  ".ln-b3": {
+   "fs": 0.8921,
+   "sx": 1.2806,
+   "dx": 0.121,
+   "dy": 0.456
+  },
+  ".ln-b4": {
+   "fs": 1.0882,
+   "sx": 1.0154,
+   "dx": 0.034,
+   "dy": 0.406
+  },
+  ".ln-b5": {
+   "fs": 1.0779,
+   "sx": 1.0533,
+   "dx": 0.06,
+   "dy": 0.199
+  },
+  ".ln-cartouche_txt": {
+   "fs": 1.1662,
+   "sx": 0.5041,
+   "dx": 0.034,
+   "dy": 0.219
+  },
+  ".ln-copyright": {
+   "fs": 0.7898,
+   "sx": 1.1328,
+   "dx": -0.087,
+   "dy": 0.367
+  },
+  ".lim": {
+   "fs": 0.9962,
+   "sx": 0.7931,
+   "dx": -0.087,
+   "dy": -0.081
+  },
+  ".edi": {
+   "fs": 0.9658,
+   "sx": 1.0628,
+   "dx": -0.203,
+   "dy": 0.34
+  }
+ }
+}

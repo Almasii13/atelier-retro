@@ -1,0 +1,487 @@
+#target photoshop
+/*  ATELIER RETRO \u2014 construction automatique du document dans Photoshop
+    ---------------------------------------------------------------------
+    Utilisation : Photoshop > Fichier > Scripts > Parcourir\u2026 > choisir ce fichier.
+    Le script cr\u00e9e le document au format final (fond perdu compris, 300 ppi) avec :
+      - de vrais calques de texte modifiables (polices, tailles, approches, interlignages, couleurs, rotations) ;
+      - des calques de forme vectoriels ;
+      - pour chaque image : une forme + un calque vide \u00e9cr\u00eat\u00e9 au-dessus (colle ton image dedans) ;
+      - les zones r\u00e9serv\u00e9es (VHS 3D, TV\u2026) dans un groupe masqu\u00e9 ;
+      - les rep\u00e8res : coupe, s\u00e9curit\u00e9, plis.
+    Polices : installe celles du dossier lib/fonts de l'atelier avant de lancer le script.
+    Le PSD est enregistr\u00e9 \u00e0 c\u00f4t\u00e9 de ce script.
+*/
+(function () {
+ try {
+  var SCENE = {"titre": "Jaquette VHS PREY \u2014 style ALIEN 1979 (104,5 \u00d7 189)", "fichier": "jaquette_prey_alien1979", "largeur": 1305, "hauteur": 2303, "reperes": {"coupe": [35.43307086614173, 1269.6850393700788, 35.43307086614173, 2267.716535433071], "secu": [70.86614173228347, 1234.251968503937, 70.86614173228347, 2232.283464566929]}, "plis": [], "polices": ["ArchivoBlack-Regular", "TeXGyreHeros-Bold", "TeXGyreHeros-Regular"], "items": [{"calque": "fond", "calqueNom": "Fond (noir, panneau cr\u00e8me)", "groupe": "", "nom": "Fond noir", "type": "forme", "couleur": [18, 23, 24], "chemins": [[{"a": [-0.03, -0.01]}, {"a": [1305.06, -0.01]}, {"a": [1305.06, 1841.29]}, {"a": [-0.03, 1841.29]}]]}, {"calque": "fond", "calqueNom": "Fond (noir, panneau cr\u00e8me)", "groupe": "", "nom": "Panneau cr\u00e8me", "type": "forme", "couleur": [239, 228, 203], "chemins": [[{"a": [-0.03, 1841.29]}, {"a": [1305.06, 1841.29]}, {"a": [1305.06, 2303.09]}, {"a": [-0.03, 2303.09]}]]}, {"calque": "image:visuel", "calqueNom": "Visuel", "groupe": "", "nom": "slot vide", "type": "image", "cle": "visuel", "label": "", "chemins": [[{"a": [0.0, 0.0]}, {"a": [1306.25, 0.0]}, {"a": [1306.25, 1840.62]}, {"a": [0.0, 1840.62]}]], "detoure": false}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Titre", "nom": "PREY", "type": "texte", "texte": "PREY", "runs": [{"de": 0, "a": 4, "police": "ArchivoBlack-Regular", "taille": 67.81, "approche": 2952, "interligne": 67.81, "couleur": [239, 231, 212], "italique": false, "gras": false, "echelleH": 87.0, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 4, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [652.28, 160.96], "angle": 0.0, "encre": [695.13, 46.91], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "PREY", "type": "texte", "texte": "PREY", "runs": [{"de": 0, "a": 4, "police": "ArchivoBlack-Regular", "taille": 37.77, "approche": 1011, "interligne": 37.77, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 95.0, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 4, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [651.37, 1893.42], "angle": 0.0, "encre": [212.7, 26.62], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Accroche", "nom": "In 1719, the hunter became the hunted.", "type": "texte", "texte": "In 1719, the hunter became the hunted.", "runs": [{"de": 0, "a": 38, "police": "TeXGyreHeros-Bold", "taille": 46.03, "approche": 0, "interligne": 44.84, "couleur": [243, 237, 226], "italique": false, "gras": false, "echelleH": 101.19, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 38, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [653.51, 1276.03], "angle": 0.0, "encre": [855.94, 42.22], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "\u00a9 2022 20TH CENTURY STUDIOS", "type": "texte", "texte": "\u00a9 2022 20TH CENTURY STUDIOS", "runs": [{"de": 0, "a": 27, "police": "TeXGyreHeros-Regular", "taille": 16.15, "approche": 0, "interligne": 23.26, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 68.13, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 27, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [1154.69, 1849.89], "angle": 0.0, "encre": [172.52, 12.5], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "20TH CENTURY STUDIOS PRESENTS", "type": "texte", "texte": "20TH CENTURY STUDIOS PRESENTS", "runs": [{"de": 0, "a": 29, "police": "TeXGyreHeros-Regular", "taille": 13.04, "approche": 60, "interligne": 14.41, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 89.1, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 29, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [422.36, 1886.1], "angle": 0.0, "encre": [226.17, 9.4], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "AMBER MIDTHUNDER  DAKOTA BEAVERS  MICHEL", "type": "texte", "texte": "AMBER MIDTHUNDER  DAKOTA BEAVERS  MICHELLE THRUSH", "runs": [{"de": 0, "a": 49, "police": "TeXGyreHeros-Regular", "taille": 29.27, "approche": 0, "interligne": 27.9, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 49, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [652.05, 1947.25], "angle": 0.0, "encre": [984.3, 23.47], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "STORMEE KIPP  JULIAN BLACK ANTELOPE and ", "type": "texte", "texte": "STORMEE KIPP  JULIAN BLACK ANTELOPE and DANE DILIEGRO", "runs": [{"de": 0, "a": 36, "police": "TeXGyreHeros-Regular", "taille": 29.27, "approche": 0, "interligne": 27.9, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}, {"de": 36, "a": 39, "police": "TeXGyreHeros-Regular", "taille": 13.17, "approche": 0, "interligne": 27.9, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}, {"de": 39, "a": 53, "police": "TeXGyreHeros-Regular", "taille": 29.27, "approche": 0, "interligne": 27.9, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 53, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [620.73, 1978.94], "angle": 0.0, "encre": [976.64, 23.45], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "AS PREDATOR", "type": "texte", "texte": "AS\rPREDATOR", "runs": [{"de": 0, "a": 3, "police": "TeXGyreHeros-Regular", "taille": 9.95, "approche": 20, "interligne": 13.24, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}, {"de": 3, "a": 11, "police": "TeXGyreHeros-Regular", "taille": 9.95, "approche": 20, "interligne": 13.24, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 112.96, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 3, "align": "left", "retrait1": 0.0, "retraitG": 0.0}, {"de": 3, "a": 11, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [1143.5, 1977.52], "angle": 0.0, "encre": [60.37, 20.43], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "EXECUTIVE PRODUCER LAWRENCE GORDON   PRO", "type": "texte", "texte": "EXECUTIVE PRODUCER LAWRENCE GORDON   PRODUCED BY JOHN DAVIS, JHANE MYERS and MARTY EWING", "runs": [{"de": 0, "a": 73, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 99.46, "echelleV": 100.0, "decalage": 0.0}, {"de": 73, "a": 76, "police": "TeXGyreHeros-Regular", "taille": 8.64, "approche": 178, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 99.46, "echelleV": 100.0, "decalage": 0.0}, {"de": 76, "a": 88, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 99.46, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 88, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [651.53, 2013.67], "angle": 0.0, "encre": [1135.34, 17.2], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "DIRECTED BY DAN TRACHTENBERG   STORY BY ", "type": "texte", "texte": "DIRECTED BY DAN TRACHTENBERG   STORY BY PATRICK AISON and DAN TRACHTENBERG", "runs": [{"de": 0, "a": 54, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}, {"de": 54, "a": 57, "police": "TeXGyreHeros-Regular", "taille": 8.64, "approche": 178, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}, {"de": 57, "a": 74, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 74, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [652.82, 2040.06], "angle": 0.0, "encre": [968.37, 14.08], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "SCREENPLAY BY PATRICK AISON MUSIC SARAH ", "type": "texte", "texte": "SCREENPLAY BY PATRICK AISON MUSIC SARAH SCHACHNER  DIRECTOR OF PHOTOGRAPHY JEFF CUTTER", "runs": [{"de": 0, "a": 86, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 96.44, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 86, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [655.37, 2065.26], "angle": 0.0, "encre": [1089.89, 14.09], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "BASED ON CHARACTERS CREATED BY JIM THOMA", "type": "texte", "texte": "BASED ON CHARACTERS CREATED BY JIM THOMAS and JOHN THOMAS", "runs": [{"de": 0, "a": 42, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}, {"de": 42, "a": 45, "police": "TeXGyreHeros-Regular", "taille": 8.64, "approche": 178, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}, {"de": 45, "a": 57, "police": "TeXGyreHeros-Regular", "taille": 19.21, "approche": 80, "interligne": 20.82, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 103.87, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 57, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [651.92, 2094.46], "angle": 0.0, "encre": [760.08, 14.07], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Encadr\u00e9s", "nom": "MOTION PICTURE SOUNDTRACK AVAILABLE ON H", "type": "texte", "texte": "MOTION PICTURE SOUNDTRACK AVAILABLE ON HOLLYWOOD RECORDS", "runs": [{"de": 0, "a": 56, "police": "TeXGyreHeros-Bold", "taille": 11.76, "approche": 94, "interligne": 13.78, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 93.73, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 56, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [697.0, 2135.93], "angle": 0.0, "encre": [449.32, 9.4], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Encadr\u00e9s", "nom": "A HULU ORIGINAL FILM", "type": "texte", "texte": "A HULU ORIGINAL FILM", "runs": [{"de": 0, "a": 20, "police": "TeXGyreHeros-Bold", "taille": 11.76, "approche": 94, "interligne": 13.78, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 93.73, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 20, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [1084.34, 2135.93], "angle": 0.0, "encre": [146.81, 9.4], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "G\u00e9n\u00e9rique", "nom": "Running Time: 99 Min.", "type": "texte", "texte": "Running Time: 99 Min.", "runs": [{"de": 0, "a": 21, "police": "TeXGyreHeros-Regular", "taille": 33.8, "approche": 0, "interligne": 33.35, "couleur": [38, 35, 33], "italique": false, "gras": false, "echelleH": 98.77, "echelleV": 100.0, "decalage": 0.0}], "paras": [{"de": 0, "a": 21, "align": "left", "retrait1": 0.0, "retraitG": 0.0}], "centre": [640.75, 2244.36], "angle": 0.0, "encre": [329.59, 32.9], "vertical": false, "boite": null}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Encadr\u00e9s", "nom": "Encadr\u00e9 1", "type": "forme", "couleur": [38, 35, 33], "chemins": [[{"a": [419.84, 2115.89]}, {"a": [973.77, 2115.89]}, {"a": [973.77, 2151.91]}, {"a": [419.84, 2151.91]}], [{"a": [422.44, 2118.49]}, {"a": [422.44, 2149.31]}, {"a": [971.17, 2149.31]}, {"a": [971.17, 2118.49]}]], "xor": true}, {"calque": "texte", "calqueNom": "Textes & filets", "groupe": "Encadr\u00e9s", "nom": "Encadr\u00e9 2", "type": "forme", "couleur": [38, 35, 33], "chemins": [[{"a": [987.35, 2115.89]}, {"a": [1177.5, 2115.89]}, {"a": [1177.5, 2151.91]}, {"a": [987.35, 2151.91]}], [{"a": [989.95, 2118.49]}, {"a": [989.95, 2149.31]}, {"a": [1174.91, 2149.31]}, {"a": [1174.91, 2118.49]}]], "xor": true}, {"calque": "image:classification", "calqueNom": "Classification", "groupe": "", "nom": "slot detoure vide", "type": "image", "cle": "classification", "label": "", "chemins": [[{"a": [484.18, 2163.72]}, {"a": [712.3, 2163.72]}, {"a": [712.3, 2210.6]}, {"a": [484.18, 2210.6]}]], "detoure": true}, {"calque": "image:logo", "calqueNom": "Logo studio", "groupe": "", "nom": "slot detoure vide", "type": "image", "cle": "logo", "label": "", "chemins": [[{"a": [727.49, 2163.72]}, {"a": [799.37, 2163.72]}, {"a": [799.37, 2207.47]}, {"a": [727.49, 2207.47]}]], "detoure": true}], "motifs": {}, "images": {}};
+  if (!confirm("Atelier Retro\n\nConstruire le document \u00ab " + SCENE.titre + " \u00bb ?\n(1 a 2 minutes)")) return;
+
+  function cTID(s) { return charIDToTypeID(s); }
+  function sTID(s) { return stringIDToTypeID(s); }
+  var erreurs = [];
+
+  // ---------- V\u00e9rification des polices ----------
+  var installees = {};
+  for (var f = 0; f < app.fonts.length; f++) { installees[app.fonts[f].postScriptName] = true; }
+  var manquantes = [];
+  for (var i = 0; i < SCENE.polices.length; i++) { if (!installees[SCENE.polices[i]]) manquantes.push(SCENE.polices[i]); }
+  if (manquantes.length) {
+    if (!confirm("Polices non install\u00e9es (Photoshop les remplacera) :\n\n  " + manquantes.join("\n  ") +
+                 "\n\nInstalle-les depuis lib/fonts puis relance, ou clique OK pour continuer quand m\u00eame.")) return;
+  }
+
+  var prefsRU = app.preferences.rulerUnits, prefsTU = app.preferences.typeUnits, dlg = app.displayDialogs;
+  app.preferences.rulerUnits = Units.PIXELS;
+  app.preferences.typeUnits = TypeUnits.POINTS;
+  app.displayDialogs = DialogModes.NO;
+
+  // Construction \u00e0 72 ppi (1 pt = 1 px : textes et trac\u00e9s exacts), passage \u00e0 300 ppi sans r\u00e9\u00e9chantillonnage \u00e0 la fin.
+  // Nom de document sans caract\u00e8res interdits (\u00ab : \u00bb, \u00ab \u2014 \u00bb\u2026) : cause d'\u00e9chec de la commande \u00ab Cr\u00e9er \u00bb sous Windows
+  var nomDoc = SCENE.fichier;
+  var doc;
+  try {
+    doc = app.documents.add(new UnitValue(SCENE.largeur, "px"), new UnitValue(SCENE.hauteur, "px"), 72, nomDoc,
+                            NewDocumentMode.RGB, DocumentFill.WHITE);
+  } catch (e1) {
+    doc = app.documents.add(new UnitValue(SCENE.largeur, "px"), new UnitValue(SCENE.hauteur, "px"), 72);
+  }
+
+  // ---------- Utilitaires ----------
+  function couleurRGB(rgb) { var c = new SolidColor(); c.rgb.red = rgb[0]; c.rgb.green = rgb[1]; c.rgb.blue = rgb[2]; return c; }
+  function descCouleur(rgb) {
+    var c = new ActionDescriptor();
+    c.putDouble(cTID("Rd  "), rgb[0]); c.putDouble(cTID("Grn "), rgb[1]); c.putDouble(cTID("Bl  "), rgb[2]);
+    return c;
+  }
+  function px(u) { return (typeof u === "number") ? u : u.as("px"); }
+  function centreEncre(l) { var b = l.bounds; return [(px(b[0]) + px(b[2])) / 2, (px(b[1]) + px(b[3])) / 2]; }
+  function largeurEncre(l) { var b = l.bounds; return px(b[2]) - px(b[0]); }
+
+  function ranger(calque, conteneur) {
+    try { calque.move(conteneur, ElementPlacement.PLACEATBEGINNING); }
+    catch (e) { try { calque.move(conteneur, ElementPlacement.INSIDE); } catch (e2) {} }
+  }
+
+  // Groupes : un groupe par calque logique, sous-groupes par zone de la mise en page
+  var groupes = {};
+  function groupeDe(it) {
+    var cle = it.calque;
+    var parent = groupes[cle];
+    if (!parent) {
+      parent = doc.layerSets.add();
+      parent.name = it.calqueNom;
+      ranger(parent, doc);
+      groupes[cle] = parent;
+      if (cle.indexOf("zone:") === 0) parent.visible = false;
+    }
+    if (!it.groupe) return parent;
+    var cle2 = cle + "/" + it.groupe;
+    var g = groupes[cle2];
+    if (!g) { g = doc.layerSets.add(); g.name = it.groupe; ranger(g, parent); groupes[cle2] = g; }
+    return g;
+  }
+
+  // ---------- Formes vectorielles ----------
+  var nChemin = 0;
+  // remplissage : null (couleur unie rgb) ou {angle, stops} (d\u00e9grad\u00e9 lin\u00e9aire)
+  function forme(chemins, rgb, nom, remplissage, xor) {
+    var subs = [];
+    for (var c = 0; c < chemins.length; c++) {
+      var pts = [];
+      for (var p = 0; p < chemins[c].length; p++) {
+        var a = chemins[c][p].a, pp = new PathPointInfo();
+        pp.kind = PointKind.CORNERPOINT; pp.anchor = a; pp.leftDirection = a; pp.rightDirection = a;
+        pts.push(pp);
+      }
+      var sp = new SubPathInfo();
+      sp.operation = (xor && c > 0) ? ShapeOperation.SHAPEXOR : ShapeOperation.SHAPEADD; sp.closed = true; sp.entireSubPath = pts;
+      subs.push(sp);
+    }
+    var chemin = doc.pathItems.add("atelier_tmp_" + (nChemin++), subs);
+    var d = new ActionDescriptor(), r = new ActionReference();
+    r.putClass(sTID("contentLayer")); d.putReference(cTID("null"), r);
+    var d2 = new ActionDescriptor(), d3 = new ActionDescriptor();
+    if (remplissage) {
+      d3.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(remplissage.stops));
+      d3.putUnitDouble(cTID("Angl"), cTID("#Ang"), remplissage.angle);
+      d3.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
+      d3.putBoolean(cTID("Algn"), true);
+      d2.putObject(cTID("Type"), sTID("gradientLayer"), d3);
+    } else {
+      d3.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(rgb));
+      d2.putObject(cTID("Type"), sTID("solidColorLayer"), d3);
+    }
+    d.putObject(cTID("Usng"), sTID("contentLayer"), d2);
+    try {
+      try { chemin.select(); executeAction(cTID("Mk  "), d, DialogModes.NO); }
+      catch (e) {  // repli : s\u00e9lection + calque de remplissage masqu\u00e9
+        chemin.makeSelection(0, true, SelectionType.REPLACE);
+        executeAction(cTID("Mk  "), d, DialogModes.NO);
+        doc.selection.deselect();
+      }
+    } finally {
+      try { chemin.remove(); } catch (e3) {}
+    }
+    var l = doc.activeLayer; l.name = nom;
+    return l;
+  }
+
+  // ---------- D\u00e9grad\u00e9s ----------
+  function descDegrade(stops) {
+    var g = new ActionDescriptor();
+    g.putString(cTID("Nm  "), "Atelier");
+    g.putEnumerated(cTID("GrdF"), cTID("GrdF"), cTID("CstS"));
+    g.putDouble(cTID("Intr"), 4096);
+    var cl = new ActionList();
+    for (var i = 0; i < stops.length; i++) {
+      var st = new ActionDescriptor();
+      st.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(stops[i].c));
+      st.putEnumerated(cTID("Type"), cTID("Clry"), cTID("UsrS"));
+      st.putInteger(cTID("Lctn"), Math.round(Math.max(0, Math.min(1, stops[i].pos)) * 4096));
+      st.putInteger(cTID("Mdpn"), 50);
+      cl.putObject(cTID("Clrt"), st);
+    }
+    g.putList(cTID("Clrs"), cl);
+    var tl = new ActionList(), avecAlpha = false;
+    for (var q = 0; q < stops.length; q++) if (stops[q].a !== undefined) avecAlpha = true;
+    var nT = avecAlpha ? stops.length : 2;
+    for (var k = 0; k < nT; k++) {
+      var t = new ActionDescriptor();
+      t.putUnitDouble(cTID("Opct"), cTID("#Prc"), avecAlpha ? Math.round((stops[k].a === undefined ? 1 : stops[k].a) * 100) : 100);
+      t.putInteger(cTID("Lctn"), avecAlpha ? Math.round(Math.max(0, Math.min(1, stops[k].pos)) * 4096) : k * 4096);
+      t.putInteger(cTID("Mdpn"), 50);
+      tl.putObject(cTID("TrnS"), t);
+    }
+    g.putList(cTID("Trns"), tl);
+    return g;
+  }
+  function couleurMoyenne(stops) { return stops[Math.floor(stops.length / 2)].c; }
+
+  function formeDegradee(it) {
+    // calque de remplissage d\u00e9grad\u00e9 avec masque vectoriel ; repli : couleur m\u00e9diane
+    try { return forme(it.chemins, null, it.nom, { angle: it.angle, stops: it.stops }); }
+    catch (e) {
+      erreurs.push(it.nom + " (d\u00e9grad\u00e9 remplac\u00e9 par une couleur unie) : " + e.message);
+      return forme(it.chemins, couleurMoyenne(it.stops), it.nom);
+    }
+  }
+
+  function incrustationDegrade(dg) {
+    var d = new ActionDescriptor(), r = new ActionReference();
+    r.putProperty(cTID("Prpr"), cTID("Lefx")); r.putEnumerated(cTID("Lyr "), cTID("Ordn"), cTID("Trgt"));
+    d.putReference(cTID("null"), r);
+    var fx = new ActionDescriptor(), g = new ActionDescriptor();
+    fx.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
+    g.putBoolean(cTID("enab"), true);
+    g.putEnumerated(cTID("Md  "), cTID("BlnM"), cTID("Nrml"));
+    g.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
+    g.putObject(cTID("Grad"), cTID("Grdn"), descDegrade(dg.stops));
+    g.putUnitDouble(cTID("Angl"), cTID("#Ang"), dg.angle);
+    g.putEnumerated(cTID("Type"), cTID("GrdT"), cTID("Lnr "));
+    g.putBoolean(cTID("Algn"), true);
+    g.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
+    fx.putObject(cTID("GrFl"), cTID("GrFl"), g);
+    d.putObject(cTID("T   "), cTID("Lefx"), fx);
+    executeAction(cTID("setd"), d, DialogModes.NO);
+  }
+
+  // ---------- Textes ----------
+  function creerTexte(texte, runs, paras, boite, vertical) {
+    var d = new ActionDescriptor(), r = new ActionReference();
+    r.putClass(sTID("textLayer")); d.putReference(cTID("null"), r);
+    var t = new ActionDescriptor();
+    t.putString(sTID("textKey"), texte);
+    var clic = new ActionDescriptor();
+    clic.putUnitDouble(sTID("horizontal"), sTID("percentUnit"), 10);
+    clic.putUnitDouble(sTID("vertical"), sTID("percentUnit"), 10);
+    t.putObject(sTID("textClickPoint"), sTID("paint"), clic);
+    var formes = new ActionList(), f = new ActionDescriptor();
+    f.putEnumerated(sTID("char"), sTID("char"), sTID(boite ? "box" : "paint"));
+    f.putEnumerated(sTID("orientation"), sTID("orientation"), sTID(vertical ? "vertical" : "horizontal"));
+    if (boite) {
+      var b = new ActionDescriptor();
+      b.putUnitDouble(sTID("top"), sTID("pointsUnit"), 0);
+      b.putUnitDouble(sTID("left"), sTID("pointsUnit"), 0);
+      b.putUnitDouble(sTID("bottom"), sTID("pointsUnit"), boite.h);
+      b.putUnitDouble(sTID("right"), sTID("pointsUnit"), boite.l);
+      f.putObject(sTID("bounds"), sTID("rectangle"), b);
+    }
+    formes.putObject(sTID("textShape"), f);
+    t.putList(sTID("textShape"), formes);
+
+    var styles = new ActionList();
+    for (var i = 0; i < runs.length; i++) {
+      var ru = runs[i], rd = new ActionDescriptor(), st = new ActionDescriptor();
+      rd.putInteger(sTID("from"), ru.de); rd.putInteger(sTID("to"), ru.a);
+      st.putString(sTID("fontPostScriptName"), ru.police);
+      st.putUnitDouble(sTID("size"), sTID("pointsUnit"), ru.taille);
+      st.putInteger(sTID("tracking"), ru.approche);
+      st.putDouble(sTID("horizontalScale"), ru.echelleH);
+      if (ru.echelleV && Math.abs(ru.echelleV - 100) > 0.5) st.putDouble(sTID("verticalScale"), ru.echelleV);
+      if (ru.decalage && Math.abs(ru.decalage) > 0.05) st.putUnitDouble(sTID("baselineShift"), sTID("pointsUnit"), ru.decalage);
+      st.putBoolean(sTID("syntheticItalic"), ru.italique);
+      st.putBoolean(sTID("syntheticBold"), ru.gras);
+      if (ru.interligne) { st.putBoolean(sTID("autoLeading"), false); st.putUnitDouble(sTID("leading"), sTID("pointsUnit"), ru.interligne); }
+      else { st.putBoolean(sTID("autoLeading"), true); }
+      st.putObject(sTID("color"), cTID("RGBC"), descCouleur(ru.couleur));
+      rd.putObject(sTID("textStyle"), sTID("textStyle"), st);
+      styles.putObject(sTID("textStyleRange"), rd);
+    }
+    t.putList(sTID("textStyleRange"), styles);
+
+    var pl = new ActionList();
+    for (var j = 0; j < paras.length; j++) {
+      var pa = paras[j], pd = new ActionDescriptor(), ps = new ActionDescriptor();
+      pd.putInteger(sTID("from"), pa.de); pd.putInteger(sTID("to"), Math.max(pa.a, pa.de + 1));
+      ps.putEnumerated(sTID("align"), sTID("alignmentType"), sTID(pa.align));
+      ps.putUnitDouble(sTID("firstLineIndent"), sTID("pointsUnit"), pa.retrait1);
+      ps.putUnitDouble(sTID("startIndent"), sTID("pointsUnit"), pa.retraitG);
+      pd.putObject(sTID("paragraphStyle"), sTID("paragraphStyle"), ps);
+      pl.putObject(sTID("paragraphStyleRange"), pd);
+    }
+    t.putList(sTID("paragraphStyleRange"), pl);
+    d.putObject(cTID("Usng"), sTID("textLayer"), t);
+    executeAction(cTID("Mk  "), d, DialogModes.NO);
+    return doc.activeLayer;
+  }
+
+  // Place l'encre du calque sur le centre voulu puis tourne autour de ce centre
+  function placer(l, centre, angle) {
+    var c = centreEncre(l);
+    l.translate(centre[0] - c[0], centre[1] - c[1]);
+    if (Math.abs(angle) > 0.01) l.rotate(angle, AnchorPosition.MIDDLECENTER);
+  }
+
+  // Masque vectoriel (polygone, px document) sur le calque actif
+  function masqueVectoriel(points) {
+    var pts = [];
+    for (var i = 0; i < points.length; i++) {
+      var pp = new PathPointInfo();
+      pp.kind = PointKind.CORNERPOINT; pp.anchor = points[i]; pp.leftDirection = points[i]; pp.rightDirection = points[i];
+      pts.push(pp);
+    }
+    var sp = new SubPathInfo(); sp.operation = ShapeOperation.SHAPEADD; sp.closed = true; sp.entireSubPath = pts;
+    var cible = doc.activeLayer;
+    var chemin = doc.pathItems.add("atelier_masque_" + (nChemin++), [sp]);
+    try {
+      doc.activeLayer = cible;
+      chemin.select();
+      var d = new ActionDescriptor(), r = new ActionReference();
+      r.putClass(cTID("Path")); d.putReference(cTID("null"), r);
+      var r2 = new ActionReference(); r2.putEnumerated(cTID("Path"), cTID("Path"), sTID("vectorMask"));
+      d.putReference(cTID("At  "), r2);
+      var r3 = new ActionReference(); r3.putEnumerated(cTID("Path"), cTID("Ordn"), cTID("Trgt"));
+      d.putReference(cTID("Usng"), r3);
+      executeAction(cTID("Mk  "), d, DialogModes.NO);
+    } finally { try { chemin.remove(); } catch (e) {} }
+  }
+
+  function contour(taille, rgb, centre) {
+    var d = new ActionDescriptor(), r = new ActionReference();
+    r.putProperty(cTID("Prpr"), cTID("Lefx")); r.putEnumerated(cTID("Lyr "), cTID("Ordn"), cTID("Trgt"));
+    d.putReference(cTID("null"), r);
+    var fx = new ActionDescriptor(), s = new ActionDescriptor();
+    fx.putUnitDouble(cTID("Scl "), cTID("#Prc"), 100);
+    s.putBoolean(cTID("enab"), true);
+    s.putEnumerated(cTID("Styl"), cTID("FStl"), cTID(centre ? "CtrF" : "OutF"));
+    s.putEnumerated(cTID("PntT"), cTID("FrFl"), cTID("SClr"));
+    s.putEnumerated(cTID("Md  "), cTID("BlnM"), cTID("Nrml"));
+    s.putUnitDouble(cTID("Opct"), cTID("#Prc"), 100);
+    s.putUnitDouble(cTID("Sz  "), cTID("#Pxl"), Math.max(1, Math.round(taille)));
+    s.putObject(cTID("Clr "), cTID("RGBC"), descCouleur(rgb));
+    fx.putObject(cTID("FrFX"), cTID("FrFX"), s);
+    d.putObject(cTID("T   "), cTID("Lefx"), fx);
+    executeAction(cTID("setd"), d, DialogModes.NO);
+  }
+
+  function texte(it) {
+    var l = creerTexte(it.texte, it.runs, it.paras, it.boite, it.vertical);
+    l.name = it.nom;
+    // Ajustement fin de l'approche des lignes simples pour retrouver la largeur exacte de la maquette
+    if (!it.vertical && !it.boite && it.runs.length === 1 && it.texte.indexOf("\r") < 0 && it.texte.length > 2) {
+      var w = largeurEncre(l), cible = it.encre[0];
+      if (w > 0 && Math.abs(w - cible) / cible > 0.01) {
+        var delta = (cible - w) / (it.texte.length - 1) / it.runs[0].taille * 1000;
+        try { l.textItem.tracking = it.runs[0].approche + Math.round(delta); } catch (e) {}
+      }
+    }
+    placer(l, it.centre, it.angle);
+    if (it.contour) contour(it.contour.taille, it.contour.couleur, it.contour.centre);
+    if (it.contourSeul) { try { l.fillOpacity = 0; } catch (e) {} }
+    if (it.masque) { try { masqueVectoriel(it.masque); } catch (e) { erreurs.push(it.nom + " (masque) : " + e.message); } }
+    if (it.opacite) { try { l.opacity = it.opacite; } catch (e) {} }
+    if (it.degradeTexte) { try { incrustationDegrade(it.degradeTexte); } catch (e) { erreurs.push(it.nom + " (d\u00e9grad\u00e9 du texte) : " + e.message); } }
+    return l;
+  }
+
+  // ---------- Textures incrust\u00e9es (motif bois\u2026) ----------
+  // Le PNG est embarqu\u00e9 en base64 dans le script : \u00e9crit dans le dossier temporaire, ouvert, copi\u00e9,
+  // puis coll\u00e9 juste au-dessus du texte en calque \u00e9cr\u00eat\u00e9 (masque d'\u00e9cr\u00eatage) : le texte reste modifiable.
+  function b64bin(s) {
+    var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", o = [], b = 0, n = 0;
+    for (var i = 0; i < s.length; i++) {
+      var c = t.indexOf(s.charAt(i));
+      if (c < 0) continue;
+      b = ((b << 6) | c) & 0xFFFFFF; n += 6;
+      if (n >= 8) { n -= 8; o.push(String.fromCharCode((b >> n) & 255)); }
+    }
+    return o.join("");
+  }
+  var fichiersMotifs = {};
+  function fichierMotif(cle) {
+    if (fichiersMotifs[cle]) return fichiersMotifs[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_motif_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.motifs[cle].b64)); f.close();
+    fichiersMotifs[cle] = f;
+    return f;
+  }
+  // Texture plac\u00e9e (Fichier > Importer incorpor\u00e9) dans le document lui-m\u00eame : aucun changement de document,
+  // compatible avec l'historique suspendu ; repli : ouverture + copier-coller.
+  function poserMotif(texteCalque, it) {
+    var f = fichierMotif(it.motif), m = SCENE.motifs[it.motif], l = null;
+    doc.activeLayer = texteCalque;
+    try {
+      var d = new ActionDescriptor();
+      d.putPath(cTID("null"), f);
+      d.putEnumerated(cTID("FTcs"), cTID("QCSt"), cTID("Qcsa"));
+      executeAction(cTID("Plc "), d, DialogModes.NO);
+      l = doc.activeLayer;
+      if (l === texteCalque) throw new Error("import incorpor\u00e9 refus\u00e9");
+    } catch (e1) {
+      var tex = app.open(f);
+      tex.selection.selectAll(); tex.selection.copy();
+      tex.close(SaveOptions.DONOTSAVECHANGES);
+      app.activeDocument = doc; doc.activeLayer = texteCalque;
+      l = doc.paste(); if (!l || l === texteCalque) l = doc.activeLayer;
+    }
+    l.name = "Motif " + it.motif + " (incrust\u00e9 dans \u00ab " + it.nom + " \u00bb)";
+    // taille exacte de la texture (l'import peut la redimensionner selon les pr\u00e9f\u00e9rences)
+    var b = l.bounds, w = px(b[2]) - px(b[0]), h = px(b[3]) - px(b[1]);
+    if (w > 0 && h > 0 && (Math.abs(w - m.l) > 1 || Math.abs(h - m.h) > 1)) l.resize(m.l / w * 100, m.h / h * 100, AnchorPosition.MIDDLECENTER);
+    var c = centreEncre(l);
+    l.translate(it.centre[0] - c[0], it.centre[1] - c[1]);
+    l.grouped = true;  // masque d'\u00e9cr\u00eatage sur le texte
+    return l;
+  }
+  var motifsAPoser = [];
+
+  // ---------- Images des emplacements (logos, photos) ----------
+  var fichiersImages = {};
+  function fichierImage(cle) {
+    if (fichiersImages[cle]) return fichiersImages[cle];
+    var f = new File(Folder.temp.fsName + "/atelier_image_" + cle + ".png");
+    f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.images[cle].b64)); f.close();
+    fichiersImages[cle] = f;
+    return f;
+  }
+  // base : calque forme sur lequel l'image est \u00e9cr\u00eat\u00e9e (null = image pos\u00e9e librement, PNG d\u00e9tour\u00e9)
+  function poserImage(base, it) {
+    var src = app.open(fichierImage(it.image));
+    src.selection.selectAll(); src.selection.copy();
+    src.close(SaveOptions.DONOTSAVECHANGES);
+    app.activeDocument = doc;
+    if (base) doc.activeLayer = base;
+    var l = doc.paste();
+    if (!l || l === base) l = doc.activeLayer;
+    l.name = it.calqueNom;
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (var c = 0; c < it.chemins.length; c++) for (var p = 0; p < it.chemins[c].length; p++) {
+      var a = it.chemins[c][p].a;
+      x0 = Math.min(x0, a[0]); x1 = Math.max(x1, a[0]); y0 = Math.min(y0, a[1]); y1 = Math.max(y1, a[1]);
+    }
+    var b = l.bounds, w = px(b[2]) - px(b[0]), h = px(b[3]) - px(b[1]);
+    var s = it.detoure ? Math.min((x1 - x0) / w, (y1 - y0) / h) : Math.max((x1 - x0) / w, (y1 - y0) / h);
+    if (Math.abs(s - 1) > 0.002) l.resize(s * 100, s * 100, AnchorPosition.MIDDLECENTER);
+    var c2 = centreEncre(l);
+    l.translate((x0 + x1) / 2 - c2[0], (y0 + y1) / 2 - c2[1]);
+    if (base) l.grouped = true;
+    return l;
+  }
+
+  function arc(it, conteneur) {
+    var g = doc.layerSets.add(); g.name = it.nom; ranger(g, conteneur);
+    for (var i = 0; i < it.car.length; i++) {
+      var c = it.car[i];
+      if (c.c === " ") continue;
+      var l = creerTexte(c.c, [{ de: 0, a: 1, police: it.police, taille: it.taille, approche: 0, echelleH: 100,
+                                  italique: it.italique, gras: false, interligne: null, couleur: it.couleur }],
+                         [{ de: 0, a: 1, align: "left", retrait1: 0, retraitG: 0 }], null);
+      l.name = c.c;
+      ranger(l, g);
+      placer(l, c.centre, c.angle);
+    }
+  }
+
+  // ---------- Construction ----------
+  $.global.__atelierConstruire = function () {
+    for (var n = 0; n < SCENE.items.length; n++) {
+      var it = SCENE.items[n];
+      try {
+        var cont = groupeDe(it), l;
+        if (it.type === "forme") {
+          l = forme(it.chemins, it.couleur, it.nom, null, it.xor); ranger(l, cont);
+          if (it.opacite) { try { l.opacity = it.opacite; } catch (e) {} }
+        }
+        else if (it.type === "degrade") { l = formeDegradee(it); ranger(l, cont); }
+        else if (it.type === "texte") {
+          l = texte(it); ranger(l, cont);
+          if (it.motif && SCENE.motifs && SCENE.motifs[it.motif]) {
+            motifsAPoser.push({ l: l, it: it });  // pos\u00e9s apr\u00e8s la construction (hors historique suspendu)
+          }
+        }
+        else if (it.type === "arc") { arc(it, cont); }
+        else if (it.type === "image") {
+          var avecImage = !!(it.image && SCENE.images && SCENE.images[it.image]);
+          if (avecImage && it.detoure) {
+            // logo / personnage d\u00e9tour\u00e9 : l'image fournie est pos\u00e9e telle quelle (PNG transparent), sans forme dessous
+            try { l = poserImage(null, it); ranger(l, cont); }
+            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+          } else if (avecImage) {
+            l = forme(it.chemins, [128, 128, 128], "Forme \u2013 " + it.calqueNom); ranger(l, cont);
+            try { poserImage(l, it); }  // photo : calque \u00e9cr\u00eat\u00e9 sur la forme
+            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+          }
+          if (!avecImage) {
+            l = forme(it.chemins, [128, 128, 128], "Forme \u2013 " + it.calqueNom); ranger(l, cont);
+            if (it.detoure) { try { l.fillOpacity = 0; } catch (e) {} }  // image d\u00e9tour\u00e9e : la forme d\u00e9coupe sans se voir
+            var img = doc.artLayers.add(); img.name = ">> " + it.calqueNom + " : colle ton image ici";
+            ranger(img, cont); img.grouped = true;
+          }
+        }
+        else if (it.type === "zone") {
+          l = forme(it.chemins, [0, 160, 233], "Zone \u2013 " + it.label); ranger(l, cont); l.opacity = 30;
+        }
+      } catch (e) { erreurs.push((it.nom || it.type) + " : " + e.message); }
+    }
+    // Rep\u00e8res
+    var R = SCENE.reperes;
+    var v = [R.coupe[0], R.coupe[1], R.secu[0], R.secu[1]].concat(SCENE.plis), h = [R.coupe[2], R.coupe[3], R.secu[2], R.secu[3]];
+    for (var a = 0; a < v.length; a++) { try { doc.guides.add(Direction.VERTICAL, v[a]); } catch (e) {} }
+    for (var b = 0; b < h.length; b++) { try { doc.guides.add(Direction.HORIZONTAL, h[b]); } catch (e) {} }
+  };
+
+  try { doc.suspendHistory("Atelier Retro", "__atelierConstruire()"); }
+  catch (e) { erreurs.push("Construction : " + e.message); }
+  for (var mo = 0; mo < motifsAPoser.length; mo++) {
+    try { poserMotif(motifsAPoser[mo].l, motifsAPoser[mo].it); }
+    catch (e) { erreurs.push(motifsAPoser[mo].it.nom + " (motif " + motifsAPoser[mo].it.motif + ") : " + e.message); }
+  }
+
+  doc.resizeImage(undefined, undefined, 300, ResampleMethod.NONE);
+  app.preferences.rulerUnits = prefsRU; app.preferences.typeUnits = prefsTU; app.displayDialogs = dlg;
+
+  var fichier = new File(File($.fileName).parent.fsName + "/" + File($.fileName).name.replace(/\.jsx$/i, "").replace(/_photoshop$/i, "") + ".psd");
+  try { var o = new PhotoshopSaveOptions(); o.layers = true; doc.saveAs(fichier, o, false, Extension.LOWERCASE); }
+  catch (e) { erreurs.push("Enregistrement : " + e.message); }
+
+  alert("Atelier Retro \u2014 document construit.\n\n" +
+        "Fichier : " + fichier.fsName + "\n" +
+        "Rep\u00e8res : coupe (fond perdu " + "3 mm), s\u00e9curit\u00e9, plis.\n" +
+        (manquantes.length ? "\nPolices remplac\u00e9es : " + manquantes.join(", ") + "\n" : "") +
+        (erreurs.length ? "\n\u00c9l\u00e9ments non cr\u00e9\u00e9s (" + erreurs.length + ") :\n- " + erreurs.slice(0, 12).join("\n- ") : "\nAucune erreur."));
+
+ } catch (err) {
+  alert("Atelier Retro \u2014 erreur\n\nLigne " + err.line + " : " + err.message +
+        "\n\nEnvoie une capture de ce message a Claude.");
+ }
+})();
