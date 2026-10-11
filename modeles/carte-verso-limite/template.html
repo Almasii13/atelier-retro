@@ -39,7 +39,9 @@
   <div class="abs" data-calque="motif" style="inset:0">
     {{ svg('Panneaux crème') }}
       <path data-nom="Panneaux crème" fill="{{ C.creme }}" d="{{ d(G.creme) }}"/>
-      <path data-nom="Trame de points" fill="{{ C.trame }}" d="{{ dots(G.trame, G.rayon_point) }}"/>
+      {% for paquet in G.trame | batch(200) %}<path data-nom="Trame de points {{ loop.index }}" fill="{{ C.trame }}" d="{{ dots(paquet, G.rayon_point) }}"/>
+      {% endfor %}
+      <path data-nom="Inscription bleue « ジャンプ »" fill="{{ C.bleu }}" fill-rule="evenodd" d="{{ d(G.inscription) }}"/>
     </svg>
     {{ svg('Bandes') }}
       <path data-nom="Coins – orange" fill="{{ C.orange }}" d="{{ d(G.coin_orange) }}"/>
