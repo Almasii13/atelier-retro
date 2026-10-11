@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après la « SPECIAL CARDDASS » Dragon Ball (WEEKLY JUMP).
+   Fond argent, bandeau bleu « SPECIAL CARDDASS » échancré par deux médaillons, fenêtre à bordure bleue
+   (oreilles et marches), piliers cannelés à chapiteaux, socle et médaillons bas, macaron WEEKLY JUMP.
+   Géométrie : outils/special_carddass.py (cotes relevées, recentrées, symétrisées). #}
+{% macro d(rings) %}{% for r in rings %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% set F = G.fenetre %}{% set R = G.fenetre_rayon %}
+{% macro clip_arrondi(w, h, r, n=10) %}{% set pts = [] %}{% for cx, cy, a0 in [(w - r, r, -90), (w - r, h - r, 0), (r, h - r, 90), (r, r, 180)] %}{% for k in range(n + 1) %}{% set a = radians(a0 + 90 * k / n) %}{% set _ = pts.append('%.3f%% %.3f%%' % ((cx + r * cos(a)) / w * 100, (cy + r * sin(a)) / h * 100)) %}{% endfor %}{% endfor %}polygon({{ pts | join(', ') }}){% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .fenetre { position: absolute; left: {{ F[0] }}mm; top: {{ F[1] }}mm; width: {{ '%.3f' % (F[2] - F[0]) }}mm; height: {{ '%.3f' % (F[3] - F[1]) }}mm;
+    background: linear-gradient(180deg{% for p, c in C.fenetre %}, {{ c }} {{ p }}%{% endfor %});
+    clip-path: {{ clip_arrondi(F[2] - F[0], F[3] - F[1], R) }}; }
+  .bandeau { font: 400 4mm/1 "Coustard Black", serif; color: {{ C.texte }}; }
+  .wj { font: 400 2mm/1 "Coustard Black", serif; color: {{ C.marine }};
+        -webkit-text-stroke: {{ G.wj_contour * 2 }}mm {{ C.creme }}; paint-order: stroke fill; }
+  .copy { font: 400 1.6mm/1 "MP1 Medium", sans-serif; color: {{ C.texte }}; }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ '%.2f' % (G.logo[2] - G.logo[0]) }}mm; height: {{ '%.2f' % (G.logo[3] - G.logo[1]) }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond argent" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.argent }}"/>
+    </svg>
+  </div>
+
+  <div class="abs" data-calque="cadre" style="inset:0">
+    {{ svg('Cadre & piliers') }}
+      <path data-nom="Cadre, chapiteaux et cannelures (noir)" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.noir) }}"/>
+      <path data-nom="Socle (noir)" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.socle) }}"/>
+      <path data-nom="Bordure bleue" fill="{{ C.bleu }}" fill-rule="evenodd" d="{{ d(G.bleu) }}"/>
+      <path data-nom="Filet de la fenêtre" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.filet_image) }}"/>
+    </svg>
+    <div class="fenetre" data-groupe="Fenêtre" data-nom="Fond de fenêtre (dégradé)"></div>
+    {{ svg('Médaillons') }}
+      <path data-nom="Médaillons hauts" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.med_haut) }}"/>
+      <path data-nom="Médaillons hauts – reflets" fill="{{ C.bleu }}" fill-rule="evenodd" d="{{ d(G.med_haut_reflets) }}"/>
+      <path data-nom="Médaillons bas" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.med_bas) }}"/>
+      <path data-nom="Médaillons bas – reflets" fill="{{ C.bleu }}" fill-rule="evenodd" d="{{ d(G.med_bas_reflets) }}"/>
+      {% for c in G.disques %}{% set r = G.disque_r[loop.index0] %}
+      <circle data-nom="Disque {{ loop.index }} – cerclage" cx="{{ c[0] }}" cy="{{ c[1] }}" r="{{ r }}" fill="{{ C.cerclage }}"/>
+      <circle data-nom="Disque {{ loop.index }}" cx="{{ c[0] }}" cy="{{ c[1] }}" r="{{ '%.3f' % (r - G.disque_anneau) }}" fill="{{ C.disque }}"/>
+      {% endfor %}
+    </svg>
+    {{ svg('Bandeau') }}
+      <path data-nom="Bandeau – contour noir" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.bande_noir) }}"/>
+      <path data-nom="Bandeau – bleu" fill="{{ C.bleu }}" fill-rule="evenodd" d="{{ d(G.bande_bleu) }}"/>
+      <path data-nom="Étoiles" fill="{{ C.rouge }}" d="{{ d(G.etoiles) }}"/>
+    </svg>
+    <div class="t bandeau" data-groupe="Bandeau">{{ T.bandeau }}</div>
+  </div>
+
+  {% set u = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u else 'vide' }}" data-label="PERSONNAGE DÉTOURÉ">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {{ svg('Macaron WEEKLY JUMP') }}
+      {% set o = G.macaron_ombre %}
+      <polygon data-nom="Macaron – ombre" fill="{{ C.noir }}" points="{% for x, y in G.macaron %}{{ '%.3f' % (x + o[0]) }},{{ '%.3f' % (y + o[1]) }} {% endfor %}"/>
+      <polygon data-nom="Macaron – or" fill="{{ C.or }}" points="{% for x, y in G.macaron %}{{ x }},{{ y }} {% endfor %}"/>
+    </svg>
+    <div class="t wj wj-weekly" data-groupe="Macaron WEEKLY JUMP">{{ T.weekly }}</div>
+    <div class="t wj wj-jump" data-groupe="Macaron WEEKLY JUMP">{{ T.jump }}</div>
+    <div class="t copy copy-1" data-groupe="Copyright">{{ T.copyright[0] }}</div>
+    <div class="t copy copy-2" data-groupe="Copyright">{{ T.copyright[1] }}</div>
+  </div>
+
+  {% set u = img('logo') %}
+  <div class="abs" data-calque="image:logo" style="inset:0">
+    <div class="slot detoure zone-logo {{ '' if u else 'vide' }}" data-label="LOGO DRAGON BALL">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

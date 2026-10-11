@@ -1,0 +1,40 @@
+{
+ "modele": "carte-verso-damier",
+ "titre_fichier": "Carte SPECIAL CARDDASS — verso JUMP MUSEUM 65x90",
+ "format": {
+  "largeur": 65,
+  "hauteur": 90
+ },
+ "fond_perdu": 3,
+ "securite": 2.5,
+ "rayon": 2.5,
+ "geo": {
+  "damier": {
+   "y": 86.35,
+   "h": 1.95,
+   "rangs": 2,
+   "x0": -2.6,
+   "w": 2.2,
+   "n": 32
+  },
+  "visuel": [
+   -3,
+   -3,
+   68,
+   86.35
+  ]
+ },
+ "couleurs": {
+  "jaune": "#f2e600",
+  "blanc": "#f4f4f0",
+  "noir": "#15161a"
+ },
+ "images": {
+  "visuel": "images/jump_museum.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond jaune & damier",
+  "image:visuel": "Illustration JUMP MUSEUM"
+ },
+ "calage": {}
+}

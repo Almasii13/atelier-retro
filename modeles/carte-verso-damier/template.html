@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set G = geo %}
+{# Verso de carte 65 × 90 mm d'après le dos « '92 SUMMER JUMP MUSEUM » (SPECIAL CARDDASS) :
+   fond jaune, bande à damier noir / blanc (2 rangées) en pied, illustration à poser dans l'emplacement. #}
+{% set D = G.damier %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .zone-visuel { left: {{ G.visuel[0] }}mm; top: {{ G.visuel[1] }}mm; width: {{ G.visuel[2] - G.visuel[0] }}mm; height: {{ G.visuel[3] - G.visuel[1] }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond jaune" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.jaune }}"/>
+      <rect data-nom="Damier – blanc" x="{{ -FP }}" y="{{ D.y }}" width="{{ L + 2*FP }}" height="{{ H + FP - D.y }}" fill="{{ C.blanc }}"/>
+      <path data-nom="Damier – noir" fill="{{ C.noir }}" d="{% for row in range(D.rangs) %}{% set y0 = D.y + row * D.h %}{% set y1 = (H + FP) if row == D.rangs - 1 else y0 + D.h %}{% for k in range(-2, D.n + 2) %}{% if (k + row) % 2 == 0 %}{% set x0 = [D.x0 + k * D.w, -FP] | max %}{% set x1 = [D.x0 + (k + 1) * D.w, L + FP] | min %}{% if x1 > x0 %}M {{ '%.3f' % x0 }},{{ '%.3f' % y0 }} L {{ '%.3f' % x1 }},{{ '%.3f' % y0 }} L {{ '%.3f' % x1 }},{{ '%.3f' % y1 }} L {{ '%.3f' % x0 }},{{ '%.3f' % y1 }} Z {% endif %}{% endif %}{% endfor %}{% endfor %}"/>
+    </svg>
+  </div>
+  {% set u = img('visuel') %}
+  <div class="abs" data-calque="image:visuel" style="inset:0">
+    <div class="slot detoure zone-visuel {{ '' if u else 'vide' }}" data-label="ILLUSTRATION JUMP MUSEUM">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
