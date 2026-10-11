@@ -37,6 +37,7 @@
 @font-face { font-family: "Heros"; font-weight: 400; src: url("fonts/TeXGyreHeros-Regular.otf"); }
 @font-face { font-family: "Heros"; font-weight: 700; src: url("fonts/TeXGyreHeros-Bold.otf"); }
 @font-face { font-family: "Antonio R"; src: url("fonts/Antonio-Regular.ttf"); }
+@font-face { font-family: "RC Black I"; font-style: italic; src: url("fonts/RobotoCondensed-BlackItalic.ttf"); }
 @font-face { font-family: "Mona SB"; src: url("fonts/MonaSans-SemiBold.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 500; src: url("fonts/ZenKakuGothicNew-Medium.ttf"); }
 @font-face { font-family: "Zen Kaku"; font-weight: 700; src: url("fonts/ZenKakuGothicNew-Bold.ttf"); }

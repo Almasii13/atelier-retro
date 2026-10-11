@@ -1,0 +1,535 @@
+{
+ "modele": "vhs-fox-video",
+ "titre_fichier": "Jaquette VHS STAR WARS — 20th Century Fox Video (104,5 × 189)",
+ "format": {
+  "largeur": 104.5,
+  "hauteur": 189
+ },
+ "fond_perdu": 3,
+ "securite": 3,
+ "couleurs": {
+  "nuit": "#4a4e67",
+  "blanc": "#f3f2ec",
+  "rayure_clair": "#dde3e9",
+  "rayure_mi": "#b2b9c4",
+  "rayure_sombre": "#848b9a",
+  "filet_blanc": "#eef1ee",
+  "filet_gris": "#cfd1ca",
+  "rouge": "#e44d47"
+ },
+ "images": {
+  "visuel": "images/visuel.png",
+  "logo": "images/logo_studio.png",
+  "logo_titre": "images/logo_titre.png"
+ },
+ "libelles_calques": {
+  "fond": "Fond (rayures, cartouche, bandeaux, panneau)",
+  "image:visuel": "Visuel",
+  "image:logo_titre": "Logo titre STAR WARS",
+  "image:logo": "Logo 20th Century Fox",
+  "texte": "Textes & formes"
+ },
+ "geo": {
+  "rayures": {
+   "bas": 21.45,
+   "pas": 1.47,
+   "n": 17,
+   "sombre": 0.6,
+   "mi": 0.95
+  },
+  "cartouche": [
+   40.6,
+   63.9
+  ],
+  "filet_blanc": [
+   30.9,
+   32.05
+  ],
+  "filet_gris": [
+   156.4,
+   157.85
+  ],
+  "logo": [
+   42.6,
+   0.6,
+   61.9,
+   20.4
+  ],
+  "logo_titre": [
+   3.5,
+   119.0,
+   61.0,
+   156.4
+  ],
+  "etiquette": [
+   -3,
+   161.25,
+   16.45,
+   172.25
+  ],
+  "etiquette_rayon": 1.1,
+  "pente": 0.21,
+  "filets_mono": [
+   [
+    85.9,
+    165.7,
+    90.2,
+    166.45
+   ],
+   [
+    85.9,
+    166.62,
+    90.2,
+    167.4
+   ],
+   [
+    85.9,
+    167.6,
+    90.2,
+    168.4
+   ],
+   [
+    97.75,
+    165.7,
+    102.05,
+    166.45
+   ],
+   [
+    97.75,
+    166.62,
+    102.05,
+    167.4
+   ],
+   [
+    97.75,
+    167.6,
+    102.05,
+    168.4
+   ]
+  ],
+  "lignes": {
+   "video": {
+    "x": 52.875,
+    "y": 19.975,
+    "fs": 5.3,
+    "cls": "",
+    "ls": 1.6,
+    "groupe": "En-tête"
+   },
+   "tm1": {
+    "x": 64.75,
+    "y": 152.0,
+    "fs": 2.4,
+    "cls": "fin",
+    "ls": 0.15,
+    "groupe": "Mentions visuel"
+   },
+   "tm2": {
+    "x": 91.3,
+    "y": 152.0,
+    "fs": 2.4,
+    "cls": "fin",
+    "ls": 0,
+    "groupe": "Mentions visuel"
+   },
+   "vhs": {
+    "x": 8.375,
+    "y": 161.075,
+    "fs": 7.3,
+    "cls": "italique",
+    "ls": 0,
+    "groupe": "Étiquette VHS"
+   },
+   "stereo": {
+    "x": 94.875,
+    "y": 159.0,
+    "fs": 6.4,
+    "cls": "italique",
+    "ls": 0,
+    "groupe": "Stéréo"
+   },
+   "mono": {
+    "x": 93.925,
+    "y": 164.85,
+    "fs": 3.6,
+    "cls": "italique",
+    "ls": 0,
+    "groupe": "Stéréo"
+   },
+   "compat": {
+    "x": 93.375,
+    "y": 167.85,
+    "fs": 3.8,
+    "cls": "italique",
+    "ls": 0,
+    "groupe": "Stéréo"
+   },
+   "c1": {
+    "x": 52.025,
+    "y": 159.113,
+    "fs": 1.75,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c2": {
+    "x": 51.95,
+    "y": 160.525,
+    "fs": 2.3,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c3": {
+    "x": 52.0,
+    "y": 162.825,
+    "fs": 2.3,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c4": {
+    "x": 51.95,
+    "y": 165.1,
+    "fs": 2.6,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c5": {
+    "x": 50.975,
+    "y": 167.425,
+    "fs": 2.3,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c6": {
+    "x": 51.95,
+    "y": 170.5,
+    "fs": 1.8,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c7": {
+    "x": 51.975,
+    "y": 172.275,
+    "fs": 2.3,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c8": {
+    "x": 52.025,
+    "y": 174.55,
+    "fs": 2.6,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   },
+   "c9": {
+    "x": 52.125,
+    "y": 177.275,
+    "fs": 1.9,
+    "cls": "",
+    "ls": 0,
+    "groupe": "Générique"
+   }
+  }
+ },
+ "textes": {
+  "lignes": {
+   "video": [
+    [
+     "VIDEO"
+    ]
+   ],
+   "tm1": [
+    [
+     "*TM"
+    ]
+   ],
+   "tm2": [
+    [
+     "*TM  © 1977 Lucasfilm Ltd."
+    ]
+   ],
+   "vhs": [
+    [
+     "VHS"
+    ]
+   ],
+   "stereo": [
+    [
+     "STEREO"
+    ]
+   ],
+   "mono": [
+    [
+     "MONO"
+    ]
+   ],
+   "compat": [
+    [
+     "COMPATIBLE"
+    ]
+   ],
+   "c1": [
+    [
+     "TWENTIETH CENTURY-FOX Presents"
+    ]
+   ],
+   "c2": [
+    [
+     "A LUCASFILM LTD. PRODUCTION"
+    ]
+   ],
+   "c3": [
+    [
+     "STAR WARS"
+    ]
+   ],
+   "c4": [
+    [
+     {
+      "p": "Starring"
+     },
+     " MARK HAMILL    HARRISON FORD    CARRIE FISHER"
+    ]
+   ],
+   "c5": [
+    [
+     "PETER CUSHING"
+    ]
+   ],
+   "c6": [
+    [
+     "and"
+    ]
+   ],
+   "c7": [
+    [
+     "ALEC GUINNESS"
+    ]
+   ],
+   "c8": [
+    [
+     {
+      "p": "Written and Directed by"
+     },
+     " GEORGE LUCAS ",
+     {
+      "p": "Produced by"
+     },
+     " GARY KURTZ ",
+     {
+      "p": "Music by"
+     },
+     " JOHN WILLIAMS"
+    ]
+   ],
+   "c9": [
+    [
+     "PANAVISION©    PRINTS BY DELUXE©    TECHNICOLOR©"
+    ]
+   ]
+  }
+ },
+ "cibles": {
+  ".ln-video": [
+   42.85,
+   21.3,
+   62.9,
+   25.2
+  ],
+  ".ln-tm1": [
+   62.2,
+   152.6,
+   67.3,
+   154.4
+  ],
+  ".ln-tm2": [
+   81.6,
+   152.6,
+   101.0,
+   154.5
+  ],
+  ".ln-vhs": [
+   4.3,
+   162.9,
+   12.45,
+   168.2
+  ],
+  ".ln-stereo": [
+   86.85,
+   160.6,
+   102.9,
+   165.25
+  ],
+  ".ln-mono": [
+   90.3,
+   165.75,
+   97.55,
+   168.4
+  ],
+  ".ln-compat": [
+   85.45,
+   168.8,
+   101.3,
+   171.6
+  ],
+  ".ln-c1": [
+   40.55,
+   159.55,
+   63.5,
+   160.8
+  ],
+  ".ln-c2": [
+   37.4,
+   161.1,
+   66.5,
+   162.75
+  ],
+  ".ln-c3": [
+   46.8,
+   163.4,
+   57.2,
+   165.0
+  ],
+  ".ln-c4": [
+   26.15,
+   165.75,
+   77.75,
+   167.85
+  ],
+  ".ln-c5": [
+   43.5,
+   168.0,
+   58.45,
+   169.6
+  ],
+  ".ln-c6": [
+   50.9,
+   170.95,
+   53.0,
+   172.0
+  ],
+  ".ln-c7": [
+   44.45,
+   172.85,
+   59.5,
+   174.45
+  ],
+  ".ln-c8": [
+   16.65,
+   175.2,
+   87.4,
+   177.0
+  ],
+  ".ln-c9": [
+   33.75,
+   177.75,
+   70.5,
+   179.15
+  ]
+ },
+ "calage": {
+  ".ln-video": {
+   "fs": 0.9958,
+   "sx": 0.8938,
+   "dx": 0.77,
+   "dy": 0.943
+  },
+  ".ln-tm1": {
+   "fs": 1.0495,
+   "sx": 1.1063,
+   "dx": 0.134,
+   "dy": 0.029
+  },
+  ".ln-tm2": {
+   "fs": 1.0879,
+   "sx": 0.625,
+   "dx": 0.168,
+   "dy": -0.002
+  },
+  ".ln-vhs": {
+   "fs": 1.0096,
+   "sx": 0.6857,
+   "dx": -0.174,
+   "dy": 1.033
+  },
+  ".ln-stereo": {
+   "fs": 1.0116,
+   "sx": 0.7965,
+   "dx": -0.051,
+   "dy": 1.017
+  },
+  ".ln-mono": {
+   "fs": 1.0096,
+   "sx": 0.8095,
+   "dx": 0.139,
+   "dy": 0.964
+  },
+  ".ln-compat": {
+   "fs": 1.0238,
+   "sx": 0.7868,
+   "dx": -0.063,
+   "dy": 0.453
+  },
+  ".ln-c1": {
+   "fs": 1.0218,
+   "sx": 0.7281,
+   "dx": -0.007,
+   "dy": 0.33
+  },
+  ".ln-c2": {
+   "fs": 0.9489,
+   "sx": 0.8355,
+   "dx": -0.068,
+   "dy": 0.622
+  },
+  ".ln-c3": {
+   "fs": 0.9288,
+   "sx": 0.8442,
+   "dx": -0.033,
+   "dy": 0.494
+  },
+  ".ln-c4": {
+   "fs": 0.9546,
+   "sx": 0.7423,
+   "dx": -0.052,
+   "dy": 0.416
+  },
+  ".ln-c5": {
+   "fs": 0.9288,
+   "sx": 0.8701,
+   "dx": 0.0,
+   "dy": 0.573
+  },
+  ".ln-c6": {
+   "fs": 0.8566,
+   "sx": 0.8171,
+   "dx": -0.068,
+   "dy": 0.127
+  },
+  ".ln-c7": {
+   "fs": 0.9288,
+   "sx": 0.8643,
+   "dx": -0.034,
+   "dy": 0.659
+  },
+  ".ln-c8": {
+   "fs": 0.8006,
+   "sx": 0.9168,
+   "dx": -0.007,
+   "dy": 0.878
+  },
+  ".ln-c9": {
+   "fs": 1.0505,
+   "sx": 0.6754,
+   "dx": 0.069,
+   "dy": 0.676
+  }
+ }
+}

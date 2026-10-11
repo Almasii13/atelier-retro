@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% import '_vhs_macros.html' as M %}
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Face de jaquette VHS 104,5 × 189 mm d'après la VHS « STAR WARS » 20th Century Fox Video (1982).
+   En-tête à rayures métallisées + cartouche central (logo Fox) + bandeau « VIDEO », filet blanc, visuel,
+   filet gris clair, panneau bleu nuit : étiquette rouge VHS, générique centré (Helvetica gras), pastille
+   STEREO / MONO COMPATIBLE. Cotes en mm (page finie), relevées sur la photo redressée. #}
+{% macro rect(nom, b, coul, rx=0) %}<rect data-nom="{{ nom }}" x="{{ b[0] }}" y="{{ b[1] }}" width="{{ '%.3f' % (b[2]-b[0]) }}" height="{{ '%.3f' % (b[3]-b[1]) }}"{% if rx %} rx="{{ rx }}"{% endif %} fill="{{ coul }}"/>{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  {{ M.css_lignes() }}
+  .ln { color: {{ C.blanc }}; font-family: "Heros"; font-weight: 700; }
+  .ln .p { font-size: .62em; }
+  .ln.italique { font-family: "RC Black I"; font-weight: 400; font-style: italic; }
+  .ln.fin { font-weight: 400; }
+  .slot.vide::after { font: 700 4mm/1 "Heros", sans-serif; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set R = G.rayures %}
+      {{ rect("Rayures – fond clair", [-FP, -FP, L + FP, R.bas], C.rayure_clair) }}
+      <path data-nom="Rayures – demi-teinte" fill="{{ C.rayure_mi }}" d="{% for k in range(R.n) %}{% set d = R.bas - R.pas * (k + 1) %}M {{ -FP }},{{ '%.3f' % (d + R.sombre) }} L {{ L + FP }},{{ '%.3f' % (d + R.sombre) }} L {{ L + FP }},{{ '%.3f' % (d + R.mi) }} L {{ -FP }},{{ '%.3f' % (d + R.mi) }} Z {% endfor %}"/>
+      <path data-nom="Rayures – sombre" fill="{{ C.rayure_sombre }}" d="{% for k in range(R.n) %}{% set d = R.bas - R.pas * (k + 1) %}M {{ -FP }},{{ '%.3f' % d }} L {{ L + FP }},{{ '%.3f' % d }} L {{ L + FP }},{{ '%.3f' % (d + R.sombre) }} L {{ -FP }},{{ '%.3f' % (d + R.sombre) }} Z {% endfor %}"/>
+      {{ rect("Cartouche logo", [G.cartouche[0], -FP, G.cartouche[1], R.bas + 0.01], C.nuit) }}
+      {{ rect("Bandeau VIDEO", [-FP, R.bas, L + FP, G.filet_blanc[0] + 0.01], C.nuit) }}
+      {{ rect("Filet blanc", [-FP, G.filet_blanc[0], L + FP, G.filet_blanc[1]], C.filet_blanc) }}
+      {{ rect("Filet gris clair", [-FP, G.filet_gris[0], L + FP, G.filet_gris[1]], C.filet_gris) }}
+      {{ rect("Panneau bleu nuit", [-FP, G.filet_gris[1], L + FP, H + FP], C.nuit) }}
+    </svg>
+  </div>
+
+  {% set u = img('visuel') %}{% set v = [-FP, G.filet_blanc[1], L + FP, G.filet_gris[0]] %}
+  <div class="abs" data-calque="image:visuel" style="inset:0">
+    <div class="slot {{ '' if u else 'vide' }}" data-label="VISUEL" style="left:{{ v[0] }}mm;top:{{ v[1] }}mm;width:{{ '%.3f' % (v[2]-v[0]) }}mm;height:{{ '%.3f' % (v[3]-v[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% for cle, lab in [('logo_titre', 'LOGO TITRE'), ('logo', 'LOGO STUDIO')] %}{% set u = img(cle) %}{% set b = G[cle] %}
+  <div class="abs" data-calque="image:{{ cle }}" style="inset:0">
+    <div class="slot detoure {{ '' if u else 'vide' }}" data-label="{{ lab }}" style="left:{{ b[0] }}mm;top:{{ b[1] }}mm;width:{{ '%.2f' % (b[2]-b[0]) }}mm;height:{{ '%.2f' % (b[3]-b[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% endfor %}
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Étiquette VHS rouge et pastille STEREO ----- #}
+    <svg class="abs" data-groupe="Étiquette VHS" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      {% set e = G.etiquette %}{% set r = G.etiquette_rayon %}
+      <path data-nom="Étiquette rouge" fill="{{ C.rouge }}" d="M {{ -FP }},{{ e[1] }} L {{ e[2] - r }},{{ e[1] }} Q {{ e[2] }},{{ e[1] }} {{ e[2] }},{{ e[1] + r }} L {{ e[2] }},{{ e[3] - r }} Q {{ e[2] }},{{ e[3] }} {{ e[2] - r }},{{ e[3] }} L {{ -FP }},{{ e[3] }} Z"/>
+    </svg>
+    <svg class="abs" data-groupe="Stéréo" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <path data-nom="Filets MONO" fill="{{ C.blanc }}" d="{% for b in G.filets_mono %}{% set k = (b[3]-b[1]) * G.pente %}M {{ '%.3f' % (b[0] + k) }},{{ b[1] }} L {{ '%.3f' % (b[2] + k) }},{{ b[1] }} L {{ b[2] }},{{ b[3] }} L {{ b[0] }},{{ b[3] }} Z {% endfor %}"/>
+    </svg>
+    {% for cle, P in G.lignes.items() %}
+    {{ M.ligne(cle, T.lignes[cle], P.x, P.y, P.cls or '', P.groupe or 'Générique', 'font-size:%smm;letter-spacing:%smm' % (P.fs, P.ls or 0)) }}
+    {% endfor %}
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>
