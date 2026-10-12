@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Verso de carte 65 × 90 mm d'après le dos or « 限 » (Carddass LIMITED) : cadre sombre, panneau or à encoches,
+   motif de filets noirs (blocs à décrochement, équerres, colonnes), carré central « 限 », boule à 7 étoiles,
+   disque « 七 », mentions. Cotes : outils/fiches_limited_vegeta.py. #}
+{% macro d(rings) %}{% for r in rings %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% set O = G.or %}{% set E = G.encoche %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .made { font: 400 1mm/1 "Heros", sans-serif; font-weight: 700; color: {{ C.noir }}; }
+  .copy { font: 400 1.1mm/1 "MP1 Medium", sans-serif; color: {{ C.noir }}; }
+  .bas { font: 400 2mm/1 "Heros", sans-serif; color: {{ C.texte_blanc }}; }
+  .tori { font: 400 2mm/1 "MP1 Medium", sans-serif; color: {{ C.texte_blanc }}; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Cadre sombre" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.cadre }}"/>
+      <path data-nom="Panneau or" fill="{{ C.or }}" d="M {{ O[0] + E[0] }},{{ O[1] }} L {{ O[2] - E[0] }},{{ O[1] }} L {{ O[2] - E[0] }},{{ O[1] + E[1] }} L {{ O[2] }},{{ O[1] + E[1] }} L {{ O[2] }},{{ O[3] - E[1] }} L {{ O[2] - E[0] }},{{ O[3] - E[1] }} L {{ O[2] - E[0] }},{{ O[3] }} L {{ O[0] + E[0] }},{{ O[3] }} L {{ O[0] + E[0] }},{{ O[3] - E[1] }} L {{ O[0] }},{{ O[3] - E[1] }} L {{ O[0] }},{{ O[1] + E[1] }} L {{ O[0] + E[0] }},{{ O[1] + E[1] }} Z"/>
+    </svg>
+  </div>
+  <div class="abs" data-calque="motif" style="inset:0">
+    {{ svg('Motif de filets') }}
+      <path data-nom="Filets noirs" fill="{{ C.noir }}" d="{% for x0, y0, x1, y1, n in G.filets %}M {{ x0 }},{{ y0 }} L {{ x1 }},{{ y0 }} L {{ x1 }},{{ y1 }} L {{ x0 }},{{ y1 }} Z {% endfor %}"/>
+    </svg>
+    {{ svg('Boule à 7 étoiles') }}
+      {% set B = G.boule %}<circle data-nom="Boule blanche" cx="{{ B.c[0] }}" cy="{{ B.c[1] }}" r="{{ B.r }}" fill="{{ C.blanc }}"/>
+      <path data-nom="7 étoiles" fill="{{ C.noir }}" d="{% for r in G.etoiles %}M {% for x, y in r %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}Z {% endfor %}"/>
+    </svg>
+    {{ svg('Disque 七') }}
+      {% set Dq = G.disque %}<circle data-nom="Disque – filet" cx="{{ Dq.c[0] }}" cy="{{ Dq.c[1] }}" r="{{ Dq.r }}" fill="{{ C.noir }}"/>
+      <circle data-nom="Disque blanc" cx="{{ Dq.c[0] }}" cy="{{ Dq.c[1] }}" r="{{ '%.3f' % (Dq.r - Dq.anneau) }}" fill="{{ C.blanc }}"/>
+      <path data-nom="« 七 » (vectorisé)" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.nana) }}"/>
+    </svg>
+    {{ svg('Carré central') }}
+      <path data-nom="« 限 » (pinceau vectorisé)" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.gen) }}"/>
+    </svg>
+  </div>
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="t made" data-groupe="Mentions">{{ T.made }}</div>
+    <div class="t copy" data-groupe="Mentions">{{ T.copyright }}</div>
+    <div class="t bas bird" data-groupe="Mentions">{{ T.bird }}</div>
+    <div class="t tori" data-groupe="Mentions">{{ T.toriyama }}</div>
+    <div class="t bas weekly" data-groupe="Mentions">{{ T.weekly }}</div>
+  </div>
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

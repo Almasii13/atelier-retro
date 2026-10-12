@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après une Carddass « LIMITED 3000 » (② ベジータ « 惑 »).
+   Fond prisme (dégradé violet), bande blanche à droite avec fanion noir et texte vertical à furigana,
+   fenêtre à double filet, plaque « 惑 » (tracé au pinceau vectorisé), plaque LIMITED 3000 avec pastille ⑦,
+   encadré bas : trois lignes de texte + furigana devant « BP8400 » lavande. Cotes en mm (page finie). #}
+{% macro d(rings) %}{% for r in rings %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}{% endmacro %}
+{% macro rect(nom, b, coul, rx=0) %}<rect data-nom="{{ nom }}" x="{{ b[0] }}" y="{{ b[1] }}" width="{{ '%.3f' % (b[2]-b[0]) }}" height="{{ '%.3f' % (b[3]-b[1]) }}"{% if rx %} rx="{{ rx }}"{% endif %} fill="{{ coul }}"/>{% endmacro %}
+{% macro plaque(nom, P) %}{{ rect(nom ~ ' – contour', P.boite, C.noir, P.rayon) }}{% set e = P.trait %}{{ rect(nom ~ ' – fond', [P.boite[0]+e, P.boite[1]+e, P.boite[2]-e, P.boite[3]-e], C.blanc, [P.rayon - e, 0.05] | max) }}{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% set F = G.fenetre %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .prisme { position: absolute; left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ G.bande_x + FP }}mm; height: {{ H + 2*FP }}mm;
+    background: linear-gradient(180deg{% for p, c in C.prisme %}, {{ c }} {{ p }}%{% endfor %}); }
+  .bande { position: absolute; left: {{ G.bande_x }}mm; top: -{{ FP }}mm; width: {{ L + FP - G.bande_x }}mm; height: {{ H + 2*FP }}mm; background: {{ C.bande }}; }
+  .fenetre { position: absolute; left: {{ F[0] }}mm; top: {{ F[1] }}mm; width: {{ '%.3f' % (F[2]-F[0]) }}mm; height: {{ '%.3f' % (F[3]-F[1]) }}mm;
+    background: linear-gradient(180deg{% for p, c in C.fenetre %}, {{ c }} {{ p }}%{% endfor %}); }
+  .vert { writing-mode: vertical-rl; text-orientation: upright; color: {{ C.noir }}; font: 400 3.7mm/1 "MP1 Medium", sans-serif; }
+  .vert.rt { font-size: 1.25mm; letter-spacing: .55mm; }
+  .lim { font: italic 400 3.4mm/1 "Heros BI", sans-serif; color: {{ C.noir }}; }
+  .bp { font: 400 10mm/1 "Anton", sans-serif; color: {{ C.lavande }}; }
+  .ligne { font: 400 3.3mm/1 "MP1 Medium", sans-serif; color: {{ C.noir }}; }
+  .furi { font: 400 1.0mm/1 "MP1 Medium", sans-serif; color: {{ C.noir }}; }
+  .it { display: inline-block; transform: skewX({{ G.biais_exclamation }}deg); }
+  .zone-perso { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    <div class="prisme" data-groupe="Fond" data-nom="Fond prisme (dégradé)"></div>
+    <div class="bande" data-groupe="Fond" data-nom="Bande blanche"></div>
+    {% set O = G.cadre %}
+    {{ svg('Fenêtre') }}
+      {{ rect('Fenêtre – filet extérieur', O.ext, C.noir) }}
+      {{ rect('Fenêtre – bande blanche', O.blanc, C.blanc) }}
+      {{ rect('Fenêtre – filet intérieur', O.int, C.noir) }}
+    </svg>
+    <div class="fenetre" data-groupe="Fenêtre" data-nom="Fond de fenêtre (dégradé)"></div>
+  </div>
+
+  {% set u = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-perso {{ '' if u else 'vide' }}" data-label="ILLUSTRATION DÉTOURÉE">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {{ svg('Fanion') }}
+      <polygon data-nom="Fanion noir" fill="{{ C.noir }}" points="{% for x, y in G.fanion %}{{ x }},{{ y }} {% endfor %}"/>
+    </svg>
+    {% for k in ['v1', 'v2'] %}<div class="t vert {{ k }}" data-groupe="Texte vertical">{{ T[k] }}</div>
+    {% endfor %}
+    {% for k in ['r1', 'r2'] %}<div class="t vert rt {{ k }}" data-groupe="Texte vertical">{{ T[k] }}</div>
+    {% endfor %}
+
+    {{ svg('Plaque 惑') }}
+      {{ plaque('Plaque 惑', G.plaque_kanji) }}
+      <path data-nom="« 惑 » (pinceau vectorisé)" fill="{{ C.noir }}" fill-rule="evenodd" d="{{ d(G.waku) }}"/>
+    </svg>
+
+    {{ svg('Plaque LIMITED') }}
+      {{ plaque('Plaque LIMITED', G.plaque_lim) }}
+      {% set R = G.pastille %}
+      <circle data-nom="Pastille – bord" cx="{{ R.c[0] }}" cy="{{ R.c[1] }}" r="{{ R.r }}" fill="{{ C.rouge_bord }}"/>
+      <circle data-nom="Pastille rouge" cx="{{ R.c[0] }}" cy="{{ R.c[1] }}" r="{{ R.r - R.bord }}" fill="{{ C.rouge }}"/>
+      <path data-nom="Chiffre 7 (vectorisé)" fill="{{ C.blanc_pur }}" d="{{ d(G.sept) }}"/>
+    </svg>
+    <div class="t lim lim1" data-groupe="Plaque LIMITED">{{ T.limited }}</div>
+    <div class="t lim lim2" data-groupe="Plaque LIMITED">{{ T.nombre }}</div>
+
+    {{ svg('Encadré') }}
+      {{ plaque('Encadré', G.encadre) }}
+    </svg>
+    <div class="t bp" data-groupe="Encadré">{{ T.bp }}</div>
+    {% for l in T.lignes %}<div class="t ligne l{{ loop.index }}" data-groupe="Encadré – texte">{% for sg in l %}{% if sg is string %}{{ sg }}{% else %}<span class="it">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
+    {% endfor %}
+    {% for f in T.furigana %}<div class="t furi f{{ loop.index }}" data-groupe="Encadré – texte">{{ f }}</div>
+    {% endfor %}
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

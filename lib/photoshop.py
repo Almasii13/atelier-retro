@@ -27,6 +27,7 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Archivo Black": [(0, "ArchivoBlack-Regular")],
     "Heros": [(600, "TeXGyreHeros-Bold"), (0, "TeXGyreHeros-Regular")],
     "Antonio R": [(0, "Antonio-Regular")],
+    "Heros BI": [(0, "TeXGyreHeros-BoldItalic")],
     "Mona SB": [(0, "MonaSans-SemiBold")],
     "Coustard Black": [(0, "Coustard-Black")],
     "RC Black I": [(0, "RobotoCondensed-BlackItalic")],
@@ -48,9 +49,9 @@ POLICES = {  # (famille CSS) → [(graisse min, nom PostScript), ...], du plus g
     "Noto Sans CJK JP": [(800, "NotoSansCJKjp-Black"), (600, "NotoSansCJKjp-Bold"), (0, "NotoSansCJKjp-Regular")],
     "Noto Serif CJK JP": [(0, "NotoSerifCJKjp-Bold")],
 }
-CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72, "Antonio R": 0.86, "Heros": 0.73, "Mona SB": 0.73, "RC Black I": 0.71, "Coustard Black": 0.73}
-NATIF_ITALIQUE = {"Work Sans BI", "OS Cond BI", "RC Black I"}  # polices déjà italiques : pas d'italique synthétique en plus
-UNE_GRAISSE = {"Arimo B", "Zen Maru Black", "MR Medium", "MP1 Black", "MP1 Bold", "MP1 Medium", "Potta One", "OS Cond BI", "Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra", "Antonio R", "Mona SB", "RC Black I", "Coustard Black"}  # le navigateur synthétise le gras au-delà de 600
+CAPITALE = {"Passion One": 0.62, "Anton": 0.86, "Archivo Black": 0.69, "Arvo": 0.74, "Tinos": 0.65, "Ultra": 0.72, "Antonio R": 0.86, "Heros": 0.73, "Mona SB": 0.73, "RC Black I": 0.71, "Coustard Black": 0.73, "Heros BI": 0.73}
+NATIF_ITALIQUE = {"Work Sans BI", "OS Cond BI", "RC Black I", "Heros BI"}  # polices déjà italiques : pas d'italique synthétique en plus
+UNE_GRAISSE = {"Arimo B", "Zen Maru Black", "MR Medium", "MP1 Black", "MP1 Bold", "MP1 Medium", "Potta One", "OS Cond BI", "Roboto Cond", "Rokkitt Black", "M Rounded Black", "Work Sans BI", "Noto JP Black", "Oswald M", "Passion One", "Dela Gothic", "Anton", "Archivo Black", "Yuji Syuku", "Ultra", "Antonio R", "Mona SB", "RC Black I", "Coustard Black", "Heros BI"}  # le navigateur synthétise le gras au-delà de 600
 
 
 def police_ps(st):
