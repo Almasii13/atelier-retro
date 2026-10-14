@@ -49,7 +49,7 @@
   .cel { font: 2.6mm/1 "Archivo Black", sans-serif; color: #fff; }
 
   /* Badge 打 */
-  .octo-da { font: 800 7mm/1 "M Rounded", sans-serif;
+  .octo-da { font: 800 7mm/1 "M Rounded", sans-serif; {% if G.biais_badge %}font-style: italic;{% endif %}
              background: linear-gradient(180deg, {{ C.or_haut }} 0%, {{ C.or_bas }} 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
   .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ G.logo[2] - G.logo[0] }}mm; height: {{ G.logo[3] - G.logo[1] }}mm; }
@@ -74,8 +74,9 @@
   <div class="abs" data-calque="cadre" style="inset:0">
     <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
       <rect data-nom="Cadre noir" {{ rect(F) }} fill="{{ C.noir }}"/>
-      {% for cle, coul in C.damier.items() %}{% if cle in dam %}<path data-nom="Damier – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(dam[cle]) }}"/>{% endif %}{% endfor %}
+      {% if not C.fenetre %}{% for cle, coul in C.damier.items() %}{% if cle in dam %}<path data-nom="Damier – {{ cle }}" fill="{{ coul }}" d="{{ chemin_svg(dam[cle]) }}"/>{% endif %}{% endfor %}{% endif %}
     </svg>
+    {% if C.fenetre %}<div class="abs" data-groupe="Fenêtre" data-nom="Fond de fenêtre (dégradé)" style="left:{{ F[0]+ep }}mm;top:{{ F[1]+ep }}mm;width:{{ '%.3f' % (F[2]-F[0]-2*ep) }}mm;height:{{ '%.3f' % (F[3]-F[1]-2*ep) }}mm;background:linear-gradient(180deg{% for p, c in C.fenetre %}, {{ c }} {{ p }}%{% endfor %})"></div>{% endif %}
   </div>
 
   {% set u2 = img('personnages') %}
