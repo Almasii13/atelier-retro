@@ -65,7 +65,7 @@
     <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
       <rect data-nom="Flammes – rouge" x="{{ -FP-1 }}" y="{{ -FP-1 }}" width="{{ L + 2*FP + 2 }}" height="{{ H + 2*FP + 2 }}" fill="{{ C.feu[0] }}"/>
       {% for cle in ['rouge_orange', 'orange', 'jaune'] %}
-      <path data-nom="Flammes – {{ cle }}" fill="{{ C.feu[loop.index] }}" d="{% for p in feu[cle] %}M {% for x, y in p %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+      <path data-nom="Flammes – {{ cle }}" fill="{{ C.feu[loop.index] }}" fill-rule="evenodd" d="{% for p in feu[cle] %}M {% for x, y in p %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
       {% endfor %}
     </svg>
   </div>
@@ -102,11 +102,16 @@
     <div class="t pw pw-power" data-groupe="POWER LEVEL">{{ T.power[0] }}</div>
     <div class="t pw pw-level" data-groupe="POWER LEVEL">{{ T.power[1] }}</div>
     {% for n in T.echelle %}<div class="t cel cel{{ loop.index }}" data-groupe="Échelle">{{ n }}</div>{% endfor %}
-    <div class="t pw-11" data-groupe="POWER LEVEL">{{ T.niveau_power }}</div>
+    {% if G.trace_11 %}
+    <svg class="abs" data-groupe="POWER LEVEL" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <path data-nom="11 – contour noir" fill="{{ C.noir }}" fill-rule="evenodd" d="{% for r in G.trace_11.contour %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+      <path data-nom="11 – chiffres (vectorisés)" fill="{{ C.rouge_chiffre }}" fill-rule="evenodd" d="{% for r in G.trace_11.face %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+    </svg>
+    {% else %}<div class="t pw-11" data-groupe="POWER LEVEL">{{ T.niveau_power }}</div>{% endif %}
 
     {# ----- Bandeau nom (repère tourné) ----- #}
     <div class="abs axe" data-groupe="Bandeau">
-      <svg class="abs" data-groupe="Bandeau" style="left:0;top:0;width:1mm;height:1mm;overflow:visible" viewBox="0 0 1 1">
+      <svg class="abs" data-groupe="Bandeau" style="left:0;top:0;width:100mm;height:100mm;overflow:visible" viewBox="0 0 100 100">
         <polygon data-nom="Bandeau noir" fill="{{ C.bande_noire }}" points="{{ poly([(B.u_debut, B.noir[0]), (B.coupe_noir[0], B.noir[0]), (B.coupe_noir[1], B.noir[1]), (B.u_debut, B.noir[1])]) }}"/>
         <polygon data-nom="Bandeau rouge" fill="{{ C.bande_rouge }}" points="{{ poly([(B.u_debut, B.rouge[0]), (B.coupe_rouge[0], B.rouge[0]), (B.coupe_rouge[1], B.rouge[1]), (B.u_debut, B.rouge[1])]) }}"/>
         {% set lx = B.coupe_noir %}{% set le = B.liseret / 2 %}
@@ -126,7 +131,11 @@
       <polygon data-nom="Badge – anneau blanc" fill="{{ C.blanc }}" points="{{ octo(b[0], b[1], b[2], b[3], c) }}"/>
       <polygon data-nom="Badge – fond noir" fill="{{ C.noir }}" points="{{ octo(b[0]+eb, b[1]+eb, b[2]-eb, b[3]-eb, c - eb*t8) }}"/>
     </svg>
-    <div class="t octo-da" data-groupe="Badge">{{ T.badge }}</div>
+    {% if G.trace_da %}
+    <svg class="abs" data-groupe="Badge" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <path data-nom="« 打 » (vectorisé)" fill="{{ C.or_glyphe }}" fill-rule="evenodd" d="{% for r in G.trace_da %}M {% for x, y in r %}{{ x }},{{ y }} {% endfor %}Z {% endfor %}"/>
+    </svg>
+    {% else %}<div class="t octo-da" data-groupe="Badge">{{ T.badge }}</div>{% endif %}
   </div>
 
   {% set u = img('logo') %}
