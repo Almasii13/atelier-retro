@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Recto de carte 65 × 90 mm d'après les cartes Dragon Ball « Visual Adventure » (n° 268 ベジータ, n° 219 悟飯).
+   Fond marbre vert (texture procédurale, emplacement image), médaille dorée (emblème à poser), logo
+   « DRAGON BALL » bicolore cerné (horizontal ou vertical), pastilles jaunes ドラゴンボール, fenêtre à cadre
+   (rouge / blanc) avec fond d'illustration (image ou rayons vectoriels), filets dégradés ou barres or,
+   légende blanche à numéro cerclé + furigana. Illustration détourée au-dessus. Cotes en mm (page finie). #}
+{% macro rect(nom, b, coul) %}<rect data-nom="{{ nom }}" x="{{ b[0] }}" y="{{ b[1] }}" width="{{ '%.3f' % (b[2]-b[0]) }}" height="{{ '%.3f' % (b[3]-b[1]) }}" fill="{{ coul }}"/>{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% macro poly(pts) %}{% for x, y in pts %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}{% endmacro %}
+{% set TI = G.titre %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .rot { position: absolute; width: 0; height: 0; transform-origin: 0 0; }
+  .db { font: 400 {{ TI.fs }}mm/1 "Alumni Sans XB", sans-serif; letter-spacing: {{ TI.ls }}mm;
+        -webkit-text-stroke: {{ TI.trait * 2 }}mm {{ C.trait }}; paint-order: stroke fill; }
+  .db.ombre { color: {{ C.trait }}; }
+  .db.bas { color: {{ C.titre_bas }}; }
+  .db.haut { color: {{ C.titre_haut }}; }
+  .kana { font: 400 {{ G.disques.fs }}mm/1 "{{ G.disques.police }}", sans-serif; color: {{ C.encre }}; }
+  .kana.v { writing-mode: vertical-rl; }
+  .num { font: 400 {{ G.numero.fs }}mm/1 "Oswald M", sans-serif; color: {{ C.numero }}; letter-spacing: -.05mm; }
+  .leg { font: 400 {{ G.legende_fs }}mm/1 "MP1 Bold", sans-serif; color: {{ C.blanc }}; }
+  .leg.v { writing-mode: vertical-rl; }
+  .furi { font: 400 {{ G.furi_fs }}mm/1 "MP1 Bold", sans-serif; color: {{ C.blanc }}; }
+  .furi.v { writing-mode: vertical-rl; }
+  .it { display: inline-block; transform: skewX(-14deg); }
+  .zone-pleine { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  {# ----- Marbre (texture) ----- #}
+  {% set u = img('marbre') %}
+  <div class="abs" data-calque="image:marbre" style="inset:0">
+    <div class="slot zone-pleine {{ '' if u else 'vide' }}" data-label="MARBRE">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {# ----- Fenêtre : cadre + fond d'illustration ----- #}
+  {% set F = G.fenetre %}{% set e = F.ep %}{% set I = [F.ext[0]+e, F.ext[1]+e, F.ext[2]-e, F.ext[3]-e] %}
+  <div class="abs" data-calque="fenetre" style="inset:0">
+    {{ svg('Fenêtre') }}
+      <path data-nom="Fenêtre – cadre" fill="{{ C.cadre }}" fill-rule="evenodd" d="M {{ F.ext[0] }},{{ F.ext[1] }} L {{ F.ext[2] }},{{ F.ext[1] }} L {{ F.ext[2] }},{{ F.ext[3] }} L {{ F.ext[0] }},{{ F.ext[3] }} Z M {{ '%.3f' % I[0] }},{{ '%.3f' % I[1] }} L {{ '%.3f' % I[0] }},{{ '%.3f' % I[3] }} L {{ '%.3f' % I[2] }},{{ '%.3f' % I[3] }} L {{ '%.3f' % I[2] }},{{ '%.3f' % I[1] }} Z"/>
+      {{ rect('Fenêtre – fond', I, C.fond_fenetre) }}
+      {% if G.rayons %}<path data-nom="Rayons roses" fill="{{ C.rayon }}" d="{% for p in G.rayons %}M {% for x, y in p %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}Z {% endfor %}"/>{% endif %}
+    </svg>
+  </div>
+  {% if F.image %}{% set u = img(F.image) %}
+  <div class="abs" data-calque="image:{{ F.image }}" style="inset:0">
+    <div class="slot {{ '' if u else 'vide' }}" data-label="FOND DE FENÊTRE" style="left:{{ '%.3f' % I[0] }}mm;top:{{ '%.3f' % I[1] }}mm;width:{{ '%.3f' % (I[2]-I[0]) }}mm;height:{{ '%.3f' % (I[3]-I[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% endif %}
+
+  {# ----- Filets / barres ----- #}
+  {% if G.rayures or G.barres %}
+  <div class="abs" data-calque="filets" style="inset:0">
+    {{ svg('Filets') }}
+      {% for R in G.rayures %}{{ rect('Filet ' ~ loop.index, R.b, R.c) }}{% endfor %}
+      {% if G.barres %}<path data-nom="Barres or" fill="{{ C.or_barres }}" d="{% for b in G.barres %}M {{ b[0] }},{{ b[1] }} L {{ b[2] }},{{ b[1] }} L {{ b[2] }},{{ b[3] }} L {{ b[0] }},{{ b[3] }} Z {% endfor %}"/>{% endif %}
+    </svg>
+  </div>
+  {% endif %}
+
+  {# ----- Illustration détourée ----- #}
+  {% set u = img('personnage') %}
+  <div class="abs" data-calque="image:personnage" style="inset:0">
+    <div class="slot detoure zone-pleine {{ '' if u else 'vide' }}" data-label="ILLUSTRATION DÉTOURÉE">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {# ----- Médaille ----- #}
+  {% set M = G.medaille %}
+  <div class="abs" data-calque="medaille" style="inset:0">
+    {{ svg('Médaille') }}<circle data-nom="Médaille" cx="{{ M.c[0] }}" cy="{{ M.c[1] }}" r="{{ M.r }}" fill="{{ C.medaille }}"/></svg>
+  </div>
+  {% set u = img('embleme') %}
+  <div class="abs" data-calque="image:embleme" style="inset:0">
+    <div class="slot detoure {{ '' if u else 'vide' }}" data-label="EMBLÈME" style="left:{{ '%.3f' % (M.c[0]-M.r) }}mm;top:{{ '%.3f' % (M.c[1]-M.r) }}mm;width:{{ M.r*2 }}mm;height:{{ M.r*2 }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    {# ----- Logo DRAGON BALL : ombre, couleur basse cernée, couleur haute (masquée) ----- #}
+    <div class="rot" data-groupe="Logo DRAGON BALL" style="left:{{ TI.x }}mm;top:{{ TI.y }}mm;transform:rotate({{ TI.rot }}deg)">
+      <div class="t db ombre" style="margin-left:{{ TI.ombre[0] }}mm;margin-top:{{ TI.ombre[1] }}mm">{{ T.titre }}</div>
+      <div class="t db bas">{{ T.titre }}</div>
+    </div>
+    <div class="abs" data-groupe="Logo DRAGON BALL" style="inset:0;clip-path:polygon({% for x, y in TI.coupe %}{{ x }}mm {{ y }}mm{{ ', ' if not loop.last }}{% endfor %})">
+      <div class="rot" style="left:{{ TI.x }}mm;top:{{ TI.y }}mm;transform:rotate({{ TI.rot }}deg)">
+        <div class="t db haut">{{ T.titre }}</div>
+      </div>
+    </div>
+
+    {# ----- Pastilles ドラゴンボール ----- #}
+    {% set D = G.disques %}
+    {{ svg('Pastilles ドラゴンボール') }}
+      {% for c in D.centres %}<circle data-nom="Pastille {{ loop.index }} – cerne" cx="{{ c[0] }}" cy="{{ c[1] }}" r="{{ D.d / 2 }}" fill="{{ C.encre }}"/><circle data-nom="Pastille {{ loop.index }}" cx="{{ c[0] }}" cy="{{ c[1] }}" r="{{ '%.3f' % (D.d / 2 - D.ep) }}" fill="{{ C.pastille }}"/>{% endfor %}
+    </svg>
+    {% for ch in T.kana %}<div class="t kana k{{ loop.index }}{{ ' v' if ch in D.verticaux }}" data-groupe="Pastilles ドラゴンボール">{{ ch }}</div>
+    {% endfor %}
+
+    {# ----- Légende ----- #}
+    {% set N = G.numero %}
+    {{ svg('Légende') }}<circle data-nom="Numéro – pastille" cx="{{ N.c[0] }}" cy="{{ N.c[1] }}" r="{{ N.d / 2 }}" fill="{{ C.blanc }}"/></svg>
+    <div class="t num" data-groupe="Légende">{{ T.numero }}</div>
+    <div class="t leg{{ ' v' if G.vertical }}" data-groupe="Légende">{% for sg in T.legende %}{% if sg is string %}{{ sg }}{% else %}<span class="it">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
+    {% for f in T.furigana %}<div class="t furi f{{ loop.index }}{{ ' v' if G.vertical }}" data-groupe="Légende">{{ f }}</div>
+    {% endfor %}
+  </div>
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

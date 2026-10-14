@@ -88,6 +88,9 @@ def main(jsx, original):
             if it.get("contour"):
                 c = it["contour"]
                 textes[-1] = textes[-1].replace('style="position', f'style="-webkit-text-stroke:{c["taille"] * 2 / K}px rgb({",".join(map(str, c["couleur"]))});paint-order:stroke fill;position', 1)
+            if it.get("masque"):  # masque vectoriel : appliqué après la mesure de l'encre (comme dans Photoshop)
+                poly = ",".join(f"{x / K}px {y / K}px" for x, y in it["masque"])
+                textes[-1] = f'<div class="masque" data-clip="polygon({poly})" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px">' + textes[-1] + "</div>"
         elif it["type"] == "arc":
             for j, c in enumerate(it["car"]):
                 r = {"police": it["police"], "taille": it["taille"], "approche": 0, "couleur": it["couleur"], "italique": it["italique"], "echelleH": 100}
@@ -119,6 +122,7 @@ def main(jsx, original):
                 n.style.transform=`translate(${tx}px,${ty}px) rotate(${n.dataset.a}deg) translate(${-cx}px,${-cy}px) translate(${cx}px,${cy}px) scaleX(${e}) translate(${-cx}px,${-cy}px)`;
                 n.style.transformOrigin='0 0';
                 n.style.transform=`translate(${cx+tx}px,${cy+ty}px) rotate(${n.dataset.a}deg) translate(${-cx}px,${-cy}px) scaleX(${e})`;}""", [cx, cy])
+        pg.evaluate("document.querySelectorAll('.masque').forEach(m => m.style.clipPath = m.dataset.clip)")
         rec = Image.open(io.BytesIO(pg.screenshot())).convert("RGB")
         nav.close()
     f.unlink()
