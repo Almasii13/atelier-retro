@@ -44,12 +44,12 @@
   .pw { font: 3mm/1 "Work Sans BI", sans-serif; font-style: italic; letter-spacing: -.05mm;
         background: linear-gradient(180deg, {{ C.power_haut }} 0%, {{ C.power_haut }} 22%, {{ C.power_bas }} 62%, {{ C.power_bas }} 100%);
         -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .pw-11 { font: 12mm/1 "Work Sans BI", sans-serif; font-style: italic; color: {{ C.rouge_chiffre }}; letter-spacing: -.2mm;
+  .pw-11 { font: 12mm/1 {{ G.police_11 or '"Work Sans BI"' }}, sans-serif; font-style: italic; color: {{ C.rouge_chiffre }}; letter-spacing: {{ G.ls_11 or -0.2 }}mm;
            -webkit-text-stroke: {{ G.chiffre_contour * 2 }}mm {{ C.noir }}; paint-order: stroke fill; }
   .cel { font: 2.6mm/1 "Archivo Black", sans-serif; color: #fff; }
 
   /* Badge 打 */
-  .octo-da { font: 800 7mm/1 "M Rounded", sans-serif; {% if G.biais_badge %}font-style: italic;{% endif %}
+  .octo-da { font: {{ G.police_badge or '800 7mm/1 "M Rounded"' }}, sans-serif; {% if G.biais_badge %}font-style: italic;{% endif %}
              background: linear-gradient(180deg, {{ C.or_haut }} 0%, {{ C.or_bas }} 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
   .zone-logo { left: {{ G.logo[0] }}mm; top: {{ G.logo[1] }}mm; width: {{ G.logo[2] - G.logo[0] }}mm; height: {{ G.logo[3] - G.logo[1] }}mm; }

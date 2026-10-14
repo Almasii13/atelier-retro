@@ -36,6 +36,7 @@
 @font-face { font-family: "MR Medium"; src: url("fonts/MPLUSRounded1c-Medium.ttf"); }
 @font-face { font-family: "Heros"; font-weight: 400; src: url("fonts/TeXGyreHeros-Regular.otf"); }
 @font-face { font-family: "Heros"; font-weight: 700; src: url("fonts/TeXGyreHeros-Bold.otf"); }
+@font-face { font-family: "Heros Cn BI"; font-style: italic; src: url("fonts/TeXGyreHerosCn-BoldItalic.otf"); }
 @font-face { font-family: "Heros BI"; font-style: italic; src: url("fonts/TeXGyreHeros-BoldItalic.otf"); }
 @font-face { font-family: "Antonio R"; src: url("fonts/Antonio-Regular.ttf"); }
 @font-face { font-family: "RC Black I"; font-style: italic; src: url("fonts/RobotoCondensed-BlackItalic.ttf"); }
