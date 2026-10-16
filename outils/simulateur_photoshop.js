@@ -27,8 +27,8 @@ global.Extension = { LOWERCASE: 1 };
 global.PathPointInfo = class {}; global.UnitValue = function (v, u) { this.v = v; }; global.SubPathInfo = class {};
 global.SolidColor = class { constructor() { this.rgb = {}; } };
 global.PhotoshopSaveOptions = class {};
-global.$ = { fileName: "/tmp/flyer_photoshop.jsx", global };
-global.File = function (p) { const o = { fsName: p, name: p.split("/").pop(), parent: { fsName: p.split("/").slice(0, -1).join("/") },
+global.$ = { fileName: require("path").resolve(process.argv[2]), global };
+global.File = function (p) { const o = { fsName: p, get exists() { return !!ecrits[p] || fs.existsSync(p); }, name: p.split("/").pop(), parent: { fsName: p.split("/").slice(0, -1).join("/") },
   encoding: "", contenu: "", ouvert: false,
   open(m) { this.ouvert = true; return true; }, write(t) { if (!this.ouvert) throw new Error("écriture sans open"); this.contenu += t; return true; },
   close() { this.ouvert = false; ecrits[this.fsName] = this.contenu; return true; } }; return o; };
@@ -40,6 +40,7 @@ global.alert = (m) => journal.push("ALERT\n" + m);
 function nouveauCalque(type, nom) {
   const l = { type, name: nom || type, parent: null, bounds: [100, 100, 300, 140], visible: true, opacity: 100, grouped: false,
     textItem: { tracking: 0 },
+    remove() { const i = calques.indexOf(this); if (i >= 0) calques.splice(i, 1); this.supprime = true; },
     move(c, p) { if (!c) throw new Error("move sans conteneur"); this.parent = c; },
     translate(dx, dy) { if (isNaN(dx) || isNaN(dy)) throw new Error("translate NaN"); this.bounds = this.bounds.map((v, i) => v + (i % 2 ? dy : dx)); },
     rotate(a) { if (isNaN(a)) throw new Error("rotate NaN"); this.angle = a; },
@@ -78,9 +79,21 @@ const doc = { layerSets: { add() { const g = nouveauCalque("groupe"); return g; 
 let presse = null;
 global.app = { fonts: Object.assign([{ postScriptName: "ArchivoBlack-Regular" }], {}), preferences: {}, displayDialogs: 0,
   open(f) {
-    const b = ecrits[f.fsName]; if (!b) throw new Error("ouverture d'un fichier inexistant " + f.fsName);
-    if (b.charCodeAt(1) !== 0x50 || b.slice(1, 4) !== "PNG") throw new Error("PNG invalide après décodage base64");
-    const w = (b.charCodeAt(16) << 24 | b.charCodeAt(17) << 16 | b.charCodeAt(18) << 8 | b.charCodeAt(19)), h = (b.charCodeAt(20) << 24 | b.charCodeAt(21) << 16 | b.charCodeAt(22) << 8 | b.charCodeAt(23));
+    const b = ecrits[f.fsName] || (fs.existsSync(f.fsName) ? fs.readFileSync(f.fsName, "latin1") : null);
+    if (!b) throw new Error("ouverture d'un fichier inexistant " + f.fsName);
+    let w, h;
+    if (b.charCodeAt(0) === 0xFF && b.charCodeAt(1) === 0xD8) {          // JPEG : dimensions lues dans le segment SOF
+      let i = 2;
+      while (i < b.length) {
+        const m = b.charCodeAt(i + 1), L = b.charCodeAt(i + 2) << 8 | b.charCodeAt(i + 3);
+        if (m >= 0xC0 && m <= 0xC3) { h = b.charCodeAt(i + 5) << 8 | b.charCodeAt(i + 6); w = b.charCodeAt(i + 7) << 8 | b.charCodeAt(i + 8); break; }
+        i += 2 + L;
+      }
+      if (!w) throw new Error("JPEG invalide");
+    } else {
+      if (b.charCodeAt(1) !== 0x50 || b.slice(1, 4) !== "PNG") throw new Error("PNG invalide après décodage base64");
+      w = (b.charCodeAt(16) << 24 | b.charCodeAt(17) << 16 | b.charCodeAt(18) << 8 | b.charCodeAt(19)); h = (b.charCodeAt(20) << 24 | b.charCodeAt(21) << 16 | b.charCodeAt(22) << 8 | b.charCodeAt(23));
+    }
     return { selection: { selectAll() {}, copy() { presse = { w, h }; } }, close(o) { if (o !== SaveOptions.DONOTSAVECHANGES) throw new Error("close"); } };
   },
   set activeDocument(d) {},

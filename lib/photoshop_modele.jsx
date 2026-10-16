@@ -318,14 +318,18 @@
   // Le PNG est embarqué en base64 dans le script : écrit dans le dossier temporaire, ouvert, copié,
   // puis collé juste au-dessus du texte en calque écrêté (masque d'écrêtage) : le texte reste modifiable.
   function b64bin(s) {
-    var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", o = [], b = 0, n = 0;
+    // décodage par blocs (table de correspondance, morceaux de 4096 octets) : rapide même pour un gros fichier
+    var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", T = {}, morceaux = [], o = [];
+    for (var k = 0; k < 64; k++) T[t.charAt(k)] = k;
+    var b = 0, n = 0;
     for (var i = 0; i < s.length; i++) {
-      var c = t.indexOf(s.charAt(i));
-      if (c < 0) continue;
+      var c = T[s.charAt(i)];
+      if (c === undefined) continue;
       b = ((b << 6) | c) & 0xFFFFFF; n += 6;
-      if (n >= 8) { n -= 8; o.push(String.fromCharCode((b >> n) & 255)); }
+      if (n >= 8) { n -= 8; o.push((b >> n) & 255); if (o.length >= 4096) { morceaux.push(String.fromCharCode.apply(null, o)); o = []; } }
     }
-    return o.join("");
+    if (o.length) morceaux.push(String.fromCharCode.apply(null, o));
+    return morceaux.join("");
   }
   var fichiersMotifs = {};
   function fichierMotif(cle) {
@@ -363,12 +367,19 @@
     l.grouped = true;  // masque d'écrêtage sur le texte
     return l;
   }
-  var motifsAPoser = [];
+  var motifsAPoser = [], imagesAPoser = [];
 
   // ---------- Images des emplacements (logos, photos) ----------
   var fichiersImages = {};
   function fichierImage(cle) {
     if (fichiersImages[cle]) return fichiersImages[cle];
+    if (SCENE.images[cle].fichier) {
+      // image livrée à côté du script (dossier <nom>_images) : ouverte directement, sans décodage
+      var g = new File(File($.fileName).parent.fsName + "/" + SCENE.images[cle].fichier);
+      if (!g.exists) throw new Error("fichier introuvable : " + SCENE.images[cle].fichier + " (à laisser à côté du script)");
+      fichiersImages[cle] = g;
+      return g;
+    }
     var f = new File(Folder.temp.fsName + "/atelier_image_" + cle + ".png");
     f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.images[cle].b64)); f.close();
     fichiersImages[cle] = f;
@@ -433,13 +444,13 @@
         else if (it.type === "image") {
           var avecImage = !!(it.image && SCENE.images && SCENE.images[it.image]);
           if (avecImage && it.detoure) {
-            // logo / personnage détouré : l'image fournie est posée telle quelle (PNG transparent), sans forme dessous
-            try { l = poserImage(null, it); ranger(l, cont); }
-            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+            // logo / personnage détouré : calque repère à sa place, l'image est posée après la construction
+            l = doc.artLayers.add(); l.name = it.calqueNom; ranger(l, cont);
+            imagesAPoser.push({ repere: l, it: it });
           } else if (avecImage) {
+            // photo / texture : forme maintenant, image écrêtée dessus après la construction
             l = forme(it.chemins, [128, 128, 128], "Forme \u2013 " + it.calqueNom); ranger(l, cont);
-            try { poserImage(l, it); }  // photo : calque écrêté sur la forme
-            catch (e) { erreurs.push(it.calqueNom + " (image) : " + e.message); avecImage = false; }
+            imagesAPoser.push({ base: l, it: it });
           }
           if (!avecImage) {
             l = forme(it.chemins, [128, 128, 128], "Forme – " + it.calqueNom); ranger(l, cont);
@@ -462,6 +473,22 @@
 
   try { doc.suspendHistory("Atelier Retro", "__atelierConstruire()"); }
   catch (e) { erreurs.push("Construction : " + e.message); }
+  // Images : ouvertes et collées hors de l'historique suspendu (ouvrir un autre document pendant
+  // suspendHistory peut bloquer Photoshop)
+  for (var im = 0; im < imagesAPoser.length; im++) {
+    var P = imagesAPoser[im];
+    try {
+      if (P.base) { poserImage(P.base, P.it); }
+      else { doc.activeLayer = P.repere; poserImage(null, P.it); P.repere.remove(); }
+    } catch (e) {
+      erreurs.push(P.it.calqueNom + " (image) : " + e.message);
+      try {
+        var vide = doc.artLayers.add(); vide.name = ">> " + P.it.calqueNom + " : colle ton image ici";
+        if (P.base) { vide.move(P.base, ElementPlacement.PLACEBEFORE); vide.grouped = true; }
+        else { vide.move(P.repere, ElementPlacement.PLACEBEFORE); P.repere.remove(); }
+      } catch (e2) {}
+    }
+  }
   for (var mo = 0; mo < motifsAPoser.length; mo++) {
     try { poserMotif(motifsAPoser[mo].l, motifsAPoser[mo].it); }
     catch (e) { erreurs.push(motifsAPoser[mo].it.nom + " (motif " + motifsAPoser[mo].it.motif + ") : " + e.message); }

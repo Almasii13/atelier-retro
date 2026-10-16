@@ -275,6 +275,11 @@
   var fichiersImages = {};
   function fichierImage(cle) {
     if (fichiersImages[cle]) return fichiersImages[cle];
+    if (SCENE.images[cle].fichier) {
+      var g = new File(File($.fileName).parent.fsName + "/" + SCENE.images[cle].fichier);
+      if (!g.exists) throw new Error("fichier introuvable : " + SCENE.images[cle].fichier);
+      fichiersImages[cle] = g; return g;
+    }
     var f = new File(Folder.temp.fsName + "/atelier_image_" + cle + ".png");
     f.encoding = "BINARY"; f.open("w"); f.write(b64bin(SCENE.images[cle].b64)); f.close();
     fichiersImages[cle] = f;

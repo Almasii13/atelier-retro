@@ -321,8 +321,19 @@ def exporter_jsx(page, fiche, base):
             s = min(1.0, max(bw / im.width, bh / im.height))
             if s < 1:
                 im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
-            buf = io.BytesIO(); im.save(buf, "PNG", optimize=True)
-            images[cle] = {"b64": base64.b64encode(buf.getvalue()).decode(), "l": im.width, "h": im.height}
+            opaque = not it.get("detoure") and im.getchannel("A").getextrema()[0] == 255
+            buf = io.BytesIO()
+            if opaque:
+                im.convert("RGB").save(buf, "JPEG", quality=92); ext = "jpg"
+            else:
+                im.save(buf, "PNG", optimize=True); ext = "png"
+            if buf.tell() > 60_000:
+                # grosse image : livrée à côté du script (le décodage base64 en ExtendScript fige Photoshop)
+                dossier = pathlib.Path(f"{base}_images"); dossier.mkdir(exist_ok=True)
+                (dossier / f"{cle}.{ext}").write_bytes(buf.getvalue())
+                images[cle] = {"fichier": f"{dossier.name}/{cle}.{ext}", "l": im.width, "h": im.height}
+            else:
+                images[cle] = {"b64": base64.b64encode(buf.getvalue()).decode(), "l": im.width, "h": im.height}
     donnees["images"] = images
     import re, unicodedata
     nom = unicodedata.normalize("NFKD", pathlib.Path(base).name).encode("ascii", "ignore").decode()

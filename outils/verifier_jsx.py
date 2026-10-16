@@ -67,9 +67,12 @@ def main(jsx, original):
         if it["type"] == "image" and it.get("image") and sc.get("images", {}).get(it["image"]):
             # image embarquée : posée comme le script la pose (contain pour un PNG détouré, cover sinon)
             xs = [q["a"][0] for ch in it["chemins"] for q in ch]; ys = [q["a"][1] for ch in it["chemins"] for q in ch]
-            m = sc["images"][it["image"]]
+            m = dict(sc["images"][it["image"]])
+            if m.get("fichier"):  # image livrée à côté du script
+                import base64
+                m["b64"] = base64.b64encode((pathlib.Path(jsx).parent / m["fichier"]).read_bytes()).decode()
             svg.append(f'<image x="{min(xs) / K}" y="{min(ys) / K}" width="{(max(xs) - min(xs)) / K}" height="{(max(ys) - min(ys)) / K}" '
-                       f'preserveAspectRatio="xMidYMid {"meet" if it.get("detoure") else "slice"}" href="data:image/png;base64,{m["b64"]}"/>')
+                       f'preserveAspectRatio="xMidYMid {"meet" if it.get("detoure") else "slice"}" href="data:image/*;base64,{m["b64"]}"/>')
             continue
         if it["type"] == "image" and it.get("detoure"):
             continue
