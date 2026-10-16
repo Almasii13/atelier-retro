@@ -30,9 +30,9 @@
   .kana { font: 400 {{ G.disques.fs }}mm/1 "{{ G.disques.police }}", sans-serif; color: {{ C.encre }}; }
   .kana.v { writing-mode: vertical-rl; }
   .num { font: 400 {{ G.numero.fs }}mm/1 "Oswald M", sans-serif; color: {{ C.numero }}; letter-spacing: -.05mm; }
-  .leg { font: 400 {{ G.legende_fs }}mm/1 "MP1 Bold", sans-serif; color: {{ C.blanc }}; }
+  .leg { font: 400 {{ G.legende_fs }}mm/1 "{{ G.legende_police or "MP1 Bold" }}", sans-serif; color: {{ C.legende or C.blanc }}; }
   .leg.v { writing-mode: vertical-rl; }
-  .furi { font: 400 {{ G.furi_fs }}mm/1 "MP1 Bold", sans-serif; color: {{ C.blanc }}; }
+  .furi { font: 400 {{ G.furi_fs }}mm/1 "{{ G.furi_police or "MP1 Bold" }}", sans-serif; color: {{ C.legende or C.blanc }}; }
   .furi.v { writing-mode: vertical-rl; }
   .it { display: inline-block; transform: skewX(-14deg); }
   .zone-pleine { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
@@ -53,9 +53,10 @@
   <div class="abs" data-calque="fenetre" style="inset:0">
     {{ svg('Fenêtre') }}
       <path data-nom="Fenêtre – cadre" fill="{{ C.cadre }}" fill-rule="evenodd" d="M {{ F.ext[0] }},{{ F.ext[1] }} L {{ F.ext[2] }},{{ F.ext[1] }} L {{ F.ext[2] }},{{ F.ext[3] }} L {{ F.ext[0] }},{{ F.ext[3] }} Z M {{ '%.3f' % I[0] }},{{ '%.3f' % I[1] }} L {{ '%.3f' % I[0] }},{{ '%.3f' % I[3] }} L {{ '%.3f' % I[2] }},{{ '%.3f' % I[3] }} L {{ '%.3f' % I[2] }},{{ '%.3f' % I[1] }} Z"/>
-      {{ rect('Fenêtre – fond', I, C.fond_fenetre) }}
+      {% if not C.fond_degrade %}{{ rect('Fenêtre – fond', I, C.fond_fenetre) }}{% endif %}
       {% if G.rayons %}<path data-nom="Rayons roses" fill="{{ C.rayon }}" d="{% for p in G.rayons %}M {% for x, y in p %}{{ '%.3f' % x }},{{ '%.3f' % y }} {% endfor %}Z {% endfor %}"/>{% endif %}
     </svg>
+    {% if C.fond_degrade %}<div class="abs" data-groupe="Fenêtre" style="left:{{ '%.3f' % I[0] }}mm;top:{{ '%.3f' % I[1] }}mm;width:{{ '%.3f' % (I[2]-I[0]) }}mm;height:{{ '%.3f' % (I[3]-I[1]) }}mm;background:linear-gradient(180deg{% for p, c in C.fond_degrade %}, {{ c }} {{ p }}%{% endfor %})"></div>{% endif %}
   </div>
   {% if F.image %}{% set u = img(F.image) %}
   <div class="abs" data-calque="image:{{ F.image }}" style="inset:0">
@@ -111,7 +112,7 @@
 
     {# ----- Légende ----- #}
     {% set N = G.numero %}
-    {{ svg('Légende') }}<circle data-nom="Numéro – pastille" cx="{{ N.c[0] }}" cy="{{ N.c[1] }}" r="{{ N.d / 2 }}" fill="{{ C.blanc }}"/></svg>
+    {{ svg('Légende') }}<circle data-nom="Numéro – pastille" cx="{{ N.c[0] }}" cy="{{ N.c[1] }}" r="{{ N.d / 2 }}" fill="{{ C.pastille_num or C.blanc }}"/></svg>
     <div class="t num" data-groupe="Légende">{{ T.numero }}</div>
     <div class="t leg{{ ' v' if G.vertical }}" data-groupe="Légende">{% for sg in T.legende %}{% if sg is string %}{{ sg }}{% else %}<span class="it">{{ sg[0] }}</span>{% endif %}{% endfor %}</div>
     {% for f in T.furigana %}<div class="t furi f{{ loop.index }}{{ ' v' if G.vertical }}" data-groupe="Légende">{{ f }}</div>
