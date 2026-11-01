@@ -1,0 +1,99 @@
+{
+ "modele": "titre-arc-en-ciel",
+ "titre_fichier": "Titre CARTE2054 (style arc-en-ciel)",
+ "format": {
+  "largeur": 68,
+  "hauteur": 18
+ },
+ "fond_perdu": 2,
+ "securite": 0,
+ "geo": {
+  "x": 2.6,
+  "y": -0.5,
+  "fs": 14.5,
+  "ls": -0.15,
+  "contour": 0.5,
+  "ombre": [
+   0.9,
+   0.7
+  ],
+  "filets": [
+   {
+    "b": [
+     4.0,
+     14.55,
+     66.2,
+     15.1
+    ],
+    "c": "#f08a2c"
+   },
+   {
+    "b": [
+     2.4,
+     15.75,
+     64.6,
+     16.35
+    ],
+    "degrade": [
+     [
+      0,
+      "#f6e43c"
+     ],
+     [
+      25,
+      "#f08a2c"
+     ],
+     [
+      55,
+      "#5fc5ea"
+     ],
+     [
+      80,
+      "#86c94e"
+     ],
+     [
+      100,
+      "#f6e43c"
+     ]
+    ]
+   }
+  ],
+  "sx": 0.728
+ },
+ "couleurs": {
+  "fond": "#1546b8",
+  "contour": "#ffffff",
+  "ombre": "#e46f2b",
+  "degrade": [
+   [
+    0,
+    "#9ae6fa"
+   ],
+   [
+    28,
+    "#5cc7e8"
+   ],
+   [
+    46,
+    "#86c94e"
+   ],
+   [
+    60,
+    "#b8c236"
+   ],
+   [
+    76,
+    "#dc962f"
+   ],
+   [
+    100,
+    "#e2702b"
+   ]
+  ]
+ },
+ "textes": {
+  "titre": "CARTE2054"
+ },
+ "cibles": {},
+ "calage": {}
+}

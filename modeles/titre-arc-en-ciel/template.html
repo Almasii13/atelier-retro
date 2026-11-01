@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set G = geo %}
+{# Titre « années 90 » : capitales italiques grasses, remplissage en dégradé arc-en-ciel vertical, contour
+   blanc, ombre décalée orange cernée de blanc, double filet souligné (orange + arc-en-ciel). #}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .bloc { position: absolute; left: {{ G.x }}mm; top: {{ G.y }}mm; width: 0; height: 0; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1;
+       font: italic 400 {{ G.fs }}mm/1 "Work Sans BI", sans-serif; letter-spacing: {{ G.ls }}mm;
+       transform: scaleX({{ G.sx }}); transform-origin: 0 0; }
+  .ombre { color: {{ C.ombre }}; -webkit-text-stroke: {{ G.contour * 2 }}mm {{ C.contour }}; paint-order: stroke fill;
+           margin-left: {{ G.ombre[0] }}mm; margin-top: {{ G.ombre[1] }}mm; }
+  .contour { color: {{ C.contour }}; -webkit-text-stroke: {{ G.contour * 2 }}mm {{ C.contour }}; paint-order: stroke fill; }
+  .lettres { background: linear-gradient(180deg{% for p, c in C.degrade %}, {{ c }} {{ p }}%{% endfor %});
+             -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .filet { position: absolute; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  {% if C.fond %}<div class="abs" data-calque="fond" style="inset:0">
+    <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
+      <rect data-nom="Fond (aperçu, à supprimer)" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.fond }}"/>
+    </svg></div>{% endif %}
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% for f in G.filets %}<div class="filet" data-groupe="Filets" style="left:{{ f.b[0] }}mm;top:{{ f.b[1] }}mm;width:{{ '%.3f' % (f.b[2]-f.b[0]) }}mm;height:{{ '%.3f' % (f.b[3]-f.b[1]) }}mm;{% if f.degrade %}background:linear-gradient(90deg{% for p, c in f.degrade %}, {{ c }} {{ p }}%{% endfor %}){% else %}background:{{ f.c }}{% endif %}"></div>{% endfor %}
+    <div class="bloc" data-groupe="Titre">
+      <div class="t ombre" data-groupe="Titre">{{ textes.titre }}</div>
+      <div class="t contour" data-groupe="Titre">{{ textes.titre }}</div>
+      <div class="t lettres" data-groupe="Titre">{{ textes.titre }}</div>
+    </div>
+  </div>
+  {% if not propre %}<div class="repere coupe" style="inset:0"></div>{% endif %}
+</div>
+</body>
+</html>
