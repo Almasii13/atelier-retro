@@ -47,6 +47,7 @@
 @font-face { font-family: "Zen Kaku"; font-weight: 900; src: url("fonts/ZenKakuGothicNew-Black.ttf"); }
 @font-face { font-family: "Alumni Sans XB"; src: url("fonts/AlumniSans-ExtraBold.ttf"); }
 @font-face { font-family: "MR Bold"; src: url("fonts/MPLUSRounded1c-Bold.ttf"); }
+@font-face { font-family: "Black Ops One"; src: url("fonts/BlackOpsOne-Regular.ttf"); }
 
 :root {
   --fp: 3mm;          /* fond perdu */

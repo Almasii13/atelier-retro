@@ -28,17 +28,17 @@
 
   /* Repère tourné du bandeau */
   .axe { left: 0; top: 0; width: 0; height: 0; transform: rotate({{ G.angle_bandeau }}deg); transform-origin: 0 0; }
-  .ban-nom1 { font: 700 1.25mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_blanc }}; }
-  .ban-nom2 { font: 700 2.2mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_blanc }}; }
-  .ban-l2 { font: italic 2.6mm/1 "Noto JP Black", sans-serif; color: {{ C.texte_blanc }}; }
+  .ban-nom1 { font: {{ G.police_nom or '700 1.25mm/1 "BIZ UDP"' }}, sans-serif; font-size: 1.25mm; color: {{ C.texte_blanc }}; }
+  .ban-nom2 { font: {{ G.police_nom or '700 2.2mm/1 "BIZ UDP"' }}, sans-serif; font-size: 2.2mm; color: {{ C.texte_blanc }}; }
+  .ban-l2 { font: {{ G.police_attaque or 'italic 2.6mm/1 "Noto JP Black"' }}, sans-serif; color: {{ C.texte_blanc }}; }
   .ban-l2 { --ruby-ecart: {{ G.ruby_ecart_bandeau }}mm; --ruby-decalage: {{ G.ruby_decalage_bandeau }}mm; }
-  .ban-l2 .rt { font: 700 1.12mm/1 "BIZ UDP", sans-serif; font-style: normal; letter-spacing: .22mm; color: {{ C.texte_blanc }}; }
+  .ban-l2 .rt { font: {{ G.police_rt_bandeau or '700 1.12mm/1 "BIZ UDP"' }}, sans-serif; font-style: normal; letter-spacing: .22mm; color: {{ C.texte_blanc }}; }
   .ban-num { font: 2.1mm/1 "Oswald M", sans-serif; color: {{ C.texte_blanc }}; }
 
   /* Encadré texte */
-  .tb { font: 700 2.15mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_fonce }}; }
+  .tb { font: {{ G.police_tb or '700 2.15mm/1 "BIZ UDP"' }}, sans-serif; color: {{ C.texte_fonce }}; }
   .tb { --ruby-ecart: {{ G.ruby_ecart }}mm; }
-  .tb .rt { font: 700 1.09mm/1 "BIZ UDP", sans-serif; color: {{ C.texte_fonce }}; }
+  .tb .rt { font: {{ G.police_rt or '700 1.09mm/1 "BIZ UDP"' }}, sans-serif; color: {{ C.texte_fonce }}; }
 
   /* POWER LEVEL (dégradé brun → noir comme l'impression d'origine) et grand chiffre */
   .pw { font: 3mm/1 "Work Sans BI", sans-serif; font-style: italic; letter-spacing: -.05mm;
@@ -60,7 +60,8 @@
 <body class="{{ 'propre' if propre else '' }}">
 <div class="page">
 
-  {# ===== FOND : flammes ===== #}
+  {# ===== FOND : flammes (vectorielles) ou texture (image) ===== #}
+  {% if C.feu %}
   <div class="abs" data-calque="fond" style="inset:0">
     <svg class="abs" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">
       <rect data-nom="Flammes – rouge" x="{{ -FP-1 }}" y="{{ -FP-1 }}" width="{{ L + 2*FP + 2 }}" height="{{ H + 2*FP + 2 }}" fill="{{ C.feu[0] }}"/>
@@ -69,6 +70,11 @@
       {% endfor %}
     </svg>
   </div>
+  {% else %}{% set uf = img('fond') %}
+  <div class="abs" data-calque="image:fond" style="inset:0">
+    <div class="slot zone-perso {{ '' if uf else 'vide' }}" data-label="FOND (TEXTURE)">{% if uf %}<img src="{{ uf }}">{% endif %}</div>
+  </div>
+  {% endif %}
 
   {# ===== CADRE : liseré noir + damier prisme ===== #}
   <div class="abs" data-calque="cadre" style="inset:0">
