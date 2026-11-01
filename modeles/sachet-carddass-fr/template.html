@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Sachet de cartes 70,7 × 122,1 mm (zone verte, sans les soudures argentées) d'après la pochette
+   Carddass France « Dragon Ball GT — Le Grand Combat, 9e partie ». face = recto | verso.
+   Recto : fond vert, bloc de texte blanc, cartouche bleu nuit « 5 », médaillon orange à texte en arc
+   (+ anneau, étoile, points), onglet « 第9弾 », emplacements logos et illustration.
+   Verso : fond vert, soudure dorsale (relief, calque séparé), textes tournés de −90°, encadré blanc +
+   code-barres EAN-13 vectoriel, emplacements logos et illustration. Cotes en mm (page finie). #}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% macro rect(nom, b, coul) %}<rect data-nom="{{ nom }}" x="{{ b[0] }}" y="{{ b[1] }}" width="{{ '%.3f' % (b[2]-b[0]) }}" height="{{ '%.3f' % (b[3]-b[1]) }}" fill="{{ coul }}"/>{% endmacro %}
+{% macro slot(cle, b, label, det=True) %}{% set u = img(cle) %}
+  <div class="abs" data-calque="image:{{ cle }}" style="inset:0">
+    <div class="slot {{ 'detoure' if det }} {{ '' if u else 'vide' }}" data-label="{{ label }}" style="left:{{ b[0] }}mm;top:{{ b[1] }}mm;width:{{ '%.3f' % (b[2]-b[0]) }}mm;height:{{ '%.3f' % (b[3]-b[1]) }}mm">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .rot { position: absolute; left: 0; top: {{ H }}mm; width: 0; height: 0; transform: rotate(-90deg); transform-origin: 0 0; }
+  .bl { font: 700 {{ G.bloc_fs or 2.4 }}mm/1 "BIZ UDP", sans-serif; color: {{ C.blanc }}; }
+  .nb { font: 700 2.1mm/1 "BIZ UDP", sans-serif; color: {{ C.blanc }}; }
+  .nb.n1 { font: 700 4.8mm/1 "Heros", sans-serif; }
+  .og { font: 700 3.2mm/1 "BIZ UDP", sans-serif; color: {{ C.argent_onglet }}; }
+  .og.o2 { font: 700 6mm/1 "Heros", sans-serif; }
+  .arc { font-family: "MP1 Black"; font-weight: 400; }
+  .dos { font: 700 {{ G.dos_fs or 2.6 }}mm/1 "BIZ UDP", sans-serif; color: {{ C.argent }}; }
+  .dos.fonce { color: {{ C.gris_fonce }}; }
+  .dos.creme { color: {{ C.creme }}; }
+  .cb { font: 400 2.2mm/1 "Heros", sans-serif; color: {{ C.encre_cb }}; }
+  .cb.c1, .cb.c2 { letter-spacing: .72mm; }
+  .zone-pleine { left: -{{ FP }}mm; top: -{{ FP }}mm; width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .slot.vide::after { font: 700 3.5mm/1 "Heros", sans-serif; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+
+  <div class="abs" data-calque="fond" style="inset:0">
+    {{ svg('Fond') }}{{ rect('Fond vert', [-FP, -FP, L + FP, H + FP], C.vert) }}</svg>
+  </div>
+
+  {% if face == 'verso' %}{% set S = G.soudure %}
+  <div class="abs" data-calque="soudure" style="inset:0">
+    {{ svg('Soudure dorsale') }}
+      {{ rect('Soudure – bande', [S.x[0], -FP, S.x[1], H + FP], C.soudure) }}
+      {{ rect('Soudure – ombre gauche', [S.x[0], -FP, S.x[0] + S.ombre, H + FP], C.soudure_ombre) }}
+      {{ rect('Soudure – reflet droit', [S.x[1] - S.ombre, -FP, S.x[1], H + FP], C.soudure_reflet) }}
+    </svg>
+  </div>
+  {% endif %}
+
+  {% set u = img('illustration') %}
+  <div class="abs" data-calque="image:illustration" style="inset:0">
+    <div class="slot detoure zone-pleine {{ '' if u else 'vide' }}" data-label="ILLUSTRATION DÉTOURÉE">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+
+  {% if face == 'recto' %}
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% for l in T.bloc %}<div class="t bl b{{ loop.index }}" data-groupe="Bloc collection">{{ l }}</div>
+    {% endfor %}
+
+    {{ svg('Cartouche 5 cartes') }}{{ rect('Cartouche bleu nuit', G.cartouche, C.nuit) }}</svg>
+    {% for l in T.cartouche %}<div class="t nb n{{ loop.index }}" data-groupe="Cartouche 5 cartes">{{ l }}</div>
+    {% endfor %}
+
+    {% set M = G.medaillon %}{% set cx, cy = M.c %}
+    {{ svg('Médaillon') }}
+      <circle data-nom="Médaillon orange" cx="{{ cx }}" cy="{{ cy }}" r="{{ M.r }}" fill="{{ C.orange }}"/>
+      <path data-nom="Anneau argent" fill="{{ C.argent_med }}" fill-rule="evenodd" d="{% for rr in [M.anneau[0] + M.anneau[1] / 2, M.anneau[0] - M.anneau[1] / 2] %}M {% for k in range(144) %}{% set a = k * 2.5 * 0.0174533 %}{{ '%.3f' % (cx + rr * cos(a)) }},{{ '%.3f' % (cy + rr * sin(a)) }} {% endfor %}Z {% endfor %}"/>
+      <polygon data-nom="Étoile" fill="{{ C.argent_med }}" points="{% for k in range(10) %}{% set rr = M.etoile if k % 2 == 0 else M.etoile * 0.382 %}{% set a = (-90 + 36 * k) * 0.0174533 %}{{ '%.3f' % (cx + rr * cos(a)) }},{{ '%.3f' % (cy + rr * sin(a)) }} {% endfor %}"/>
+      {% for ang in M.points %}{% set a = ang * 0.0174533 %}<circle data-nom="Point" cx="{{ '%.3f' % (cx + M.r_points * cos(a)) }}" cy="{{ '%.3f' % (cy + M.r_points * sin(a)) }}" r="{{ M.d_point / 2 }}" fill="{{ C.argent_med }}"/>{% endfor %}
+      {# katakana posés un par un sur le cercle : haut lisible de l'extérieur, bas tête vers le centre #}
+      {% for ch in T.arc_haut %}{% set n = T.arc_haut|length %}{% set ang = M.haut[0] + (M.haut[1] - M.haut[0]) * (loop.index0 / (n - 1)) %}{% set a = ang * 0.0174533 %}
+      <text class="arc" fill="{{ C.argent_med }}" style="color:{{ C.argent_med }}" font-size="{{ M.fs }}" text-anchor="middle" transform="translate({{ '%.3f' % (cx + M.r_texte * cos(a)) }} {{ '%.3f' % (cy + M.r_texte * sin(a)) }}) rotate({{ '%.2f' % (ang + 90) }})" x="0" y="{{ '%.3f' % (0.36 * M.fs) }}">{{ ch }}</text>{% endfor %}
+      {% for ch in T.arc_bas %}{% set n = T.arc_bas|length %}{% set ang = M.bas[0] + (M.bas[1] - M.bas[0]) * (loop.index0 / (n - 1)) %}{% set a = ang * 0.0174533 %}
+      <text class="arc" fill="{{ C.argent_med }}" style="color:{{ C.argent_med }}" font-size="{{ M.fs }}" text-anchor="middle" transform="translate({{ '%.3f' % (cx + M.r_texte * cos(a)) }} {{ '%.3f' % (cy + M.r_texte * sin(a)) }}) rotate({{ '%.2f' % (ang - 90) }})" x="0" y="{{ '%.3f' % (0.36 * M.fs) }}">{{ ch }}</text>{% endfor %}
+    </svg>
+
+    {{ svg('Onglet 第9弾') }}{{ rect('Onglet bleu nuit', G.onglet, C.nuit) }}</svg>
+    {% for l in T.onglet %}<div class="t og o{{ loop.index }}" data-groupe="Onglet 第9弾">{{ l }}</div>
+    {% endfor %}
+  </div>
+  {{ slot('logo_carddass', G.logo_carddass, 'LOGO CARDDASS') }}
+  {{ slot('logo_dbgt', G.logo_dbgt, 'LOGO DRAGON BALL GT') }}
+  {{ slot('logo_bandai', G.logo_bandai, 'BANDAI') }}
+
+  {% else %}
+  <div class="abs" data-calque="texte" style="inset:0">
+    {% set B = G.encadre_cb %}{% set Z = G.barres %}{% set code, modules = ean13(T.ean) %}
+    {{ svg('Code-barres') }}
+      {{ rect('Encadré blanc', B, C.blanc_cb) }}
+      {% set m = (Z.y[0] - Z.y[1]) / 95 %}
+      <path data-nom="Code-barres EAN-13" fill="{{ C.encre_cb }}" d="{% for i, n in barres(modules) %}{% set garde = i < 3 or (45 <= i < 50) or i >= 92 %}{% set x1 = Z.x_garde if garde else Z.x[1] %}M {{ Z.x[0] }},{{ '%.3f' % (Z.y[0] - (i+n)*m) }} L {{ x1 }},{{ '%.3f' % (Z.y[0] - (i+n)*m) }} L {{ x1 }},{{ '%.3f' % (Z.y[0] - i*m) }} L {{ Z.x[0] }},{{ '%.3f' % (Z.y[0] - i*m) }} Z {% endfor %}"/>
+    </svg>
+    <div class="rot" data-groupe="Textes (tournés)">
+      {% for l in T.dos %}<div class="t dos d{{ loop.index }}" data-groupe="Mentions">{{ l }}</div>
+      {% endfor %}
+      {% for l in T.distrib %}<div class="t dos fonce r{{ loop.index }}" data-groupe="Distributeur">{{ l }}</div>
+      {% endfor %}
+      <div class="t dos creme ref" data-groupe="Référence">{{ T.ref }}</div>
+      <div class="t cb c0" data-groupe="Code-barres">{{ code[0] }}</div>
+      <div class="t cb c1" data-groupe="Code-barres">{{ code[1:7] }}</div>
+      <div class="t cb c2" data-groupe="Code-barres">{{ code[7:] }}</div>
+    </div>
+  </div>
+  {{ slot('logo_recyclage', G.logo_recyclage, 'RECYCLAGE') }}
+  {{ slot('logo_bandai', G.logo_bandai, 'BANDAI') }}
+  {% endif %}
+
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

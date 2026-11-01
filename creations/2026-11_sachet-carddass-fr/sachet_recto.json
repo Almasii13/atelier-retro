@@ -1,0 +1,308 @@
+{
+ "modele": "sachet-carddass-fr",
+ "format": {
+  "largeur": 70.7,
+  "hauteur": 122.1
+ },
+ "fond_perdu": 3,
+ "securite": 2.5,
+ "face": "recto",
+ "titre_fichier": "Sachet Carddass DBGT スーパーバトル — recto 70,7x122,1",
+ "geo": {
+  "bloc_fs": 2.4,
+  "cartouche": [
+   51.62,
+   4.75,
+   65.05,
+   19.15
+  ],
+  "medaillon": {
+   "c": [
+    55.9,
+    55.0
+   ],
+   "r": 12.3,
+   "anneau": [
+    5.05,
+    0.35
+   ],
+   "etoile": 2.65,
+   "points": [
+    174,
+    4
+   ],
+   "r_points": 8.7,
+   "d_point": 1.3,
+   "fs": 3.3,
+   "r_texte": 7.6,
+   "haut": [
+    214,
+    318
+   ],
+   "bas": [
+    128,
+    52
+   ]
+  },
+  "onglet": [
+   -3,
+   85.7,
+   17.35,
+   93.72
+  ],
+  "logo_carddass": [
+   0.8,
+   19.3,
+   69.2,
+   37.6
+  ],
+  "logo_dbgt": [
+   2.8,
+   105.6,
+   36.0,
+   119.8
+  ],
+  "logo_bandai": [
+   55.95,
+   107.98,
+   65.7,
+   117.5
+  ]
+ },
+ "couleurs": {
+  "vert": "#5cb43c",
+  "blanc": "#ffffff",
+  "nuit": "#1d1e36",
+  "orange": "#c4632c",
+  "argent_med": "#d9d4ca",
+  "argent_onglet": "#d8d0bd",
+  "argent": "#cfcbb8",
+  "gris_fonce": "#464b42",
+  "creme": "#f2ebcd",
+  "blanc_cb": "#f7f6f2",
+  "encre_cb": "#15152a",
+  "soudure": "#5cb43c",
+  "soudure_ombre": "#3f8a27",
+  "soudure_reflet": "#7cc95c"
+ },
+ "images": {},
+ "libelles_calques": {
+  "fond": "Fond vert",
+  "image:illustration": "Illustration",
+  "texte": "Textes & formes",
+  "image:logo_carddass": "Logo Carddass",
+  "image:logo_dbgt": "Logo Dragon Ball GT",
+  "image:logo_bandai": "Logo Bandai"
+ },
+ "textes": {
+  "bloc": [
+   "全46種類のカードを収録。",
+   "プリズムカード7種を含む",
+   "（ダブルプリズム2種、シークレット",
+   "プリズム2種、番外編プリズム1種）",
+   "スペシャルフラッシュカード1種。"
+  ],
+  "cartouche": [
+   "5",
+   "枚入り",
+   "1パック",
+   "あたり"
+  ],
+  "arc_haut": "スーパー",
+  "arc_bas": "バトル",
+  "onglet": [
+   "第",
+   "9",
+   "弾"
+  ]
+ },
+ "cibles": {
+  ".b1": {
+   "bbox": [
+    3.35,
+    4.77,
+    13.75,
+    5.57
+   ],
+   "fixe": true,
+   "bord": "g"
+  },
+  ".b2": {
+   "bbox": [
+    3.35,
+    7.66,
+    13.75,
+    8.46
+   ],
+   "fixe": true,
+   "bord": "g"
+  },
+  ".b3": {
+   "bbox": [
+    3.35,
+    10.55,
+    13.75,
+    11.35
+   ],
+   "fixe": true,
+   "bord": "g"
+  },
+  ".b4": {
+   "bbox": [
+    3.35,
+    13.44,
+    13.75,
+    14.24
+   ],
+   "fixe": true,
+   "bord": "g"
+  },
+  ".b5": {
+   "bbox": [
+    3.35,
+    16.33,
+    13.75,
+    17.13
+   ],
+   "fixe": true,
+   "bord": "g"
+  },
+  ".n1": {
+   "bbox": [
+    57.93,
+    7.47,
+    58.73,
+    8.27
+   ],
+   "fixe": true
+  },
+  ".n2": {
+   "bbox": [
+    57.93,
+    10.83,
+    58.73,
+    11.63
+   ],
+   "fixe": true
+  },
+  ".n3": {
+   "bbox": [
+    57.93,
+    13.62,
+    58.73,
+    14.42
+   ],
+   "fixe": true
+  },
+  ".n4": {
+   "bbox": [
+    57.93,
+    16.43,
+    58.73,
+    17.23
+   ],
+   "fixe": true
+  },
+  ".o1": {
+   "bbox": [
+    4.88,
+    90.18,
+    5.68,
+    90.98
+   ],
+   "fixe": true
+  },
+  ".o2": {
+   "bbox": [
+    8.23,
+    89.31,
+    9.03,
+    90.11
+   ],
+   "fixe": true
+  },
+  ".o3": {
+   "bbox": [
+    11.63,
+    90.18,
+    12.43,
+    90.98
+   ],
+   "fixe": true
+  }
+ },
+ "calage": {
+  ".b1": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.307,
+   "dy": 4.305
+  },
+  ".b2": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.175,
+   "dy": 7.228
+  },
+  ".b3": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.043,
+   "dy": 10.145
+  },
+  ".b4": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.175,
+   "dy": 13.001
+  },
+  ".b5": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.175,
+   "dy": 15.852
+  },
+  ".n1": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 57.03,
+   "dy": 5.424
+  },
+  ".n2": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 55.409,
+   "dy": 10.505
+  },
+  ".n3": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 54.814,
+   "dy": 13.353
+  },
+  ".n4": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 55.343,
+   "dy": 16.188
+  },
+  ".o1": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 3.71,
+   "dy": 89.266
+  },
+  ".o2": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 7.006,
+   "dy": 86.626
+  },
+  ".o3": {
+   "fs": 1,
+   "sx": 1,
+   "dx": 10.442,
+   "dy": 89.2
+  }
+ }
+}
