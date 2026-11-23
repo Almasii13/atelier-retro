@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set C = couleurs %}{% set T = textes %}{% set G = geo %}
+{# Logo « VHS » chromé : lettres en trois couches (liseré argent, filet sombre, face en dégradé chrome),
+   étincelles, bande de parallélogrammes arc-en-ciel inclinés, accroche, année entre deux filets.
+   Cotes en mm (page finie) relevées sur l'image de référence. #}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .vhs { font: 400 {{ G.vhs_fs }}mm/1 "Archivo Black", sans-serif; letter-spacing: {{ G.vhs_ls }}mm; }
+  .v-liseret { color: {{ C.liseret }}; -webkit-text-stroke: {{ G.liseret * 2 }}mm {{ C.liseret }}; paint-order: stroke fill; }
+  .v-filet { color: {{ C.filet_sombre }}; -webkit-text-stroke: {{ G.filet_sombre * 2 }}mm {{ C.filet_sombre }}; paint-order: stroke fill; }
+  .v-face { background: linear-gradient(180deg{% for p, c in C.chrome %}, {{ c }} {{ p }}%{% endfor %});
+            -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .acc { font: 900 {{ G.acc_fs }}mm/1 "Zen Kaku", sans-serif; letter-spacing: {{ G.acc_ls }}mm; color: {{ C.blanc }}; }
+  .an { font: 900 {{ G.an_fs }}mm/1 "Zen Kaku", sans-serif; letter-spacing: {{ G.an_ls }}mm; color: {{ C.blanc }}; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+  <div class="abs" data-calque="fond" style="inset:0">
+    {{ svg('Fond') }}<rect data-nom="Fond noir" x="{{ -FP }}" y="{{ -FP }}" width="{{ L + 2*FP }}" height="{{ H + 2*FP }}" fill="{{ C.fond }}"/></svg>
+  </div>
+
+  <div class="abs" data-calque="texte" style="inset:0">
+    <div class="t vhs v-liseret" data-groupe="VHS chromé">{{ T.vhs }}</div>
+    <div class="t vhs v-filet" data-groupe="VHS chromé">{{ T.vhs }}</div>
+    <div class="t vhs v-face" data-groupe="VHS chromé">{{ T.vhs }}</div>
+
+    {{ svg('Étincelles') }}
+      {% for x, y, r in G.etincelles %}
+      <circle data-nom="Halo" cx="{{ x }}" cy="{{ y }}" r="{{ '%.3f' % (r * 0.32) }}" fill="{{ C.blanc }}" fill-opacity=".55"/>
+      <polygon data-nom="Étincelle" fill="{{ C.blanc }}" points="{% for k in range(8) %}{% set rr = r if k % 2 == 0 else r * 0.09 %}{% set a = (k * 45 - 90) * 0.0174533 %}{{ '%.3f' % (x + rr * cos(a)) }},{{ '%.3f' % (y + rr * sin(a)) }} {% endfor %}"/>
+      {% endfor %}
+    </svg>
+
+    {% set B = G.bande %}
+    {{ svg('Bande arc-en-ciel') }}
+      {% for x0, x1, c in B.segments %}{% set d = (B.y[1] - B.y[0]) / 2 * B.pente %}
+      <polygon data-nom="Bande {{ loop.index }}" fill="{{ c }}" points="{{ '%.3f' % (x0 + d) }},{{ B.y[0] }} {{ '%.3f' % (x1 + d) }},{{ B.y[0] }} {{ '%.3f' % (x1 - d) }},{{ B.y[1] }} {{ '%.3f' % (x0 - d) }},{{ B.y[1] }}"/>
+      {% endfor %}
+      {% for f in G.filets %}<rect data-nom="Filet {{ loop.index }}" x="{{ f[0] }}" y="{{ f[1] }}" width="{{ '%.3f' % (f[2]-f[0]) }}" height="{{ '%.3f' % (f[3]-f[1]) }}" fill="{{ C.blanc }}"/>{% endfor %}
+    </svg>
+
+    <div class="t acc" data-groupe="Accroche">{{ T.accroche }}</div>
+    <div class="t an" data-groupe="Année">{{ T.annee }}</div>
+  </div>
+  {% if not propre %}<div class="repere coupe" style="inset:0"></div>{% endif %}
+</div>
+</body>
+</html>
