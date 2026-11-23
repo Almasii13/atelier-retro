@@ -21,6 +21,11 @@
   .v-filet { color: {{ C.filet_sombre }}; -webkit-text-stroke: {{ G.filet_sombre * 2 }}mm {{ C.filet_sombre }}; paint-order: stroke fill; }
   .v-face { background: linear-gradient(180deg{% for p, c in C.chrome %}, {{ c }} {{ p }}%{% endfor %});
             -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hifi { font: 400 {{ G.hifi_fs or 10 }}mm/1 "Archivo Black", sans-serif; letter-spacing: {{ G.hifi_ls or 0 }}mm; }
+  .h-liseret { color: {{ C.liseret }}; -webkit-text-stroke: {{ G.hifi_liseret * 2 }}mm {{ C.liseret }}; paint-order: stroke fill; }
+  .h-filet { color: {{ C.filet_sombre }}; -webkit-text-stroke: {{ G.filet_sombre * 2 }}mm {{ C.filet_sombre }}; paint-order: stroke fill; }
+  .h-face { background: linear-gradient(180deg{% for p, c in C.chrome %}, {{ c }} {{ p }}%{% endfor %});
+            -webkit-background-clip: text; background-clip: text; color: transparent; }
   .acc { font: 900 {{ G.acc_fs }}mm/1 "Zen Kaku", sans-serif; letter-spacing: {{ G.acc_ls }}mm; color: {{ C.blanc }}; }
   .an { font: 900 {{ G.an_fs }}mm/1 "Zen Kaku", sans-serif; letter-spacing: {{ G.an_ls }}mm; color: {{ C.blanc }}; }
 </style>
@@ -36,6 +41,11 @@
     <div class="t vhs v-filet" data-groupe="VHS chromé">{{ T.vhs }}</div>
     <div class="t vhs v-face" data-groupe="VHS chromé">{{ T.vhs }}</div>
 
+    {% if T.hifi %}
+    <div class="t hifi h-liseret" data-groupe="HI-FI chromé">{{ T.hifi }}</div>
+    <div class="t hifi h-filet" data-groupe="HI-FI chromé">{{ T.hifi }}</div>
+    <div class="t hifi h-face" data-groupe="HI-FI chromé">{{ T.hifi }}</div>
+    {% endif %}
     {{ svg('Étincelles') }}
       {% for x, y, r in G.etincelles %}
       <circle data-nom="Halo" cx="{{ x }}" cy="{{ y }}" r="{{ '%.3f' % (r * 0.32) }}" fill="{{ C.blanc }}" fill-opacity=".55"/>

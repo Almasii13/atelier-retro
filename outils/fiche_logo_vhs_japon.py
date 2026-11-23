@@ -28,6 +28,7 @@ def centre_x(x0, x1):
 vx0, vx1 = centre_x(45 * k, 772 * k)
 vy0, vy1 = 133 * k, 430 * k
 LIS, FIL = 1.25, 0.22        # largeur du liseré argent, du filet sombre (mm)
+HW, HY0, HY1 = 27.0, 10.0, 16.8    # largeur des lettres HI-FI, haut et bas de son encre (mm)
 CX, CY = 0.0, 0.0             # correction résiduelle mesurée sur le rendu
 
 # bande : segments au milieu de la hauteur (y = 493,5 px), décalés pour centrer l'ensemble
@@ -50,17 +51,19 @@ fiche = {
                        [r(150 * k), r(412 * k), 2.4], [r(560 * k), r(414 * k), 2.0]],
         "bande": {"y": [r(459 * k), r(528 * k)], "pente": 0.38, "segments": segments},
         "filets": filets,
-        "acc_fs": 8.6, "acc_ls": 2.3,
+        "hifi_liseret": 0.4, "hifi_ls": 0.9, "acc_fs": 8.6, "acc_ls": 2.3,
         "an_fs": 6.0, "an_ls": 2.7,
     },
     "couleurs": {"fond": "#000000", "blanc": "#ffffff", "liseret": "#d6dade", "filet_sombre": "#30343a",
                  "chrome": [[0, "#ffffff"], [12, "#eef1f4"], [30, "#c2c8cf"], [44, "#6f7781"], [48, "#1c1f24"],
                             [56, "#3a4049"], [66, "#7f8892"], [80, "#e9edf1"], [88, "#ffffff"], [94, "#a9b0b8"], [100, "#e4e8ec"]]},
-    "textes": {"vhs": "VHS", "accroche": "未来はもうここにある", "annee": "1976年"},
+    "textes": {"vhs": "VHS", "hifi": "HI-FI", "accroche": "未来はもうここにある", "annee": "1976年"},
     "cibles": {
         # le calage mesure les lettres sans contour : liseré, filet et face partagent la même boîte de lettre,
         # le contour du liseré déborde de LIS jusqu'à l'encre totale relevée, celui du filet de FIL.
         **{s: [r(vx0 + LIS + CX + 0.25), r(vy0 + LIS + CY), r(vx1 - LIS - CX + 0.25), r(vy1 - LIS - CY)] for s in (".v-liseret", ".v-filet", ".v-face")},
+        # HI-FI : au-dessus du S, calé à droite sur le bord du VHS
+        **{s: [r(vx1 + 0.25 - 0.4 - HW), r(HY0 + 0.4), r(vx1 + 0.25 - 0.4), r(HY1 - 0.4)] for s in (".h-liseret", ".h-filet", ".h-face")},
         ".acc": {"bbox": [r(AX - 0.4), r((554 + 599) / 2 * k - 0.4), r(AX + 0.4), r((554 + 599) / 2 * k + 0.4)], "fixe": True},
         ".an": {"bbox": [r(AX - 0.4), r(94.9 - 0.4), r(AX + 0.4), r(94.9 + 0.4)], "fixe": True},
     },
