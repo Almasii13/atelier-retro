@@ -40,42 +40,37 @@ def r3(p):
 
 
 # --------------------------------------------------------------------------- éclairs (zigzag à facettes)
-# Gabarit relevé sur l'éclair bas-droit de la carte A : A (pointe), Un/Uo (coude haut : creux / saillant),
-# B (pointe), Ln/Lo (coude bas). Les autres éclairs en sont des similitudes (A, B mesurés), « ecrase »
-# amincit perpendiculairement à l'axe.
-GAB_1 = [(45.54, 84.61), (48.0, 85.53), (48.43, 85.39), (50.65, 87.65), (47.86, 86.85), (47.43, 86.71)]
-GAB_2 = [(48.36, 84.19), (50.65, 85.05), (51.14, 84.87), (53.95, 87.6), (50.85, 86.72), (50.4, 86.88)]
+# Gabarit relevé sur le croquis de Cyril (éclair bas-droit de la carte A, posé sur la photo) : losange allongé
+# A (pointe haute) → T (angle haut) → B (pointe basse) → L (angle bas), point central C relié aux 4 sommets.
+# Les autres éclairs en sont des similitudes calées sur leurs deux pointes ; « ecrase » amincit
+# perpendiculairement à l'axe (éclairs plus fins de la carte 500).
+GAB = [(48.45, 84.32), (51.47, 85.09), (53.95, 87.6), (50.43, 86.57), (51.02, 85.92)]  # A, T, B, L, C
 
 
 def similitude(P, A2, B2, ecrase=1.0):
-    A, B = complex(*P[0]), complex(*P[3])
+    A, B = complex(*P[0]), complex(*P[2])
     a2, b2 = complex(*A2), complex(*B2)
     s = (b2 - a2) / (B - A)
+    ax = (B - A) / abs(B - A)
     out = []
     for p in P:
         z = complex(*p) - A
-        if ecrase != 1:  # amincissement dans le repère de l'axe
-            ax = (B - A) / abs(B - A)
+        if ecrase != 1:
             w = z / ax
             z = complex(w.real, w.imag * ecrase) * ax
         q = z * s + a2
-        out.append((q.real, q.imag))
+        out.append((round(q.real, 3), round(q.imag, 3)))
     return out
 
 
 def facettes(P):
-    """4 facettes autour d'un point central C (intersection de l'axe pointe → pointe A–B et du segment des deux
-    angles saillants Uo–Lo). 4 arêtes partent de C : vers les deux pointes A, B et les deux angles saillants
-    Uo, Lo ; chaque facette partage une arête avec ses deux voisines. Aux creux Un, Ln ne se rejoignent que les
-    2 traits du contour. Retour : [(nom, pts, direction du dégradé)]"""
-    A, Un, Uo, B, Ln, Lo = [np.array(p, float) for p in P]
-    d1, d2 = B - A, Lo - Uo
-    t = np.linalg.solve(np.array([d1, -d2]).T, Uo - A)[0]
-    C = A + t * d1
-    return [("facette 1 (lame haute, dessus)", [A, Un, Uo, C], (A, C)),
-            ("facette 2 (lame basse, dessus)", [Uo, B, C], (C, B)),
-            ("facette 3 (lame basse, dessous)", [B, Ln, Lo, C], (C, B)),
-            ("facette 4 (lame haute, dessous)", [Lo, A, C], (A, C))]
+    """4 facettes triangulaires autour du point central C : chaque arête intérieure va de C à un sommet
+    (2 pointes, 2 angles) ; chaque facette partage une arête avec ses deux voisines. Retour : [(nom, pts, direction)]"""
+    A, T, B, L, C = [np.array(p, float) for p in P]
+    return [("facette 1 (haut, côté pointe haute)", [A, T, C], (A, C)),
+            ("facette 2 (haut, côté pointe basse)", [T, B, C], (C, B)),
+            ("facette 3 (bas, côté pointe basse)", [B, L, C], (C, B)),
+            ("facette 4 (bas, côté pointe haute)", [L, A, C], (A, C))]
 
 
 def angle_css(a, b):
@@ -88,7 +83,7 @@ def eclairs(img, liste, nom, conv=None, contour=None):
     el = []
     for i, P in enumerate(liste):
         if contour:
-            g = Polygon(P).buffer(contour[0], join_style=2, mitre_limit=3)
+            g = Polygon(P[:4]).buffer(contour[0], join_style=2, mitre_limit=3)
             pc = [r3(p) for p in list(g.exterior.coords)[:-1]]
             el.append({"k": "poly", "g": nom, "n": f"{nom} {i + 1} – contour", "c": contour[1],
                        "p": conv(pc) if conv else pc})
@@ -175,10 +170,9 @@ def carte_a():
     FEN = [3.9, 2.35, 54.3, 75.4]
     # --- cadre doré
     O = ([18.25, 73.65, 51.95, 87.75], 2.0); M = ([18.88, 74.47, 51.28, 86.98], 1.85); W = ([19.85, 75.45, 50.30, 86.05], 1.65)
-    bolts = [GAB_1, GAB_2,
-             [(16.71, 74.07), (19.1, 74.88), (19.55, 74.8), (21.56, 76.94), (19.05, 76.27), (18.6, 76.15)],
-             [(19.9, 74.07), (22.2, 75.0), (22.6, 74.98), (24.06, 76.75), (21.75, 76.1), (21.4, 76.15)]]
-    ex = masque(img.shape, bolts)
+    bolts = [similitude(GAB, (45.54, 84.61), (50.65, 87.65)), GAB,
+             similitude(GAB, (16.71, 74.07), (21.56, 76.94)), similitude(GAB, (19.9, 74.07), (24.06, 76.75))]
+    ex = masque(img.shape, [b[:4] for b in bolts])
     ex = cv2.dilate(ex.astype(np.uint8), np.ones((17, 17), np.uint8)) > 0
     pieces = cadre(img, [(O[0], O[1], 2), (M[0], M[1], 3), W], ex, nom="Cadre doré")
     # --- trame de points (fenêtre du cadre, débord 0,15 mm sous le cadre)
@@ -290,9 +284,9 @@ def carte_b():
     O = ([16.42, 47.08, 48.5, 61.38], 1.8)
     Mo = ([17.33, 47.88, 47.67, 60.47], 1.35); Mi = ([17.48, 48.03, 47.52, 60.32], 1.25)
     W = ([18.15, 48.78, 46.85, 59.5], 0.9)
-    bolts = [similitude(GAB_1, (14.63, 46.88), (20.5, 50.5), 0.55), similitude(GAB_2, (17.38, 47.25), (22.6, 50.4), 0.55),
-             similitude(GAB_1, (42.4, 57.9), (47.1, 61.1), 0.55), similitude(GAB_2, (44.25, 57.75), (50.5, 61.4), 0.55)]
-    ex = masque(img.shape, bolts)
+    bolts = [similitude(GAB, (14.63, 46.88), (20.5, 50.5), 0.55), similitude(GAB, (17.38, 47.25), (22.6, 50.4), 0.55),
+             similitude(GAB, (42.4, 57.9), (47.1, 61.1), 0.55), similitude(GAB, (44.25, 57.75), (50.5, 61.4), 0.55)]
+    ex = masque(img.shape, [b[:4] for b in bolts])
     ex = cv2.dilate(ex.astype(np.uint8), np.ones((15, 15), np.uint8)) > 0
     pieces = cadre(img, [(O[0], O[1], 2), (Mo[0], Mo[1], 1), (Mi[0], Mi[1], 2), W], ex, nom="Cadre doré")
     # --- trame de points (générée en paysage puis tournée)
