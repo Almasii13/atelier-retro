@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{ titre_fichier }}</title>
+<link rel="stylesheet" href="{{ lib }}/atelier.css">
+{{ calage_script }}
+<script src="{{ lib }}/atelier.js" defer></script>
+{% set G = geo %}
+{# Recto de carte Carddass 65 × 90 mm à cadre doré « 3D » et fenêtre à points (SPECIAL).
+   Modèle piloté par données : la fiche (générée par outils/fiches_carddass_or.py) liste, calque par calque,
+   des formes (polygones / rectangles / cercles), des pièces dégradées (div + clip-path + linear-gradient :
+   cadre doré découpé en onglet, facettes des éclairs, plaques), des emplacements d'image et des textes.
+   Les textes « rot » sont posés dans un repère tourné G.repere = [ox, oy, angle] (carte à dessin paysage,
+   ou ligne de texte horizontale tournée de 90°). Toutes les cotes en mm, page finie portrait. #}
+{% macro pts(p) %}{% for x, y in p %}{{ x }},{{ y }} {% endfor %}{% endmacro %}
+{% macro svg(groupe) %}<svg class="abs" data-groupe="{{ groupe }}" style="left:0;top:0;width:{{ L }}mm;height:{{ H }}mm;overflow:visible" viewBox="0 0 {{ L }} {{ H }}">{% endmacro %}
+{% macro clip(b, p) %}{% set w = b[2] - b[0] %}{% set h = b[3] - b[1] %}clip-path:polygon({% for x, y in p %}{{ '%.3f' % ((x - b[0]) / w * 100) }}% {{ '%.3f' % ((y - b[1]) / h * 100) }}%{{ ', ' if not loop.last }}{% endfor %});{% endmacro %}
+{% macro boite(b) %}left:{{ b[0] }}mm;top:{{ b[1] }}mm;width:{{ '%.3f' % (b[2] - b[0]) }}mm;height:{{ '%.3f' % (b[3] - b[1]) }}mm;{% endmacro %}
+{% macro segs(l) %}{% for sg in l %}{% if sg is string %}{{ sg }}{% elif sg[1] == 'it' %}<span class="it">{{ sg[0] }}</span>{% else %}<span data-ruby="{{ sg[1] }}">{{ sg[0] }}</span>{% endif %}{% endfor %}{% endmacro %}
+{% macro element(e) %}
+{% if e.k == 'poly' %}{{ svg(e.g) }}<polygon data-nom="{{ e.n }}" fill="{{ e.c }}" points="{{ pts(e.p) }}"/></svg>
+{% elif e.k == 'polys' %}{{ svg(e.g) }}<path data-nom="{{ e.n }}" fill="{{ e.c }}"{% if e.eo %} fill-rule="evenodd"{% endif %} d="{% for p in e.p %}M {{ pts(p) }}Z {% endfor %}"/></svg>
+{% elif e.k == 'rect' %}{{ svg(e.g) }}<rect data-nom="{{ e.n }}" x="{{ e.b[0] }}" y="{{ e.b[1] }}" width="{{ '%.3f' % (e.b[2]-e.b[0]) }}" height="{{ '%.3f' % (e.b[3]-e.b[1]) }}"{% if e.r %} rx="{{ e.r }}"{% endif %} fill="{{ e.c }}"/></svg>
+{% elif e.k == 'cercle' %}{{ svg(e.g) }}<circle data-nom="{{ e.n }}" cx="{{ e.o[0] }}" cy="{{ e.o[1] }}" r="{{ e.r }}" fill="{{ e.c }}"/></svg>
+{% elif e.k == 'deg' %}<div class="abs" data-groupe="{{ e.g }}" data-nom="{{ e.n }}" style="{{ boite(e.b) }}{% if e.p %}{{ clip(e.b, e.p) }}{% endif %}background:linear-gradient({{ e.a }}deg{% for p, c in e.s %}, {{ c }} {{ p }}%{% endfor %})"></div>
+{% elif e.k == 'texte' %}{% if e.rot %}<div class="abs rot" data-groupe="{{ e.g }}">{% endif %}<div class="t {{ e.cls }}" data-groupe="{{ e.g }}">{{ segs(e.s) }}</div>{% if e.rot %}</div>{% endif %}
+{% endif %}
+{% endmacro %}
+<style>
+  :root { --fp: {{ FP }}mm; }
+  body { width: {{ L + 2*FP }}mm; height: {{ H + 2*FP }}mm; }
+  .page { width: {{ L }}mm; height: {{ H }}mm; }
+  .t { position: absolute; left: 0; top: 0; white-space: nowrap; line-height: 1; }
+  .it { display: inline-block; transform: skewX({{ G.biais or -20 }}deg); }
+  .rot { left: {{ G.repere[0] }}mm; top: {{ G.repere[1] }}mm; width: 0; height: 0; transform: rotate({{ G.repere[2] }}deg); transform-origin: 0 0; }
+  .rt { position: absolute; }
+{% for cls, css in G.styles.items() %}  .{{ cls }} { {{ css }} }
+{% endfor %}
+  .repere.coupe { border-radius: {{ rayon }}mm; }
+</style>
+</head>
+<body class="{{ 'propre' if propre else '' }}">
+<div class="page">
+{% for cq in G.calques %}
+  {% if cq.slot %}{% set S = cq.slot %}{% set u = img(S.cle) %}
+  <div class="abs" data-calque="image:{{ S.cle }}" style="inset:0">
+    <div class="slot {{ 'detoure' if S.detoure }} {{ '' if u else 'vide' }}" data-label="{{ S.label }}" style="position:absolute;{{ boite(S.b) }}{% if S.p %}{{ clip(S.b, S.p) }}{% endif %}">{% if u %}<img src="{{ u }}">{% endif %}</div>
+  </div>
+  {% else %}
+  <div class="abs" data-calque="{{ cq.id }}" style="inset:0">
+    {% for e in cq.el %}{{ element(e) }}{% endfor %}
+  </div>
+  {% endif %}
+{% endfor %}
+  {% if not propre %}
+  <div class="repere coupe" style="inset:0"></div>
+  <div class="repere secu" style="inset:{{ SECU }}mm"></div>
+  {% endif %}
+</div>
+</body>
+</html>

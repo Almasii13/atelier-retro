@@ -48,6 +48,7 @@
 @font-face { font-family: "Alumni Sans XB"; src: url("fonts/AlumniSans-ExtraBold.ttf"); }
 @font-face { font-family: "MR Bold"; src: url("fonts/MPLUSRounded1c-Bold.ttf"); }
 @font-face { font-family: "Black Ops One"; src: url("fonts/BlackOpsOne-Regular.ttf"); }
+@font-face { font-family: "Didact Gothic"; src: url("fonts/DidactGothic-Regular.ttf"); }
 
 :root {
   --fp: 3mm;          /* fond perdu */
