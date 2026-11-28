@@ -64,12 +64,18 @@ def similitude(P, A2, B2, ecrase=1.0):
 
 
 def facettes(P):
-    """4 facettes : lame 1 (claire / sombre), lame 2 (claire / sombre). Arête de la lame 1 : A → K1 ; arête de la
-    lame 2 : K1 → B (le coude appartient à la lame 2). Retour : [(nom, pts, direction du dégradé)]"""
-    A, Un, Uo, B, Ln, Lo = [np.array(p) for p in P]
-    K1 = (Un + Lo) / 2
-    return [("lame 1 – face claire", [A, Un, K1], (A, K1)), ("lame 1 – face sombre", [A, K1, Lo], (A, K1)),
-            ("lame 2 – face claire", [Un, Uo, B, K1], (K1, B)), ("lame 2 – face sombre", [K1, B, Ln, Lo], (K1, B))]
+    """4 facettes autour d'un point central C (intersection de l'axe pointe → pointe A–B et du segment des deux
+    angles saillants Uo–Lo). 4 arêtes partent de C : vers les deux pointes A, B et les deux angles saillants
+    Uo, Lo ; chaque facette partage une arête avec ses deux voisines. Aux creux Un, Ln ne se rejoignent que les
+    2 traits du contour. Retour : [(nom, pts, direction du dégradé)]"""
+    A, Un, Uo, B, Ln, Lo = [np.array(p, float) for p in P]
+    d1, d2 = B - A, Lo - Uo
+    t = np.linalg.solve(np.array([d1, -d2]).T, Uo - A)[0]
+    C = A + t * d1
+    return [("facette 1 (lame haute, dessus)", [A, Un, Uo, C], (A, C)),
+            ("facette 2 (lame basse, dessus)", [Uo, B, C], (C, B)),
+            ("facette 3 (lame basse, dessous)", [B, Ln, Lo, C], (C, B)),
+            ("facette 4 (lame haute, dessous)", [Lo, A, C], (A, C))]
 
 
 def angle_css(a, b):
