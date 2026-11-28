@@ -64,12 +64,12 @@ def similitude(P, A2, B2, ecrase=1.0):
 
 
 def facettes(P):
-    """6 facettes : lame 1 (haut / bas), coude (haut / bas), lame 2 (haut / bas). Retour : [(nom, pts, A→B)]"""
+    """4 facettes : lame 1 (claire / sombre), lame 2 (claire / sombre). Arête de la lame 1 : A → K1 ; arête de la
+    lame 2 : K1 → B (le coude appartient à la lame 2). Retour : [(nom, pts, direction du dégradé)]"""
     A, Un, Uo, B, Ln, Lo = [np.array(p) for p in P]
-    K1, K2 = (Un + Lo) / 2, (Uo + Ln) / 2
+    K1 = (Un + Lo) / 2
     return [("lame 1 – face claire", [A, Un, K1], (A, K1)), ("lame 1 – face sombre", [A, K1, Lo], (A, K1)),
-            ("coude – face claire", [Un, Uo, K2, K1], (K1, K2)), ("coude – face sombre", [K1, K2, Ln, Lo], (K1, K2)),
-            ("lame 2 – face claire", [Uo, B, K2], (K2, B)), ("lame 2 – face sombre", [K2, B, Ln], (K2, B))]
+            ("lame 2 – face claire", [Un, Uo, B, K1], (K1, B)), ("lame 2 – face sombre", [K1, B, Ln, Lo], (K1, B))]
 
 
 def angle_css(a, b):
@@ -138,11 +138,21 @@ def rgb(h):
 
 
 def ecrire(nom, F):
+    cadre_seul(nom, F)
     p = D / nom
     if p.exists():
         F["calage"] = json.loads(p.read_text(encoding="utf-8")).get("calage", {})
     p.write_text(json.dumps(F, ensure_ascii=False, indent=1), encoding="utf-8")
     print("ok", p)
+
+
+def cadre_seul(nom, F):
+    G = json.loads(json.dumps(F))
+    G["titre_fichier"] = F["titre_fichier"].replace("— recto", "— cadre doré seul —")
+    G["geo"]["calques"] = [{"id": "cadre", "el": [e for e in c["el"] if e["k"] != "texte"]} for c in F["geo"]["calques"] if c.get("id") == "cadre"]
+    G["images"], G["cibles"], G["calage"] = {}, {}, {}
+    G["libelles_calques"] = {"cadre": "Cadre doré & éclairs"}
+    (D / nom.replace(".json", "_cadre.json")).write_text(json.dumps(G, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def rel(b, pts):
