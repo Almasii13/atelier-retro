@@ -174,6 +174,8 @@ def carte_a():
              similitude(GAB, (16.71, 74.07), (21.56, 76.94)), similitude(GAB, (19.9, 74.07), (24.06, 76.75))]
     ex = masque(img.shape, [b[:4] for b in bolts])
     ex = cv2.dilate(ex.astype(np.uint8), np.ones((17, 17), np.uint8)) > 0
+    ex[int(73.5 * K):int(74.4 * K), int(50.9 * K):int(52.1 * K)] = True
+    ex[int(73.5 * K):int(75.1 * K), int(51.2 * K):int(52.1 * K)] = True  # coin haut-droit : bavure orange de l'illustration sur la photo
     pieces = cadre(img, [(O[0], O[1], 2), (M[0], M[1], 3), W], ex, nom="Cadre doré")
     # --- trame de points (fenêtre du cadre, débord 0,15 mm sous le cadre)
     Wb = [W[0][0] - 0.15, W[0][1] - 0.15, W[0][2] + 0.15, W[0][3] + 0.15]
