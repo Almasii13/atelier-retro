@@ -217,7 +217,22 @@ def carte_a():
     ]
     el_cadre = [{"k": "texte", "g": "Fenêtre à points", "cls": "special", "s": ["SPECIAL"]}]
     el_cadre += pieces_el(pieces, "Cadre doré")
-    el_cadre += eclairs(img, bolts, "Éclair")
+    el_ecl = eclairs(img, bolts, "Éclair")
+    # reflets des 4 variantes de l'éclair (eclair_variante_1..4.json, outils/eclair_variantes.py) : un jeu par éclair.
+    # Éclair 2 (bas, tout à droite) = variante 1 (reflets de la photo) ; 1, 3, 4 = variantes 2, 3, 4.
+    # L'angle de chaque facette garde l'écart variante / base, appliqué à l'orientation propre de l'éclair.
+    base = json.loads((D / "eclair_goku_bas_droite_x10.json").read_text(encoding="utf-8"))["geo"]["calques"][0]["el"]
+    for i, v in ((1, 2), (2, 1), (3, 3), (4, 4)):
+        f = D / f"eclair_variante_{v}.json"
+        if not f.exists():
+            continue
+        var = json.loads(f.read_text(encoding="utf-8"))["geo"]["calques"][0]["el"]
+        facs = [e for e in el_ecl if e["n"].startswith(f"Éclair {i} – facette")]
+        for e, vb, bb in zip(facs, var, base):
+            e["s"] = vb["s"]
+            e["a"] = round(e["a"] + vb["a"] - bb["a"], 2)
+            e["n"] += f" – reflets v{v}"
+    el_cadre += el_ecl
     el_texte = [
         {"k": "poly", "g": "Fanion", "n": "Fanion noir", "c": "#121012",
          "p": [[57.75, 2.2], [60.17, 2.2], [60.17, 4.68], [61.3, 4.68], [57.77, 7.75]]},
