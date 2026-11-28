@@ -18,13 +18,16 @@ import cv2
 from shapely.geometry import Polygon, Point
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from or_carddass import (K, rrect, cadre, echantillonner, masque, hexa, vers_portrait)  # noqa: E402
+from or_carddass import (K, rrect, cadre, echantillonner, masque, hexa, vers_portrait, anneau_degrade)  # noqa: E402
 
 D = pathlib.Path(__file__).resolve().parent.parent / "creations" / "2026-11_cartes-carddass-or"
 REF = D / "ref"
 (D / "images").mkdir(exist_ok=True)
 IMG_A = cv2.imread(str(REF / "a_redressee.png"))
 IMG_B = cv2.imread(str(REF / "b_redressee_paysage.png"))
+# maquette numérique de la carte A fournie par Cyril, redressée à 40 px/mm (calée sur la fenêtre à points) :
+# bien plus nette que la photo, elle sert de référence au cadre doré de la carte A
+IMG_AM = cv2.imread(str(REF / "a_maquette_redressee.png"))
 
 
 def med(img, b, filtre=None):
@@ -98,16 +101,24 @@ def eclairs(img, liste, nom, conv=None, contour=None):
     return el
 
 
+def rrect_boite(b):
+    return [(b[0], b[1]), (b[2], b[1]), (b[2], b[3]), (b[0], b[3])]
+
+
 def pieces_el(pieces, nom, conv=None):
     el = []
     for p in pieces:
         pts, ang = p["pts"], p["angle"]
         if conv:
             pts, ang = conv(pts), ang - 90
-        # léger débord (0,04 mm) : les pièces voisines se recouvrent, pas de filet sombre d'anticrénelage aux joints
-        g = Polygon(pts).buffer(0.04, join_style=2, mitre_limit=2)
-        pts = [r3(q) for q in list(g.exterior.coords)[:-1]]
-        bx = [round(v, 3) for v in Polygon(pts).bounds]
+        if p.get("anneau"):  # anneau d'un seul tenant (polygone à pont) : boîte = rectangle extérieur
+            bx = p["boite"] if not conv else [round(v, 3) for v in Polygon(conv(rrect_boite(p["boite"]))).bounds]
+            pts = [list(q) for q in pts]
+        else:
+            # léger débord (0,04 mm) : les pièces voisines se recouvrent, pas de filet sombre d'anticrénelage aux joints
+            g = Polygon(pts).buffer(0.04, join_style=2, mitre_limit=2)
+            pts = [r3(q) for q in list(g.exterior.coords)[:-1]]
+            bx = [round(v, 3) for v in Polygon(pts).bounds]
         el.append({"k": "deg", "g": nom, "n": p["nom"], "b": bx, "p": pts, "a": ang, "s": p["stops"]})
     return el
 
@@ -176,7 +187,12 @@ def carte_a():
     ex = cv2.dilate(ex.astype(np.uint8), np.ones((17, 17), np.uint8)) > 0
     ex[int(73.5 * K):int(74.4 * K), int(50.9 * K):int(52.1 * K)] = True
     ex[int(73.5 * K):int(75.1 * K), int(51.2 * K):int(52.1 * K)] = True  # coin haut-droit : bavure orange de l'illustration sur la photo
-    pieces = cadre(img, [(O[0], O[1], 2), (M[0], M[1], 3), W], ex, nom="Cadre doré")
+    # Cadre en DEUX parties seulement (relevé sur la maquette) : la bordure extérieure plate, dégradé vertical
+    # (0°), et le biseau intérieur, dégradé à 38,5° ; chacune est un anneau d'un seul tenant.
+    exm = masque(IMG_AM.shape, [b[:4] for b in bolts])
+    exm = cv2.dilate(exm.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
+    pieces = [anneau_degrade(IMG_AM, O, M, 0, exm, "Cadre doré – bordure extérieure", recouvre=0.2),
+              anneau_degrade(IMG_AM, M, W, 38.5, exm, "Cadre doré – biseau intérieur")]
     # --- trame de points (fenêtre du cadre, débord 0,15 mm sous le cadre)
     Wb = [W[0][0] - 0.15, W[0][1] - 0.15, W[0][2] + 0.15, W[0][3] + 0.15]
     points(D / "images" / "points_a.png", Wb[2] - Wb[0], Wb[3] - Wb[1], 0.506, 0.368,

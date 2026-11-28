@@ -196,3 +196,32 @@ def eclair(A, K1, K2, B, l1, l2=None):
 def vers_portrait(pts, H=90):
     """Repère paysage (u, v) de la carte B → page portrait (x, y) = (v, H − u)."""
     return [(round(v, 3), round(H - u, 3)) for u, v in pts]
+
+
+def anneau(ext, inte, n=16):
+    """Anneau entre deux rectangles arrondis en UN seul polygone : contour extérieur (sens horaire), pont vers le
+    contour intérieur parcouru en sens inverse, retour. Le trou est exclu (enroulement nul) en CSS comme dans
+    Photoshop. Le pont est placé au coin haut-gauche (caché sous l'éclair)."""
+    E = rrect(*ext, n)
+    I = rrect(*inte, n)[::-1]
+    # coin haut-gauche : milieu de l'arc haut-gauche de chacun des contours
+    ie = n // 2
+    ii = len(I) - 1 - n // 2
+    I = I[ii:] + I[:ii]
+    E = E[ie:] + E[:ie]
+    return E + [E[0]] + I + [I[0]]
+
+
+def anneau_degrade(img, ext, inte, angle, exclus=None, nom="Anneau", tol=6.0, recouvre=0.0):
+    """Une pièce : l'anneau complet, un seul dégradé linéaire (angle CSS) échantillonné sur l'image.
+    recouvre : le contour intérieur du polygone est rentré d'autant (passe sous la pièce suivante, pas de joint)."""
+    b, r = inte
+    r = r if isinstance(r, (list, tuple)) else [r] * 4
+    inte_p = ([b[0] + recouvre, b[1] + recouvre, b[2] - recouvre, b[3] - recouvre], [max(0.05, v - recouvre) for v in r])
+    pts = [(round(x, 3), round(y, 3)) for x, y in anneau(ext, inte_p)]
+    ex = cv2.dilate(masque(img.shape, [rrect(*inte, 16)]).astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    if exclus is not None:
+        ex |= exclus
+    boite, ang, stops = echantillonner(img, rrect(*ext, 16), angle, ex, pas=0.12, larg=0.2, erosion=3, tol=tol)
+    return {"nom": nom, "pts": pts, "boite": [round(v, 3) for v in Polygon(rrect(*ext, 16)).bounds], "angle": ang, "stops": stops,
+            "anneau": True}
